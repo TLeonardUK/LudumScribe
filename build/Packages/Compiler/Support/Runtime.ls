@@ -6,9 +6,16 @@
 //	This should never be modified as the compiler relies on the correct content 
 //  and ordering of this file.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.Runtime;
+using native Native.{PLATFORM}.Compiler.Support.Runtime;
 
-public static native("IO") class IO : null
-{
-	public static native("Print") void Print(string value);
-}
+// Nothing is declared directly in this file. All work is performed by the 
+// native runtime source code.
+//
+// The runtime code includes two main functions.
+//	void lsRuntimeInit();
+//	void lsRuntimeDeInit();
+//
+// These functions are called before any translated code is executed and
+// after all translated code has been executed. They should be used
+// for initializing or deinitializing any runtime elements (for example
+// installing error handlers, starting up IP stack, etc).

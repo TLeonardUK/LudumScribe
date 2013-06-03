@@ -5,29 +5,40 @@
 //	This file just contains some code to test parts of the language.
 // -----------------------------------------------------------------------------
 using System.*;
+using System.Collections.*;
+
+// GC
+// Collections
+// Extended String Functions
 
 public class Application
 {
 	public static void Main()
 	{
-		string herp = "Hello World";
-		//IO.Print(herp[-3:]);
-		//IO.Print(herp[1:]);
-		//IO.Print(herp[:3]);
-		//IO.Print(herp[1:3]);
-		//IO.Print(herp[:]);
-	
-		//object o = "Herp Derp";
-
-		//string[][] herp;
-		//herp = new string[10][];
-		//herp[0] = new string[10];
+		int[] intArray = new int[10];
+		intArray[5] = 123;
 		
-		//int[] derp = new int[10];		
-		//IO.Print("POSTFIX:"+(derp[0]++)+"\n");
-		//IO.Print(" PREFIX:"+(++derp[0])+"\n");		
+		Application[] objArray = new Application[10];
+		objArray[5] = new Application();
+	
+	//	Derp d = new Derp();
+	//	GC.Collect(true);
+	//	d = new Derp();
+	//	GC.Collect(true);
+	//	d = new Derp();
+	//	GC.Collect(true);	
+	//	d = new Derp();
+	//	GC.Collect(true);
+	//	d = new Derp();
+	//	GC.Collect(true);
 
-		object 		herpObj 	= herp;
-		string[][] 	herpUncast 	= <string[][]>herpObj;	
+		Console.WriteLine("Done. Press any key to continue.");
+		Console.ReadChar();
+	
+//		while (true)
+//		{		
+//			Derp d = new Derp();		
+			//GC.Collect();
+//		}
 	}
 }

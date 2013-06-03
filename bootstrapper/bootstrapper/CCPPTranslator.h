@@ -75,9 +75,13 @@ private:
 	int m_internal_var_counter;
 	std::string m_switchBreakJumpLabel;
 
+	std::vector<std::string> m_created_files;
+
 public:
 
 	CCPPTranslator();
+	
+	virtual std::vector<std::string> GetTranslatedFiles();
 
 	void OpenSourceFile(std::string format);
 	void OpenHeaderFile(std::string format);

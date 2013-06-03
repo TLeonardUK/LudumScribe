@@ -24,6 +24,8 @@
 #include "CBoolDataType.h"
 #include "CNumericDataType.h"
 #include "CFloatDataType.h"
+#include "CStringDataType.h"
+#include "CArrayDataType.h"
 
 #include "CTranslator.h"
 
@@ -91,11 +93,12 @@ CASTNode* CPreFixExpressionASTNode::Semant(CSemanter* semanter)
 				std::vector<CDataType*> args;
 				args.push_back(new CIntDataType(Token));
 				args.push_back(leftValueBase->ExpressionResultType);
+				args.push_back(new CBoolDataType(Token));
 
 				CClassASTNode* arrayClass = leftLeftValueBase->ExpressionResultType->GetClass(semanter);
 				CClassMemberASTNode* memberNode = arrayClass->FindClassMethod(semanter, "SetIndex", args, true, NULL, NULL);
 		
-				if (memberNode == NULL)
+				if (memberNode == NULL || (dynamic_cast<CStringDataType*>(leftLeftValueBase->ExpressionResultType) == NULL && dynamic_cast<CArrayDataType*>(leftLeftValueBase->ExpressionResultType) == NULL))
 				{
 					index_node = NULL;
 				}

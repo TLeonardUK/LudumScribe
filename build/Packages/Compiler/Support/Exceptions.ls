@@ -7,7 +7,7 @@
 //	This should never be modified as the compiler relies on the correct content 
 //	and ordering of this file.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.Exceptions;
+using native Native.{PLATFORM}.Compiler.Support.Exceptions;
 
 // -----------------------------------------------------------------------------
 //	Used as a base for all objects which can be thrown.

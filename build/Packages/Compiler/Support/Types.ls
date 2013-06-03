@@ -6,7 +6,7 @@
 //	language. This should never be modified as the compiler relies on the 
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.Types;
+using native Native.{PLATFORM}.Compiler.Support.Types;
 
 // =============================================================================
 //	Values Types
@@ -111,7 +111,7 @@ public sealed native("lsArray") class @array<T> : @object, IEnumerable
 {
 	public native("ToString") override 	string 		ToString	();
 	public native("Length")				int 		Length		();
-	public native("SetIndex")			void	 	SetIndex	(int index, T value);
+	public native("SetIndex")			void	 	SetIndex	(int index, T value, bool postfix);
 	public native("GetIndex")			T		 	GetIndex	(int index);
 	public native("GetSlice")			T[]			GetSlice	(int start_index);
 	public native("GetSlice")			T[]	 		GetSlice	(int start_index, int end_index);

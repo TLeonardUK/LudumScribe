@@ -7,8 +7,8 @@
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
 
-#include "Packages/Compiler/Support/Native/Win32/Types.hpp"
-#include "Packages/Compiler/Support/Native/Win32/Exceptions.hpp"
+#include "Packages/Native/Win32/Compiler/Support/Types.hpp"
+#include "Packages/Native/Win32/Compiler/Support/Exceptions.hpp"
 
 // =========================================================================
 //	lsStringBuffer.
@@ -312,25 +312,42 @@ lsGCObject::~lsGCObject()
 {
 
 }	
-/*
+
 void lsGCObject::Mark()
 {
 }
 
 void* lsGCObject::operator new(size_t size)
 {
-
+	return GCAllocate(size);
 }
 
 void lsGCObject::operator delete(void *p)
 {
-
+	GCFree(static_cast<lsGCObject*>(p));
 }
 	
-int lsGCObject::Collect()
+lsGCObject* lsGCObject::GCAllocate(int size)
+{
+	lsGCObject* obj = static_cast<lsGCObject*>(malloc(size));
+	obj->m_marked = true;
+	return obj;
+}	
+	
+void lsGCObject::GCFree(lsGCObject* ptr)
+{
+	free(ptr);
+}	
+
+lsGCObject* lsGCObject::GCAssign(lsGCObject* lvalue, lsGCObject* rvalue)
+{
+	return NULL;
+}
+
+void lsGCObject::GCCollect(bool full)
 {
 
-}*/
+}
 
 // =========================================================================
 //	lsObject.

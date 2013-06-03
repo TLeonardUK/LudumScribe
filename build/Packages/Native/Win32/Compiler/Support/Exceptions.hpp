@@ -7,10 +7,10 @@
 //  and ordering of this file.
 // -----------------------------------------------------------------------------
 
-#ifndef __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_EXCEPTIONS__
-#define __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_EXCEPTIONS__
+#ifndef __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_EXCEPTIONS__
+#define __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_EXCEPTIONS__
 
-#include "Packages/Compiler/Support/Native/Win32/Types.hpp"
+#include "Packages/Native/Win32/Compiler/Support/Types.hpp"
 
 // -----------------------------------------------------------------------------
 //	Used as a base for all objects which can be thrown.
@@ -75,5 +75,5 @@ public:
 	}
 };
 
-#endif // __LS_COMPILER_SUPPORT_NATIVE_WIN32_RUNTIME__
+#endif // __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_EXCEPTIONS__
 

@@ -16,6 +16,7 @@
 #include "CObjectDataType.h"
 #include "CStringDataType.h"
 #include "CArrayDataType.h"
+#include "CBoolDataType.h"
 
 #include "CFieldAccessExpressionASTNode.h"
 #include "CIdentifierExpressionASTNode.h"
@@ -74,11 +75,12 @@ CASTNode* CAssignmentExpressionASTNode::Semant(CSemanter* semanter)
 		std::vector<CDataType*> args;
 		args.push_back(new CIntDataType(Token));
 		args.push_back(rightValueBase->ExpressionResultType);
+		args.push_back(new CBoolDataType(Token));
 
 		CClassASTNode* arrayClass = leftLeftValueBase->ExpressionResultType->GetClass(semanter);
 		CClassMemberASTNode* memberNode = arrayClass->FindClassMethod(semanter, "SetIndex", args, true, NULL, NULL);
 		
-		if (memberNode == NULL)
+		if (memberNode == NULL || (dynamic_cast<CStringDataType*>(leftLeftValueBase->ExpressionResultType) == NULL && dynamic_cast<CArrayDataType*>(leftLeftValueBase->ExpressionResultType) == NULL))
 		{
 			index_node = NULL;
 		}

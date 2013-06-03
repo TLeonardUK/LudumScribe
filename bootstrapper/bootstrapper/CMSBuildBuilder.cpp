@@ -33,11 +33,24 @@ bool CMSBuildBuilder::Build()
 	std::vector<std::string> configs = CStringHelper::Split(project_config.GetString("SUPPORTED_CONFIGS"), '|');
 	std::string config_name = project_config.GetString("CONFIG");
 
-	// Gather all source files in the build folder.
-	std::vector<std::string> source_files = CPathHelper::ListRecursiveFiles(build_dir, "cpp");
+	std::vector<std::string> files = m_context->GetTranslatedFiles();
 
-	// Gather all header files in the build folder.
-	std::vector<std::string> header_files = CPathHelper::ListRecursiveFiles(build_dir, "hpp");
+	// Gather all source files in the build folder.
+	std::vector<std::string> source_files;// = CPathHelper::ListRecursiveFiles(build_dir, "cpp");
+	std::vector<std::string> header_files;// = CPathHelper::ListRecursiveFiles(build_dir, "hpp");
+	for (auto iter = files.begin(); iter != files.end(); iter++)
+	{
+		std::string file = CPathHelper::CleanPath(*iter);
+		std::string ext = CStringHelper::ToLower(CPathHelper::ExtractExtension(file));
+		if (ext == "hpp" || ext == "h")
+		{
+			header_files.push_back(file);
+		}
+		else 
+		{
+			source_files.push_back(file);
+		}
+	}
 
 	// Work out include directories.
 	std::vector<std::string> include_paths;
@@ -169,7 +182,7 @@ bool CMSBuildBuilder::Build()
 	project_file += 
 		std::string("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + config_name + "|Win32'\">\n") +
 					"    <LinkIncremental>true</LinkIncremental>\n" +
-					"    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + "$(IncludePath)</IncludePath>" + 
+					"    <IncludePath>$(ProjectDir)Source;$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + "$(IncludePath)</IncludePath>" + 
 					"    <OutDir>$(SolutionDir)\\</OutDir>" + 
 					"  </PropertyGroup>\n";
 

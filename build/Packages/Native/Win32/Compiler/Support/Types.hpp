@@ -7,8 +7,8 @@
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
 
-#ifndef __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_TYPES__
-#define __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_TYPES__
+#ifndef __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_TYPES__
+#define __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_TYPES__
 
 #define _CRT_SECURE_NO_WARNINGS // GTFO windows secure functions.
 
@@ -105,20 +105,22 @@ public:
 class lsGCObject 
 {
 private:
+	bool m_marked;
 
 public:
-	virtual ~lsGCObject		();
+	virtual ~lsGCObject					();
 	
-//	void  Mark				();
-//	void* operator new		(size_t size);	
-//	void  operator delete	(void *p);	
+	virtual void  Mark					();
+	void* operator new					(size_t size);	
+	void  operator delete				(void* ptr);		
 	
-//	static void MemAlloc	();
-//	static void MemFree		();
-//	static int 	MemCollect	();
+	static lsGCObject* 	GCAllocate		(int size);
+	static void 		GCFree			(lsGCObject* ptr);
+	static void 		GCCollect		(bool full);	
+	
+	static lsGCObject*	GCAssign		(lsGCObject* lvalue, lsGCObject* rvalue);
 	
 };
-
 
 // -----------------------------------------------------------------------------
 //	All objects derive from the base object class.
@@ -294,5 +296,5 @@ public:
 	
 };
 
-#endif // __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_TYPES__
+#endif // __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_TYPES__
 

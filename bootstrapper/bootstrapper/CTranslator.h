@@ -70,6 +70,8 @@ public:
 	bool				Process							(CTranslationUnit* context);
 	CTranslationUnit*	GetContext						();
 	
+	virtual std::vector<std::string> GetTranslatedFiles	() = 0;
+
 	virtual std::string TranslateDataType				(CDataType* dt) = 0;
 		
 	virtual void TranslatePackage						(CPackageASTNode* node) = 0;

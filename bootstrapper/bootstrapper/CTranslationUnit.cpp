@@ -129,6 +129,14 @@ std::vector<std::string>& CTranslationUnit::GetNativeFileList()
 }
 
 // =================================================================
+//	Get a list of files that have been translated and need building.
+// =================================================================
+std::vector<std::string>& CTranslationUnit::GetTranslatedFiles() 
+{ 
+	return m_translated_files;
+}
+
+// =================================================================
 //	Gets a list of defines.
 // =================================================================
 std::vector<CDefine>& CTranslationUnit::GetDefines()
@@ -516,6 +524,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 		// Translate into target language.
 		int tick_count = GetTickCount();
 		m_compiler->GetTranslator()->Process(this);		
+		m_translated_files = m_compiler->GetTranslator()->GetTranslatedFiles();
 		Info(CStringHelper::FormatString("Translated %s using '%s' translator in %s ms.",
 										m_filename.c_str(), 
 										m_compiler->GetProjectConfig().GetString("TRANSLATOR_NAME").c_str(), 

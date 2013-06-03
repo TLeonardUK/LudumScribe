@@ -7,23 +7,18 @@
 //  and ordering of this file.
 // -----------------------------------------------------------------------------
 
-#ifndef __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_RUNTIME__
-#define __LS_PACKAGES_COMPILER_SUPPORT_NATIVE_WIN32_RUNTIME__
-
-#include "Packages/Compiler/Support/Native/Win32/Types.hpp"
+#include "Packages/Native/Win32/Compiler/Support/Runtime.hpp"
 
 // -----------------------------------------------------------------------------
-//	These functions are called at the start and end of the entry point 
-//	respectively and are responsible for starting and shutting down the runtime.
+//	Called at the start of the entry point, initializes the runtime.
 // -----------------------------------------------------------------------------
-void lsRuntimeInit();
-void lsRuntimeDeInit();
-
-class IO
+void lsRuntimeInit()
 {
-public:
-	static void Print(lsString value);
-};
+}
 
-#endif // __LS_COMPILER_SUPPORT_NATIVE_WIN32_RUNTIME__
-
+// -----------------------------------------------------------------------------
+//	Called at the end of the entry point, deinitializes the runtime.
+// -----------------------------------------------------------------------------
+void lsRuntimeDeInit()
+{
+}

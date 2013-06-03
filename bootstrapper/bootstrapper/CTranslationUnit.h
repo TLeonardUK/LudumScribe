@@ -41,6 +41,7 @@ private:
 	std::vector<CToken>			m_token_list;
 	std::vector<std::string>	m_using_files;
 	std::vector<std::string>	m_native_files;
+	std::vector<std::string>	m_translated_files;
 
 	int							m_last_line_row;
 	int							m_last_line_column;
@@ -69,6 +70,7 @@ public:
 	std::vector<CToken>&		GetTokenList		();
 	std::vector<std::string>&	GetUsingFileList	();
 	std::vector<std::string>&	GetNativeFileList	();
+	std::vector<std::string>&	GetTranslatedFiles	();
 	std::vector<CDefine>&		GetDefines			();
 	CSemanter*					GetSemanter			();
 
