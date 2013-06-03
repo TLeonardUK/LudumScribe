@@ -1,0 +1,40 @@
+// -----------------------------------------------------------------------------
+// 	MSBuild.lsbuilder
+// 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
+// -----------------------------------------------------------------------------
+//	This file contains all the configuration needed to tell the compiler
+//	how to compile translated code with the MSBuild builder.
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+//	BUILDER_INTERNAL_NAME: Name of the compiled class that this config file represents.
+// -----------------------------------------------------------------------------
+#define BUILDER_INTERNAL_NAME 	"CMSBuildBuilder"
+
+// -----------------------------------------------------------------------------
+//	BUILDER_SHORT_NAME: Name of the builder.
+// -----------------------------------------------------------------------------
+#define BUILDER_SHORT_NAME 		"MSBuild"
+
+// -----------------------------------------------------------------------------
+//	BUILDER_NAME: Long version of the name used in descriptions.
+// -----------------------------------------------------------------------------
+#define BUILDER_NAME 			"Microsoft Build"
+
+// -----------------------------------------------------------------------------
+//	MSBUILD_PATH: Path to the MSBuild.exe executable used to compile.
+// -----------------------------------------------------------------------------
+#define MSBUILD_PATH			@"{WINDIR}/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe"
+
+// -----------------------------------------------------------------------------
+//	MSBUILD_FLAGS: Extra command line parameters to pass to MSBuild, can be used
+//				   to override default settings.
+// -----------------------------------------------------------------------------
+#define MSBUILD_FLAGS			""
+
+// -----------------------------------------------------------------------------
+//	Make sure our platform is valid.
+// -----------------------------------------------------------------------------
+#if OS != "Win32"
+	#error "Can not build using {SHORT_NAME} on {OS}."
+#endif

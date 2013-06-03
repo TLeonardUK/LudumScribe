@@ -1,0 +1,599 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{4ec4b3f2-6499-4134-beac-303bb0c1606f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{40c2c4ff-c2a0-4886-b4dc-fe040a9d42e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lexer">
+      <UniqueIdentifier>{86f5686b-95c3-40bc-95a9-c09c8a7be7cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lexer">
+      <UniqueIdentifier>{f2e464dd-5d2e-4ad0-80d7-515de85cd9fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser">
+      <UniqueIdentifier>{835b0223-bfa5-4c83-9bf8-591846a3998f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Translator">
+      <UniqueIdentifier>{958a043b-4bed-4697-aa37-2190a45c94bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser">
+      <UniqueIdentifier>{fd429bb3-d97c-454b-aab0-131bd8cad345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Translator">
+      <UniqueIdentifier>{3fe7a1eb-1b2d-4e5c-bb38-6fcfc77ab2af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes">
+      <UniqueIdentifier>{de56003d-42e4-4f4d-82b1-8569f7515af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes">
+      <UniqueIdentifier>{eda751c5-767e-475a-8ea0-6e8f03b671cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Translator\CPP">
+      <UniqueIdentifier>{006cdfd0-aca3-4a2d-bf7c-82cbb07132a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Translator\CPP">
+      <UniqueIdentifier>{82792d6b-f399-4165-bc37-bc5aef61b00b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions">
+      <UniqueIdentifier>{d73bd24d-5598-44f6-9193-f49d91ee418b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions">
+      <UniqueIdentifier>{f83ecbf1-a098-412e-9f24-7ae1a77ac914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Statements">
+      <UniqueIdentifier>{33b93b79-506d-4a8f-a146-6b206edabf33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Statements">
+      <UniqueIdentifier>{debfd9bc-269a-44c0-9733-ed6cbb6389bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Top-Level">
+      <UniqueIdentifier>{840a7110-1457-4958-ae9f-a3c12e187770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Compiler">
+      <UniqueIdentifier>{463697b9-7c20-41e0-8853-d9e1e1b73e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Compiler">
+      <UniqueIdentifier>{632d224a-c4be-4c99-b350-ec5afcfea243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Semanter">
+      <UniqueIdentifier>{5886c0d6-786c-4e2b-af29-2e4f840dfe43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Semanter">
+      <UniqueIdentifier>{3a5c6f5c-3c6a-4b93-8502-e488ad709feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Preprocessor">
+      <UniqueIdentifier>{9c8e9e8d-1092-46ed-88a8-4840b9811eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Preprocessor">
+      <UniqueIdentifier>{33c3234d-4240-41e9-85e2-c03b110c5e82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Types">
+      <UniqueIdentifier>{aadee945-9675-4f3b-bc2d-f96be3e4c9d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Types">
+      <UniqueIdentifier>{aa6a80f8-680b-4fe1-b32f-17e6d5536318}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Types\Helper">
+      <UniqueIdentifier>{9d1e2385-3788-43a3-a9de-5dc8a7abfa80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Types\Helper">
+      <UniqueIdentifier>{1d98e9f2-ed5c-45d6-aba6-9c8c003be8e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions\Math">
+      <UniqueIdentifier>{b0cab59f-ccba-4fbc-920c-63a5c335c0a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions\Assignment">
+      <UniqueIdentifier>{c993955c-b461-4e1e-a5f2-a89bdeda56d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions\Polymorphism">
+      <UniqueIdentifier>{3ddfcb02-ca48-4df9-9aec-415872fa8823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions\Branching">
+      <UniqueIdentifier>{20615620-7f94-433c-9336-641592fe54d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser\Nodes\Expressions\Types">
+      <UniqueIdentifier>{a22447bc-41ae-41b0-8529-532df7197920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions\Math">
+      <UniqueIdentifier>{01b30f6f-315b-49f9-abf8-36915d875d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions\Assignment">
+      <UniqueIdentifier>{f815886d-15e4-4c49-ab4e-81d7f6f393c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions\Branching">
+      <UniqueIdentifier>{29317d67-805c-49e6-9307-d30e5e07ae5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions\Types">
+      <UniqueIdentifier>{631d509c-b0c2-419f-ad22-edd271301521}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Expressions\Polymorphism">
+      <UniqueIdentifier>{f34c7ea4-4470-4193-a95f-28bdf0413f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Builder">
+      <UniqueIdentifier>{aa8d2c9c-bf26-49c9-9e5c-00f56b438319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Builder">
+      <UniqueIdentifier>{138f1eac-c9a0-452b-8682-c8424b04d480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Builder\MSBuild">
+      <UniqueIdentifier>{df3dd880-00b3-4fe2-b5dc-2d437dc2b0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Builder\MSBuild">
+      <UniqueIdentifier>{a532b618-4471-4d28-a88d-eebbbb896741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\Nodes\Statements\Top-Level">
+      <UniqueIdentifier>{8bbdd2b2-bda6-4be6-802b-a404ecb089dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bootstrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CStringHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="CPathHelper.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="CLexer.cpp">
+      <Filter>Source Files\Lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="CToken.cpp">
+      <Filter>Source Files\Lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="CASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="CParser.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="CExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="CIfStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CBlockStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CClassASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CClassBodyASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CClassMemberASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CMethodBodyASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CBreakStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CCaseStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CContinueStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CDefaultStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CDoStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CForEachStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CForStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CReturnStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CSwitchStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CVariableStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CWhileStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CCompiler.cpp">
+      <Filter>Source Files\Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="CTranslationUnit.cpp">
+      <Filter>Source Files\Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="CCommandLineParser.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="CTryStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CCatchStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CSemanter.cpp">
+      <Filter>Source Files\Semanter</Filter>
+    </ClCompile>
+    <ClCompile Include="CPackageASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CPreprocessor.cpp">
+      <Filter>Source Files\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="CThrowStatementASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements</Filter>
+    </ClCompile>
+    <ClCompile Include="CVoidDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoolDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CIntDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CFloatDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CStringDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CArrayDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectDataType.cpp">
+      <Filter>Source Files\Parser\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CDeclarationASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CAliasASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Statements\Top-Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CExpressionBaseASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="CDataType.cpp">
+      <Filter>Source Files\Parser\Types\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="CIdentifierDataType.cpp">
+      <Filter>Source Files\Parser\Types\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="CNumericDataType.cpp">
+      <Filter>Source Files\Parser\Types\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="CBinaryMathExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="CComparisonExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="CLogicalExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="CPreFixExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="CPostFixExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="CNewExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClCompile>
+    <ClCompile Include="CAssignmentExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Assignment</Filter>
+    </ClCompile>
+    <ClCompile Include="CCommaExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClCompile>
+    <ClCompile Include="CTernaryExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClCompile>
+    <ClCompile Include="CMethodCallExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClCompile>
+    <ClCompile Include="CBaseExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClCompile>
+    <ClCompile Include="CCastExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CIdentifierExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CIndexExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CLiteralExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CSliceExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="CThisExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClCompile>
+    <ClCompile Include="CTypeExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="EvaluationResult.cpp">
+      <Filter>Source Files\Parser\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="CClassReferenceDataType.cpp">
+      <Filter>Source Files\Parser\Types\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="CFieldAccessExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClCompile>
+    <ClCompile Include="CNullDataType.cpp">
+      <Filter>Source Files\Parser\Types\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="CTranslator.cpp">
+      <Filter>Source Files\Translator</Filter>
+    </ClCompile>
+    <ClCompile Include="CCPPTranslator.cpp">
+      <Filter>Source Files\Translator\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="CClassRefExpressionASTNode.cpp">
+      <Filter>Source Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClCompile>
+    <ClCompile Include="CBuilder.cpp">
+      <Filter>Source Files\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="CMSBuildBuilder.cpp">
+      <Filter>Source Files\Builder\MSBuild</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CStringHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="CPathHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="CLexer.h">
+      <Filter>Header Files\Lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="CToken.h">
+      <Filter>Header Files\Lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="CASTNode.h">
+      <Filter>Header Files\Parser\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="CParser.h">
+      <Filter>Header Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="CExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="CIfStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CBlockStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CClassASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CClassBodyASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CClassMemberASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CMethodBodyASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CWhileStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CBreakStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CContinueStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CDoStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CSwitchStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CForStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CForEachStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CReturnStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CCaseStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CDefaultStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CVariableStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CCompiler.h">
+      <Filter>Header Files\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="CTranslationUnit.h">
+      <Filter>Header Files\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="CCommandLineParser.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="CTryStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CCatchStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CFinallyStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CSemanter.h">
+      <Filter>Header Files\Semanter</Filter>
+    </ClInclude>
+    <ClInclude Include="CPackageASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CPreprocessor.h">
+      <Filter>Header Files\Preprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="CThrowStatementASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Statements</Filter>
+    </ClInclude>
+    <ClInclude Include="CArrayDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoolDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CFloatDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CIntDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CStringDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CVoidDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectDataType.h">
+      <Filter>Header Files\Parser\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CDeclarationASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CAliasASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Top-Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CExpressionBaseASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="CDataType.h">
+      <Filter>Header Files\Parser\Types\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="CIdentifierDataType.h">
+      <Filter>Header Files\Parser\Types\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="CNumericDataType.h">
+      <Filter>Header Files\Parser\Types\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="CBinaryMathExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CPostFixExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CPreFixExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CThisExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClInclude>
+    <ClInclude Include="CTernaryExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClInclude>
+    <ClInclude Include="CComparisonExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CNewExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClInclude>
+    <ClInclude Include="CCastExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CSliceExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CLogicalExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CLiteralExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CIndexExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClInclude>
+    <ClInclude Include="CAssignmentExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Assignment</Filter>
+    </ClInclude>
+    <ClInclude Include="CIdentifierExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CMethodCallExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClInclude>
+    <ClInclude Include="CCommaExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Branching</Filter>
+    </ClInclude>
+    <ClInclude Include="EvaluationResult.h">
+      <Filter>Header Files\Parser\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="CTypeExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CClassReferenceDataType.h">
+      <Filter>Header Files\Parser\Types\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="CFieldAccessExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClInclude>
+    <ClInclude Include="CNullDataType.h">
+      <Filter>Header Files\Parser\Types\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="CTranslator.h">
+      <Filter>Header Files\Translator</Filter>
+    </ClInclude>
+    <ClInclude Include="CCPPTranslator.h">
+      <Filter>Header Files\Translator\CPP</Filter>
+    </ClInclude>
+    <ClInclude Include="CClassRefExpressionASTNode.h">
+      <Filter>Header Files\Parser\Nodes\Expressions\Polymorphism</Filter>
+    </ClInclude>
+    <ClInclude Include="CBuilder.h">
+      <Filter>Header Files\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="CMSBuildBuilder.h">
+      <Filter>Header Files\Builder\MSBuild</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollectionHelper.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

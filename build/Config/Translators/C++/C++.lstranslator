@@ -1,0 +1,35 @@
+// -----------------------------------------------------------------------------
+// 	C++.lstranslator
+// 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
+// -----------------------------------------------------------------------------
+//	This file contains all the configuration needed to tell the compiler
+//	how to translate code using the stdcpp translator.
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+//	TRANSLATOR_INTERNAL_NAME: Name of the compiled class that this config file represents.
+// -----------------------------------------------------------------------------
+#define TRANSLATOR_INTERNAL_NAME 		"CCPPTranslator"
+
+// -----------------------------------------------------------------------------
+//	TRANSLATOR_SHORT_NAME: Name of the translator.
+// -----------------------------------------------------------------------------
+#define TRANSLATOR_SHORT_NAME 			"C++"
+
+// -----------------------------------------------------------------------------
+//	TRANSLATOR_NAME: Long version of the name used in descriptions.
+// -----------------------------------------------------------------------------
+#define TRANSLATOR_NAME 				"Standard C++"
+
+// -----------------------------------------------------------------------------
+//	TRANSLATOR_NATIVE_FILE_EXTENSION: File extension to look for when including 
+//						   			  native files.
+// -----------------------------------------------------------------------------
+#define TRANSLATOR_NATIVE_FILE_EXTENSION "hpp"
+
+// -----------------------------------------------------------------------------
+//	Make sure our platform is valid.
+// -----------------------------------------------------------------------------
+#if OS != "Win32" && OS != "Linux" && OS != "MacOS"
+	#error "Can not translate to {NAME} on {OS}."
+#endif

@@ -1,0 +1,36 @@
+// -----------------------------------------------------------------------------
+// 	Win32.lsplatform
+// 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
+// -----------------------------------------------------------------------------
+//	This file contains all the configuration needed to tell the compiler
+//	how to translate code for the win32 platform.
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_SHORT_NAME: Name of the platform we are compiling for. This is the name
+//				used in configuration files and by the PLATFORM definition.
+// -----------------------------------------------------------------------------
+#define PLATFORM_SHORT_NAME 	"Win32"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_NAME: Long version of the name used in descriptions.
+// -----------------------------------------------------------------------------
+#define PLATFORM_NAME 			"Windows 32bit"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_TRANSLATOR: Which translator to use to generate output.
+// -----------------------------------------------------------------------------
+#define PLATFORM_TRANSLATOR 	"C++"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_BUILDER: Which builder to use to compile the translated output.
+// -----------------------------------------------------------------------------
+#if OS == "Linux"
+	#define PLATFORM_BUILDER "GCC"
+#elseif OS == "MacOS"
+	#define PLATFORM_BUILDER "GCC"
+#elseif OS == "Win32"
+	#define PLATFORM_BUILDER "MSBuild"		
+#else
+	#error "Can not target {SHORT_NAME} on {OS}."
+#endif
