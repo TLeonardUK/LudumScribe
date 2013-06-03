@@ -105,6 +105,8 @@ CClassASTNode* CArrayDataType::GetBoxClass(CSemanter* semanter)
 //	Performs semantic analysis of this data type.
 // =================================================================
 CDataType* CArrayDataType::Semant(CSemanter* semanter, CASTNode* node)
-{
-	return ElementType->Semant(semanter, node)->ArrayOf();
+{	
+	CDataType* dt = ElementType->Semant(semanter, node)->ArrayOf();
+	dt->GetClass(semanter); // Initialises generic instances if neccessary.
+	return dt;
 }

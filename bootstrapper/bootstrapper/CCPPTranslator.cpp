@@ -594,9 +594,9 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 		}
 		if (child->IsGeneric == true)
 		{
-			for (auto iter2 = child->GenericInstances.begin(); iter2 != child->GenericInstances.end(); iter2++)
+			for (int i = 0; i < child->GenericInstances.size(); i++)
 			{
-				TranslateClass(*iter2);
+				TranslateClass(child->GenericInstances.at(i));
 			}
 		}
 		else

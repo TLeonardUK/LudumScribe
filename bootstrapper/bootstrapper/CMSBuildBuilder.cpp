@@ -169,7 +169,7 @@ bool CMSBuildBuilder::Build()
 	project_file += 
 		std::string("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + config_name + "|Win32'\">\n") +
 					"    <LinkIncremental>true</LinkIncremental>\n" +
-					"    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;" + include_path + "$(IncludePath)</IncludePath>" + 
+					"    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + "$(IncludePath)</IncludePath>" + 
 					"    <OutDir>$(SolutionDir)\\</OutDir>" + 
 					"  </PropertyGroup>\n";
 

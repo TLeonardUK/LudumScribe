@@ -124,7 +124,7 @@ CASTNode* CClassASTNode::Clone(CSemanter* semanter)
 			}
 		}
 	}
-
+	
 	return clone;
 }
 
@@ -483,7 +483,8 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 			(*iter)->Finalize(semanter);
 		}
 	}
-
+	
+	printf("FINALIZE(%i):%s\n", GenericInstances.size(), ToString().c_str());
 	return this;
 }
 

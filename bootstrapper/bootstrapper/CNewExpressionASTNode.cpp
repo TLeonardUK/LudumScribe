@@ -124,6 +124,20 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 		ExpressionResultType = DataType;
 	}
 
+	// Check we can create new object.
+	if (dynamic_cast<CArrayDataType*>(DataType) == NULL)
+	{		
+		// Check class is valid.
+		CClassASTNode* classNode = DataType->GetClass(semanter);
+
+		// Check we can find a constructor.
+		CClassMemberASTNode* node = classNode->FindClassMethod(semanter, classNode->Identifier, argument_datatypes, false);
+		if (node == NULL)
+		{
+			semanter->GetContext()->FatalError(CStringHelper::FormatString("Could not find suitable constructor to instantiate class '%s'.", DataType->ToString().c_str()), Token);
+		}
+	}
+
 	return this;
 }
 
