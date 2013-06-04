@@ -75,5 +75,17 @@ public:
 	}
 };
 
+// -----------------------------------------------------------------------------
+//	Throw when we run out of memory to allocate.
+// -----------------------------------------------------------------------------
+class lsOutOfMemoryException : public lsException
+{
+public:
+	lsOutOfMemoryException() : 
+		lsException("Ran out of memory during object allocation.")
+	{
+	}
+};
+
 #endif // __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_EXCEPTIONS__
 

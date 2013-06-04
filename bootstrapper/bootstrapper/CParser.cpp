@@ -362,7 +362,7 @@ void CParser::ParseTopLevelStatement()
 }
 
 // =================================================================
-//	Parses a using statement: using x.y.z;
+//	Parses a using statement: using native|library|copy x.y.z;
 // =================================================================
 void CParser::ParseUsingStatement()
 {
@@ -372,12 +372,28 @@ void CParser::ParseUsingStatement()
 	int counter = 0;
 
 	bool isNative = false;
+	bool isCopy = false;
+	bool isLibrary = false;
 
-	// We looking for native files?
+	// We choosing a native file.
 	if (LookAheadToken().Type == TokenIdentifier::KEYWORD_NATIVE)
 	{
 		ExpectToken(TokenIdentifier::KEYWORD_NATIVE);
 		isNative = true;
+	}
+
+	// Copying a file/folder to output?
+	else if (LookAheadToken().Type == TokenIdentifier::KEYWORD_COPY)
+	{
+		ExpectToken(TokenIdentifier::KEYWORD_COPY);
+		isCopy = true;
+	}
+
+	// Linking a library?
+	else if (LookAheadToken().Type == TokenIdentifier::KEYWORD_LIBRARY)
+	{
+		ExpectToken(TokenIdentifier::KEYWORD_LIBRARY);
+		isLibrary = true;
 	}
 
 	while (true)
@@ -456,19 +472,18 @@ void CParser::ParseUsingStatement()
 			return;
 		}
 
-		// List all files in directory.
 		std::vector<std::string> files = CPathHelper::ListFiles(final_path);
 		for (auto iter = files.begin(); iter != files.end(); iter++)
 		{
 			std::string file_path = final_path + "/" + (*iter);		
 			
 			// Check extension.
-			if (CPathHelper::ExtractExtension(file_path) != file_ext)
+			if (file_ext != "" && CPathHelper::ExtractExtension(file_path) != file_ext)
 			{
 				continue;
 			}
 
-			if (!m_context->AddUsingFile(file_path, isNative))
+			if (!m_context->AddUsingFile(file_path, isNative, isCopy, isLibrary))
 			{
 				m_context->Warning(CStringHelper::FormatString("Using statement imports duplicate file '%s'.", file_path.c_str()), start_token);
 			}
@@ -501,7 +516,7 @@ void CParser::ParseUsingStatement()
 		}
 
 		// Store the file.
-		if (!m_context->AddUsingFile(final_path, isNative))
+		if (!m_context->AddUsingFile(final_path, isNative, isCopy, isLibrary))
 		{
 			m_context->Warning(CStringHelper::FormatString("Using statement imports duplicate file '%s'.", final_path.c_str()), start_token);
 		}

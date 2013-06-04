@@ -90,7 +90,9 @@ CCPPTranslator::CCPPTranslator() :
 	m_internal_var_counter(0),
 	m_source_source(""),
 	m_header_source(""),
-	m_switchBreakJumpLabel("")
+	m_switchBreakJumpLabel(""),
+	m_last_gc_collect_emit(0),
+	m_emit_source_counter(0)
 {
 }
 
@@ -238,6 +240,7 @@ void CCPPTranslator::EmitSourceFile(std::string text, ...)
 	va_end(vl);
 
 	m_source_source += text;
+	m_emit_source_counter++;
 }
 
 // =================================================================
@@ -281,6 +284,18 @@ void CCPPTranslator::EmitHeaderFile(std::string text, ...)
 	va_end(vl);
 	
 	m_header_source += text;
+}
+
+// =================================================================
+//	Writes a garbage collection call out.
+// =================================================================
+void CCPPTranslator::EmitGCCollect()
+{	
+	if (m_emit_source_counter > m_last_gc_collect_emit)
+	{
+		EmitSourceFile("lsGCObject::GCCollect(false);\n");
+	}
+	m_last_gc_collect_emit = m_emit_source_counter;
 }
 
 // =================================================================
@@ -587,16 +602,37 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 		std::string dst_file_no_extension = CPathHelper::StripExtension(dst_file);
 		
 		// Copy native file over.
-		CPathHelper::CopyFileTo(file_no_extension + ".hpp", dst_file_no_extension + ".hpp");
-		m_created_files.push_back(dst_file_no_extension + ".hpp");
+		if (CPathHelper::IsFile(file_no_extension + ".hpp"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".hpp");
+			CPathHelper::CopyFileTo(file_no_extension + ".hpp", dst_file_no_extension + ".hpp");
+			m_native_file_paths.push_back(dst_file_no_extension);
+		}
+		if (CPathHelper::IsFile(file_no_extension + ".h"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".h");
+			CPathHelper::CopyFileTo(file_no_extension + ".h", dst_file_no_extension + ".h");
+		}
 		if (CPathHelper::IsFile(file_no_extension + ".cpp"))
 		{
 			m_created_files.push_back(dst_file_no_extension + ".cpp");
 			CPathHelper::CopyFileTo(file_no_extension + ".cpp", dst_file_no_extension + ".cpp");
 		}
-
-		// Store source files.
-		m_native_file_paths.push_back(dst_file_no_extension);
+		if (CPathHelper::IsFile(file_no_extension + ".c"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".c");
+			CPathHelper::CopyFileTo(file_no_extension + ".c", dst_file_no_extension + ".c");
+		}
+		if (CPathHelper::IsFile(file_no_extension + ".cc"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".cc");
+			CPathHelper::CopyFileTo(file_no_extension + ".cc", dst_file_no_extension + ".cc");
+		}
+		if (CPathHelper::IsFile(file_no_extension + ".cxx"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".cxx");
+			CPathHelper::CopyFileTo(file_no_extension + ".cxx", dst_file_no_extension + ".cxx");
+		}
 	}
 	
 	// Emit a source file for each class.
@@ -690,6 +726,7 @@ void CCPPTranslator::TranslateClass(CClassASTNode* node)
 	{
 		std::string file_path = m_native_file_paths.at(i);
 		std::string relative = CPathHelper::GetRelativePath(file_path, m_source_directory);
+
 		EmitHeaderFile("#include \"%s.hpp\"\n", relative.c_str());
 	}
 	EmitHeaderFile("\n");
@@ -888,10 +925,12 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 			}
 			EmitSourceFile(")\n");	
 			EmitSourceFile("{\n");	
+			EmitGCCollect();
 			
 			// Translate body.
 			node->Body->TranslateChildren(this);
 			
+			EmitGCCollect();
 			EmitSourceFile("}\n");
 			EmitSourceFile("\n");				
 		}		
@@ -1041,7 +1080,9 @@ void CCPPTranslator::TranslateVariableStatement(CVariableStatementASTNode* node)
 // =================================================================	
 void CCPPTranslator::TranslateBlockStatement(CBlockStatementASTNode* node)
 {
+	EmitGCCollect();
 	node->TranslateChildren(this);
+	EmitGCCollect();	
 }
 
 // =================================================================
@@ -1223,7 +1264,10 @@ void CCPPTranslator::TranslateIfStatement(CIfStatementASTNode* node)
 // =================================================================	
 void CCPPTranslator::TranslateReturnStatement(CReturnStatementASTNode* node)
 {
+	EmitSourceFile("{\n");
+	EmitGCCollect();
 	EmitSourceFile("return (%s);\n", dynamic_cast<CExpressionBaseASTNode*>(node->ReturnExpression)->TranslateExpr(this).c_str());
+	EmitSourceFile("}\n");
 }
 
 // =================================================================
@@ -1413,15 +1457,15 @@ std::string	CCPPTranslator::TranslateAssignmentExpression(CAssignmentExpressionA
 		{
 			case TokenIdentifier::OP_ASSIGN:		
 				{
-					if (dynamic_cast<CObjectDataType*>(left_base->ExpressionResultType) != NULL)
-					{
-						return left_base->TranslateExpr(this) + " = dynamic_cast<" + TranslateDataType(left_base->ExpressionResultType) + ">(lsGCObject::GCAssign(" + left_base->TranslateExpr(this) + ", " + right_base->TranslateExpr(this) + "))";
-					}
-					else
-					{
+			//		if (dynamic_cast<CObjectDataType*>(left_base->ExpressionResultType) != NULL)
+			//		{
+			//			return left_base->TranslateExpr(this) + " = dynamic_cast<" + TranslateDataType(left_base->ExpressionResultType) + ">(lsGCObject::GCAssign(" + left_base->TranslateExpr(this) + ", " + right_base->TranslateExpr(this) + "))";
+			//		}
+			//		else
+			//		{
 						return (left_base->TranslateExpr(this) + " = " + right_base->TranslateExpr(this));	
-					}
-					break;	
+			//		}
+			//		break;	
 				}
 			case TokenIdentifier::OP_ASSIGN_AND:	return (left_base->TranslateExpr(this) + " &= " + right_base->TranslateExpr(this));
 			case TokenIdentifier::OP_ASSIGN_OR:		return (left_base->TranslateExpr(this) + " |= " + right_base->TranslateExpr(this));
@@ -1578,17 +1622,17 @@ std::string	CCPPTranslator::TranslateIndexExpression(CIndexExpressionASTNode* no
 
 	if (set == true)
 	{
-		if (dynamic_cast<CObjectDataType*>(node->ExpressionResultType) != NULL)
-		{
-			CDataType* type = dynamic_cast<CArrayDataType*>(left_base->ExpressionResultType)->ElementType;
-
-			set_expr = "dynamic_cast<" + TranslateDataType(type) + ">(lsGCObject::GCAssign(" + (left_base->TranslateExpr(this) + op + "GetIndex(" + index_base->TranslateExpr(this)) + "), " + set_expr + "))";
+		//if (dynamic_cast<CObjectDataType*>(node->ExpressionResultType) != NULL)
+		//{
+		//	CDataType* type = dynamic_cast<CArrayDataType*>(left_base->ExpressionResultType)->ElementType;
+		//
+		//	set_expr = "dynamic_cast<" + TranslateDataType(type) + ">(lsGCObject::GCAssign(" + (left_base->TranslateExpr(this) + op + "GetIndex(" + index_base->TranslateExpr(this)) + "), " + set_expr + "))";
+		//	return left_base->TranslateExpr(this) + op + "SetIndex(" + index_base->TranslateExpr(this) + ", " + set_expr + ", " + (postfix ? "true" : "false") + ")";
+		//}
+		//else
+		//{
 			return left_base->TranslateExpr(this) + op + "SetIndex(" + index_base->TranslateExpr(this) + ", " + set_expr + ", " + (postfix ? "true" : "false") + ")";
-		}
-		else
-		{
-			return left_base->TranslateExpr(this) + op + "SetIndex(" + index_base->TranslateExpr(this) + ", " + set_expr + ", " + (postfix ? "true" : "false") + ")";
-		}
+		//}
 	}
 	else
 	{

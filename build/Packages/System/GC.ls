@@ -7,6 +7,13 @@
 // -----------------------------------------------------------------------------
 using native Native.{PLATFORM}.System.GC;
 
+// Include the Boehm Garbage Collector folder/library
+// if our target language is C++.
+#if TRANSLATOR_SHORT_NAME=="C++"
+	using copy    Native.{PLATFORM}.System.GC.include.gc;
+	using library Native.{PLATFORM}.System.GC.libgc.libgc;
+#endif
+
 // -----------------------------------------------------------------------------
 //	This class is used to interact with the target languages garbage collector.
 //	Some target languages will not allow interaction with the garbage collector,

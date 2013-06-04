@@ -39,3 +39,10 @@ public native("lsInternalGCException") class InternalGCException : Exception
 {
 }
 
+// -----------------------------------------------------------------------------
+//	Throw when we run out of memory to allocate.
+// -----------------------------------------------------------------------------
+public native("lsOutOfMemoryException") class OutOfMemoryException : Exception
+{
+}
+

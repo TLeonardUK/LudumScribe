@@ -105,20 +105,15 @@ public:
 class lsGCObject 
 {
 private:
-	bool m_marked;
 
 public:
 	virtual ~lsGCObject					();
-	
-	virtual void  Mark					();
+
 	void* operator new					(size_t size);	
 	void  operator delete				(void* ptr);		
 	
 	static lsGCObject* 	GCAllocate		(int size);
-	static void 		GCFree			(lsGCObject* ptr);
 	static void 		GCCollect		(bool full);	
-	
-	static lsGCObject*	GCAssign		(lsGCObject* lvalue, lsGCObject* rvalue);
 	
 };
 

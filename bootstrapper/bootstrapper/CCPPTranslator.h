@@ -75,6 +75,9 @@ private:
 	int m_internal_var_counter;
 	std::string m_switchBreakJumpLabel;
 
+	int m_last_gc_collect_emit;
+	int m_emit_source_counter;
+
 	std::vector<std::string> m_created_files;
 
 public:
@@ -83,15 +86,17 @@ public:
 	
 	virtual std::vector<std::string> GetTranslatedFiles();
 
-	void OpenSourceFile(std::string format);
-	void OpenHeaderFile(std::string format);
-	void CloseSourceFile();
-	void CloseHeaderFile();
+	void OpenSourceFile								(std::string format);
+	void OpenHeaderFile								(std::string format);
+	void CloseSourceFile							();
+	void CloseHeaderFile							();
 
 	void GenerateEntryPoint							(CPackageASTNode* node);
 
 	void EmitSourceFile								(std::string text, ...);
 	void EmitHeaderFile								(std::string text, ...);
+
+	void EmitGCCollect								();
 	
 	std::string NewInternalVariableName				();
 	std::string EscapeCString						(std::string val);

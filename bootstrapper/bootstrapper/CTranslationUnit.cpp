@@ -174,7 +174,8 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative)
 	{
 		for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
 		{
-			std::string clean_iter = CPathHelper::CleanPath(*iter);
+			std::string clean_iter = *iter;
+
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
 			{
 				return false;
@@ -187,7 +188,7 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative)
 	{
 		for (auto iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
 		{
-			std::string clean_iter = CPathHelper::CleanPath(*iter);
+			std::string clean_iter = *iter;
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
 			{
 				return false;

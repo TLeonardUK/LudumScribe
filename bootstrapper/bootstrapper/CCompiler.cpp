@@ -396,7 +396,7 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 	}
 
 	// Attempt to compile!
-	CTranslationUnit context(this, compile_file_path, unit->GetDefines());
+	CTranslationUnit context(this, compile_file_path, m_project_config.Defines);
 	context.Compile();
 
 	return true;
