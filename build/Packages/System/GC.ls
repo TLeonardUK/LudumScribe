@@ -10,8 +10,14 @@ using native Native.{PLATFORM}.System.GC;
 // Include the Boehm Garbage Collector folder/library
 // if our target language is C++.
 #if TRANSLATOR_SHORT_NAME=="C++"
-	using copy    Native.{PLATFORM}.System.GC.include.gc;
-	using library Native.{PLATFORM}.System.GC.libgc.libgc;
+	using copy    Native.{PLATFORM}.System.GC.include.*;
+	using copy    Native.{PLATFORM}.System.GC.include.extra.*;
+	using copy    Native.{PLATFORM}.System.GC.include.private.*;	
+	#if CONFIG=="Debug"
+		using library Native.{PLATFORM}.System.GC.lib.libgcd;
+	#else
+		using library Native.{PLATFORM}.System.GC.lib.libgc;	
+	#endif
 #endif
 
 // -----------------------------------------------------------------------------
@@ -22,5 +28,6 @@ using native Native.{PLATFORM}.System.GC;
 // -----------------------------------------------------------------------------
 public static native("lsGC") class GC
 {
-	public static native("Collect") void Collect(bool full = false);
+	public static native("Collect") 		  void Collect(bool full = false);
+	public static native("GetBytesAllocated") int  GetBytesAllocated();
 }

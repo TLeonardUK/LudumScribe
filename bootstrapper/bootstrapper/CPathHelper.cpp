@@ -173,7 +173,7 @@ std::string	CPathHelper::CleanPath(std::string value)
 {
 	value = CStringHelper::Replace(value, "\\", "/"); // Turn backslashes into forward slashes.
 	value = CStringHelper::Replace(value, "//", "/"); // Remove duplicate path seperators.
-	value = RealPathCase(value);					  // Convert path to correct case.
+//	value = RealPathCase(value);					  // Convert path to correct case.
 	return value;
 }
 

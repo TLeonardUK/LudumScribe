@@ -28,6 +28,12 @@
 #define TRANSLATOR_NATIVE_FILE_EXTENSION "hpp"
 
 // -----------------------------------------------------------------------------
+//	TRANSLATOR_LIBRARY_FILE_EXTENSION: File extension to look for when including 
+//						   			   native library files.
+// -----------------------------------------------------------------------------
+#define TRANSLATOR_LIBRARY_FILE_EXTENSION "lib"
+
+// -----------------------------------------------------------------------------
 //	Make sure our platform is valid.
 // -----------------------------------------------------------------------------
 #if OS != "Win32" && OS != "Linux" && OS != "MacOS"

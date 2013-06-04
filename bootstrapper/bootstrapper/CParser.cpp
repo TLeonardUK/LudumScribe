@@ -371,9 +371,9 @@ void CParser::ParseUsingStatement()
 	CToken start_token = CurrentToken();
 	int counter = 0;
 
-	bool isNative = false;
-	bool isCopy = false;
-	bool isLibrary = false;
+	bool isNative	= false;
+	bool isCopy		= false;
+	bool isLibrary	= false;
 
 	// We choosing a native file.
 	if (LookAheadToken().Type == TokenIdentifier::KEYWORD_NATIVE)
@@ -382,7 +382,7 @@ void CParser::ParseUsingStatement()
 		isNative = true;
 	}
 
-	// Copying a file/folder to output?
+	// We copy file/dir?
 	else if (LookAheadToken().Type == TokenIdentifier::KEYWORD_COPY)
 	{
 		ExpectToken(TokenIdentifier::KEYWORD_COPY);
@@ -407,7 +407,7 @@ void CParser::ParseUsingStatement()
 		}
 		else
 		{
-			CToken token = ExpectToken(TokenIdentifier::IDENTIFIER);
+			CToken token = NextToken();
 			path_segments.push_back(token.Literal);
 		}
 
@@ -449,6 +449,14 @@ void CParser::ParseUsingStatement()
 	{
 		file_ext = m_context->GetCompiler()->GetProjectConfig().GetString("TRANSLATOR_NATIVE_FILE_EXTENSION");
 	}
+	if (isLibrary == true)
+	{
+		file_ext = m_context->GetCompiler()->GetProjectConfig().GetString("TRANSLATOR_LIBRARY_FILE_EXTENSION");
+	}
+	if (isCopy == true)
+	{
+		file_ext = "";
+	}
 
 	// Referenced as a wildcard directory.
 	if (path_is_dir == true)
@@ -483,7 +491,7 @@ void CParser::ParseUsingStatement()
 				continue;
 			}
 
-			if (!m_context->AddUsingFile(file_path, isNative, isCopy, isLibrary))
+			if (!m_context->AddUsingFile(file_path, isNative, isLibrary, isCopy))
 			{
 				m_context->Warning(CStringHelper::FormatString("Using statement imports duplicate file '%s'.", file_path.c_str()), start_token);
 			}
@@ -493,6 +501,12 @@ void CParser::ParseUsingStatement()
 	// Referenced as a file.
 	else
 	{
+		std::string local_path_spec_ext   = local_path;
+		local_path_spec_ext = local_path_spec_ext.replace(local_path_spec_ext.find_last_of('/'), 1, ".");
+
+		std::string remote_path_spec_ext  = remote_path;
+		remote_path_spec_ext = remote_path_spec_ext.replace(remote_path_spec_ext.find_last_of('/'), 1, ".");
+
 		local_path += "." + file_ext;
 		remote_path += "." + file_ext;
 
@@ -508,6 +522,18 @@ void CParser::ParseUsingStatement()
 			final_path = remote_path;
 		}
 
+		// Local path with defined extension.
+		else if (CPathHelper::IsFile(local_path_spec_ext))
+		{
+			final_path = local_path_spec_ext;
+		}
+
+		// Remote path with defined extension.
+		else if (CPathHelper::IsFile(remote_path_spec_ext))
+		{
+			final_path = remote_path_spec_ext;
+		}
+
 		// Dosen't exist?
 		else
 		{
@@ -516,7 +542,7 @@ void CParser::ParseUsingStatement()
 		}
 
 		// Store the file.
-		if (!m_context->AddUsingFile(final_path, isNative, isCopy, isLibrary))
+		if (!m_context->AddUsingFile(final_path, isNative, isLibrary, isCopy))
 		{
 			m_context->Warning(CStringHelper::FormatString("Using statement imports duplicate file '%s'.", final_path.c_str()), start_token);
 		}

@@ -41,6 +41,8 @@ private:
 	std::vector<CToken>			m_token_list;
 	std::vector<std::string>	m_using_files;
 	std::vector<std::string>	m_native_files;
+	std::vector<std::string>	m_copy_files;
+	std::vector<std::string>	m_library_files;
 	std::vector<std::string>	m_translated_files;
 
 	int							m_last_line_row;
@@ -70,6 +72,8 @@ public:
 	std::vector<CToken>&		GetTokenList		();
 	std::vector<std::string>&	GetUsingFileList	();
 	std::vector<std::string>&	GetNativeFileList	();
+	std::vector<std::string>&	GetCopyFileList		();
+	std::vector<std::string>&	GetLibraryFileList	();
 	std::vector<std::string>&	GetTranslatedFiles	();
 	std::vector<CDefine>&		GetDefines			();
 	CSemanter*					GetSemanter			();
@@ -81,7 +85,7 @@ public:
 
 	bool						Execute				(std::string path, std::string cmd_line);
 
-	bool						AddUsingFile		(std::string file, bool isNative);
+	bool						AddUsingFile		(std::string file, bool isNative, bool isLibrary, bool isCopy);
 
 	void FatalError	(std::string msg, std::string source="internal", int row=1, int column=1);
 	void FatalError	(std::string msg, CToken& token);

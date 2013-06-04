@@ -21,6 +21,19 @@ public class Application
 		Application[] objArray = new Application[10];
 		objArray[5] = new Application();
 	
+		int index = 0;
+		while (true)
+		{
+			objArray[index % 5] = new Application();
+			index++;
+			
+			if (index > 1000000)
+			{
+				Console.WriteLine("Bytes allocated: " + ((GC.GetBytesAllocated() / 1024.0) / 1024.0) + "mb");
+				index = 0;
+			}
+		}
+	
 	//	Derp d = new Derp();
 	//	GC.Collect(true);
 	//	d = new Derp();

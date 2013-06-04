@@ -22,7 +22,6 @@
     <ClCompile Include="..\finalize.c" />
     <ClCompile Include="..\gcj_mlc.c" />
     <ClCompile Include="..\gc_cpp.cc" />
-    <ClCompile Include="..\gc_cpp.cpp" />
     <ClCompile Include="..\gc_dlopen.c" />
     <ClCompile Include="..\headers.c" />
     <ClCompile Include="..\mach_dep.c" />
@@ -78,6 +77,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)..\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\lib\</OutDir>
+    <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\lib\</OutDir>

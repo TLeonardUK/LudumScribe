@@ -634,6 +634,76 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 			CPathHelper::CopyFileTo(file_no_extension + ".cxx", dst_file_no_extension + ".cxx");
 		}
 	}
+
+	// Work out and create all library files.
+	std::vector<std::string> library_files = m_context->GetLibraryFileList();
+	for (auto iter = library_files.begin(); iter != library_files.end(); iter++)
+	{
+		std::string file     = *iter;
+		std::string dst_file = file;
+
+		// Is it relative to base directory?
+		if (dst_file.size() > m_base_directory.size() &&
+			dst_file.substr(0, m_base_directory.size()) == m_base_directory)
+		{
+			dst_file = m_source_directory + dst_file.substr(m_base_directory.size() + 1);
+		}
+
+		// Is it relative to package directory?
+		else if (dst_file.size() > m_package_directory.size() &&
+				 dst_file.substr(0, m_package_directory.size()) == m_package_directory)
+		{
+			dst_file = m_source_package_directory + dst_file.substr(m_package_directory.size() + 1);
+		}
+
+		// Create directory.
+		std::string dir = CPathHelper::StripFilename(dst_file) + "/";
+		CPathHelper::MakeDirectory(dir);
+
+		// Work out base file without an extension.
+		std::string file_no_extension = CPathHelper::StripExtension(file);
+		std::string dst_file_no_extension = CPathHelper::StripExtension(dst_file);
+		
+		// Copy native file over.
+		if (CPathHelper::IsFile(file_no_extension + ".lib"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".lib");
+			CPathHelper::CopyFileTo(file_no_extension + ".lib", dst_file_no_extension + ".lib");
+		}
+	}
+	
+	// Copy across all copy files.
+	std::vector<std::string> copy_files = m_context->GetCopyFileList();
+	for (auto iter = copy_files.begin(); iter != copy_files.end(); iter++)
+	{
+		std::string file     = *iter;
+		std::string dst_file = file;
+
+		// Is it relative to base directory?
+		if (dst_file.size() > m_base_directory.size() &&
+			dst_file.substr(0, m_base_directory.size()) == m_base_directory)
+		{
+			dst_file = m_source_directory + dst_file.substr(m_base_directory.size() + 1);
+		}
+
+		// Is it relative to package directory?
+		else if (dst_file.size() > m_package_directory.size() &&
+				 dst_file.substr(0, m_package_directory.size()) == m_package_directory)
+		{
+			dst_file = m_source_package_directory + dst_file.substr(m_package_directory.size() + 1);
+		}
+
+		// Create directory.
+		std::string dir = CPathHelper::StripFilename(dst_file) + "/";
+		CPathHelper::MakeDirectory(dir);
+
+		// Copy native file over.
+		if (CPathHelper::IsFile(file))
+		{
+			//m_created_files.push_back(file);
+			CPathHelper::CopyFileTo(file, dst_file);
+		}
+	}
 	
 	// Emit a source file for each class.
 	for (auto iter = node->Children.begin(); iter != node->Children.end(); iter++)

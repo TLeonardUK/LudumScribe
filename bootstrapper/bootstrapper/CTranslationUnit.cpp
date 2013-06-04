@@ -129,6 +129,22 @@ std::vector<std::string>& CTranslationUnit::GetNativeFileList()
 }
 
 // =================================================================
+//	Get a list of native files that need to be copied to output.
+// =================================================================
+std::vector<std::string>& CTranslationUnit::GetCopyFileList() 
+{ 
+	return m_copy_files;
+}
+
+// =================================================================
+//	Get a list of native files that need to be copied to output.
+// =================================================================
+std::vector<std::string>& CTranslationUnit::GetLibraryFileList() 
+{ 
+	return m_library_files;
+}
+
+// =================================================================
 //	Get a list of files that have been translated and need building.
 // =================================================================
 std::vector<std::string>& CTranslationUnit::GetTranslatedFiles() 
@@ -166,22 +182,44 @@ int CTranslationUnit::GetLastLineColumn()
 //	Adds a new using file, returns true on success, false on
 //  duplicate using file.
 // =================================================================
-bool CTranslationUnit::AddUsingFile(std::string file, bool isNative)
+bool CTranslationUnit::AddUsingFile(std::string file, bool isNative, bool isLibrary, bool isCopy)
 {
 	std::string cleaned = CPathHelper::CleanPath(file);
 
-	if (isNative == true)
+	if (isLibrary == true)
 	{
-		for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
+		for (auto iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
 		{
 			std::string clean_iter = *iter;
-
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
 			{
 				return false;
 			}
 		}
-
+		m_library_files.push_back(cleaned);
+	}
+	else if (isCopy == true)
+	{
+		for (auto iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
+		{
+			std::string clean_iter = *iter;
+			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
+			{
+				return false;
+			}
+		}
+		m_copy_files.push_back(cleaned);
+	}
+	else if (isNative == true)
+ 	{
+		for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
+		{
+			std::string clean_iter = *iter;
+			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
+			{
+				return false;
+			}
+		}
 		m_native_files.push_back(cleaned);
 	}
 	else
@@ -194,7 +232,6 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative)
 				return false;
 			}
 		}
-
 		m_using_files.push_back(cleaned);
 	}
 
@@ -446,7 +483,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 
 			for (auto iter = files.begin(); iter != files.end(); iter++)
 			{
-				AddUsingFile(support_dir + "/" + (*iter), false);
+				AddUsingFile(support_dir + "/" + (*iter), false, false, false);
 			}
 		}
 
@@ -458,11 +495,19 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 			{
 				for (auto iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
 				{
-					importingPackage->AddUsingFile(*iter, false);
+					importingPackage->AddUsingFile(*iter, false, false, false);
 				}
 				for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
 				{
-					importingPackage->AddUsingFile(*iter, true);
+					importingPackage->AddUsingFile(*iter, true, false, false);
+				}
+				for (auto iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
+				{
+					importingPackage->AddUsingFile(*iter, false, true, false);
+				}
+				for (auto iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
+				{
+					importingPackage->AddUsingFile(*iter, false, false, true);
 				}
 			}
 

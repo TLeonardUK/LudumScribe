@@ -22,6 +22,11 @@ public:
 	//	be collected, if false then garbage will be collected incrementally.
 	// -------------------------------------------------------------------------
 	static void Collect(bool full);
+	
+	// -------------------------------------------------------------------------
+	//  Gets the number of bytes currently allocated.
+	// -------------------------------------------------------------------------
+	static int GetBytesAllocated();
 
 };
 

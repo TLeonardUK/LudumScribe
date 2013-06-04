@@ -74,6 +74,8 @@ TokenMnemonicTableEntry TOKEN_MNEMONIC_TABLE[] = {
 	TokenMnemonicTableEntry("while",		TokenIdentifier::KEYWORD_WHILE),
 	TokenMnemonicTableEntry("native",		TokenIdentifier::KEYWORD_NATIVE),
 	TokenMnemonicTableEntry("box",			TokenIdentifier::KEYWORD_BOX),
+	TokenMnemonicTableEntry("copy",			TokenIdentifier::KEYWORD_COPY),
+	TokenMnemonicTableEntry("library",		TokenIdentifier::KEYWORD_LIBRARY),
 
 	TokenMnemonicTableEntry("this",			TokenIdentifier::KEYWORD_THIS),
 	TokenMnemonicTableEntry("true",			TokenIdentifier::KEYWORD_TRUE),

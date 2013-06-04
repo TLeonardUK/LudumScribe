@@ -49,6 +49,7 @@ class CCPPTranslator : public CTranslator
 private:
 	//std::vector<std::string> m_file_paths; 
 	std::vector<std::string> m_native_file_paths;
+	std::vector<std::string> m_library_file_paths;
 
 	std::string m_base_directory;
 	std::string m_dst_directory;

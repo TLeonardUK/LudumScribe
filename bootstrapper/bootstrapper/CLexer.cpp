@@ -89,8 +89,9 @@ bool CLexer::LexToken(CTranslationUnit* context,
 						int& token_row, 
 						bool& token_avail)
 {
-	char next_char = source.at(offset);
-	char la_char   = offset + 1 < source.size() ? source.at(offset + 1) : '\0';
+	char next_char		= source.at(offset);
+	char la_char		= offset + 1 < source.size() ? source.at(offset + 1) : '\0';
+	char la_la_char		= offset + 2 < source.size() ? source.at(offset + 2) : '\0';
 	
 	// ====================================================================================
 	// Whitespace.
@@ -322,7 +323,7 @@ bool CLexer::LexToken(CTranslationUnit* context,
 	// Numeric value.
 	// ====================================================================================
 	else if (isdigit(next_char) ||											// 0.123
-			 (next_char == '.' && (isdigit(la_char) || la_char == 'e')))	// .1231 .e-12
+			 (next_char == '.' && (isdigit(la_char) || (la_char == 'e' && (la_la_char == '-' || la_la_char == '+')))))	// .1231 .e-12
 	{
 		TokenIdentifier::Type numberType= TokenIdentifier::INT_LITERAL;
 		std::string		result			= "";

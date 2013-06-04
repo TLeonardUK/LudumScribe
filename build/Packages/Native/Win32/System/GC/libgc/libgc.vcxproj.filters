@@ -117,8 +117,5 @@
     <ClCompile Include="..\gc_cpp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gc_cpp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

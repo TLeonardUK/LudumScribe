@@ -38,13 +38,19 @@ bool CMSBuildBuilder::Build()
 	// Gather all source files in the build folder.
 	std::vector<std::string> source_files;// = CPathHelper::ListRecursiveFiles(build_dir, "cpp");
 	std::vector<std::string> header_files;// = CPathHelper::ListRecursiveFiles(build_dir, "hpp");
+	std::vector<std::string> library_files;
 	for (auto iter = files.begin(); iter != files.end(); iter++)
 	{
 		std::string file = CPathHelper::CleanPath(*iter);
 		std::string ext = CStringHelper::ToLower(CPathHelper::ExtractExtension(file));
+
 		if (ext == "hpp" || ext == "h")
 		{
 			header_files.push_back(file);
+		}
+		else if (ext == "lib")
+		{
+			library_files.push_back(file);
 		}
 		else 
 		{
@@ -81,6 +87,39 @@ bool CMSBuildBuilder::Build()
 	}
 	
 	std::string include_path = CStringHelper::Join(include_paths, ";");
+	
+	// Work out library directories.
+	std::vector<std::string> full_library_paths;
+	std::vector<std::string> full_library_names;
+	for (auto iter = library_files.begin(); iter != library_files.end(); iter++)
+	{
+		std::string dir = CPathHelper::StripFilename(*iter) + "/";
+		std::string relative = CPathHelper::GetRelativePath(dir, build_dir);
+		if (relative == "")
+		{
+			relative = ".";
+		}
+
+		bool found = false;
+
+		for (auto iter2 = full_library_paths.begin(); iter2 != full_library_paths.end(); iter2++)
+		{
+			if (relative == *iter2)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (found == false)
+		{
+			full_library_paths.push_back(relative);
+			full_library_names.push_back(CPathHelper::StripDirectory(*iter));
+		}
+	}
+
+	std::string library_names = CStringHelper::Join(full_library_names, ";");
+	std::string library_paths = CStringHelper::Join(full_library_paths, ";");
 
 	// Create a solution file.
 	std::string project_name = CStringHelper::CleanExceptAlphaNum(CPathHelper::StripDirectory(CPathHelper::StripExtension(m_context->GetFilePath())), '_');
@@ -182,7 +221,7 @@ bool CMSBuildBuilder::Build()
 	project_file += 
 		std::string("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + config_name + "|Win32'\">\n") +
 					"    <LinkIncremental>true</LinkIncremental>\n" +
-					"    <IncludePath>$(ProjectDir)Source;$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + "$(IncludePath)</IncludePath>" + 
+					"    <IncludePath>$(ProjectDir)Source;$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + ";$(IncludePath)</IncludePath>" + 
 					"    <OutDir>$(SolutionDir)\\</OutDir>" + 
 					"  </PropertyGroup>\n";
 
@@ -198,6 +237,8 @@ bool CMSBuildBuilder::Build()
 						"      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>\n" +
 						"    </ClCompile>\n" +
 						"    <Link>\n" +
+						"	   <AdditionalDependencies>" + library_names + ";%(AdditionalDependencies)</AdditionalDependencies>" +
+						"	   <AdditionalLibraryDirectories>" + library_paths + ";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>" + 
 						"      <SubSystem>Console</SubSystem>\n" +
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
 						"      <OutputFile>$(SolutionDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
@@ -218,6 +259,8 @@ bool CMSBuildBuilder::Build()
 						"      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>\n" +
 						"    </ClCompile>\n" +
 						"    <Link>\n" +
+						"	   <AdditionalDependencies>" + library_names + ";%(AdditionalDependencies)</AdditionalDependencies>" +
+						"	   <AdditionalLibraryDirectories>" + library_paths + ";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>" + 
 						"      <SubSystem>Console</SubSystem>\n" +
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
 						"      <EnableCOMDATFolding>true</EnableCOMDATFolding>\n" +
