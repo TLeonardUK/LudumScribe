@@ -95,10 +95,12 @@ CASTNode* CMethodCallExpressionASTNode::Semant(CSemanter* semanter)
 	{
 		semanter->GetContext()->FatalError(CStringHelper::FormatString("Undefined method '%s(%s)' in class '%s'.", identNode->Token.Literal.c_str(), argument_types_string.c_str(), accessClass->ToString().c_str()), Token);		
 	}
-	if (declaration->IsAbstract == true)
-	{
-		semanter->GetContext()->FatalError(CStringHelper::FormatString("Cannot call method '%s(%s)' in class '%s', method is abstract.", identNode->Token.Literal.c_str(), argument_types_string.c_str(), accessClass->ToString().c_str()), Token);		
-	}
+
+// UPDATE: Abstract method calling is fine. Remember we won't be able to instantiate classes that do not override all abstract methods.
+//	if (declaration->IsAbstract == true)
+//	{
+//		semanter->GetContext()->FatalError(CStringHelper::FormatString("Cannot call method '%s(%s)' in class '%s', method is abstract.", identNode->Token.Literal.c_str(), argument_types_string.c_str(), accessClass->ToString().c_str()), Token);		
+//	}
 	
 	ResolvedDeclaration = declaration;
 
@@ -136,7 +138,7 @@ CASTNode* CMethodCallExpressionASTNode::Semant(CSemanter* semanter)
 		CDataType* dataType = declaration->Arguments.at(index++)->Type;
 
 		CExpressionBaseASTNode* subnode = dynamic_cast<CExpressionBaseASTNode*>(*iter);
-		subnode = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, dataType, Token));
+		subnode = dynamic_cast<CExpressionBaseASTNode*>(ReplaceChild(subnode, subnode->CastTo(semanter, dataType, Token)));
 		(*iter) = subnode;
 	}
 

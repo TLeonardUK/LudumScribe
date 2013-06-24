@@ -46,3 +46,35 @@ public native("lsOutOfMemoryException") class OutOfMemoryException : Exception
 {
 }
 
+// -----------------------------------------------------------------------------
+//	Throw when we attempt to get a non-existant key.
+// -----------------------------------------------------------------------------
+public class NonExistantKeyException : Exception
+{
+	public override string ToString()
+	{
+		return "Key specified does not exist in collection.";
+	}	
+}
+
+// -----------------------------------------------------------------------------
+//	Throw when we attempt to get a non-existant value.
+// -----------------------------------------------------------------------------
+public class NonExistantValueException : Exception
+{
+	public override string ToString()
+	{
+		return "Value specified does not exist in collection.";
+	}	
+}
+
+// -----------------------------------------------------------------------------
+//	Throw when we attempt to insert an already existing key into a collection.
+// -----------------------------------------------------------------------------
+public class DuplicateKeyException : Exception
+{
+	public override string ToString()
+	{
+		return "Attempt to insert duplicate key into collection.";
+	}	
+}

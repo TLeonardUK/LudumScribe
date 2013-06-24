@@ -59,8 +59,8 @@ private:
 
 	CPackageASTNode* m_package;
 
-	FILE* m_header_file_handle;
-	FILE* m_source_file_handle;
+	std::string m_header_file_path;
+	std::string m_source_file_path;
 
 	int m_header_indent_level;
 	int m_source_indent_level;
@@ -151,6 +151,7 @@ public:
 	virtual std::string	TranslateTernaryExpression		(CTernaryExpressionASTNode* node);
 	virtual std::string	TranslateThisExpression			(CThisExpressionASTNode* node);
 	virtual std::string	TranslateTypeExpression			(CTypeExpressionASTNode* node);
+	virtual std::string TranslateArrayInitializerExpression	(CArrayInitializerASTNode* node);
 
 };
 

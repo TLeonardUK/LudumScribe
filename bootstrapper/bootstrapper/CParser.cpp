@@ -42,6 +42,7 @@
 #include "CCastExpressionASTNode.h"
 #include "CCommaExpressionASTNode.h"
 #include "CClassRefExpressionASTNode.h"
+#include "CArrayInitializerASTNode.h"
 
 #include "CIfStatementASTNode.h"
 #include "CBlockStatementASTNode.h"
@@ -216,9 +217,10 @@ CClassASTNode* CParser::CurrentClassScope()
 // =================================================================
 CClassMemberASTNode* CParser::CurrentClassMemberScope()
 {
+	/*
 	CASTNode* scope = m_scope;
 
-	while (true)
+	while (scope != NULL)
 	{
 		CClassMemberASTNode* class_scope = dynamic_cast<CClassMemberASTNode*>(scope);
 		if (class_scope != NULL)
@@ -226,6 +228,16 @@ CClassMemberASTNode* CParser::CurrentClassMemberScope()
 			return class_scope;
 		}
 		scope = scope->Parent;
+	}
+	*/
+
+	for (auto iter = m_scope_stack.begin(); iter != m_scope_stack.end(); iter++)
+	{		
+		CClassMemberASTNode* class_scope = dynamic_cast<CClassMemberASTNode*>(*iter);
+		if (class_scope != NULL)
+		{
+			return class_scope;
+		}
 	}
 
 	m_context->FatalError("Expecting to be inside class member scope.", CurrentToken());
@@ -314,7 +326,7 @@ bool CParser::Evaluate(CTranslationUnit* context)
 	m_sof_token.Column		= 1;
 
 	// Create the root AST node.
-	m_root = ParseExpr();
+	m_root = ParseExpr(false);
 
 	return EndOfTokens();
 }
@@ -347,6 +359,7 @@ void CParser::ParseTopLevelStatement()
 		case TokenIdentifier::KEYWORD_ABSTRACT:
 		case TokenIdentifier::KEYWORD_INTERFACE:
 		case TokenIdentifier::KEYWORD_CLASS:
+		case TokenIdentifier::KEYWORD_ENUM:
 			{
 				ParseClassStatement();
 				return;
@@ -560,6 +573,7 @@ CClassASTNode* CParser::ParseClassStatement()
 	// Read in all attributes.
 	bool readAccessLevel = false;
 	bool readingAttributes = true;	
+	int attributeCount = 0;
 	CToken& token = start_token;
 
 	while (readingAttributes)
@@ -707,6 +721,21 @@ CClassASTNode* CParser::ParseClassStatement()
 					break;
 				}
 
+			case TokenIdentifier::KEYWORD_ENUM:
+				{
+					if ((attributeCount > 0 && readAccessLevel == false) ||
+						(attributeCount > 1 && readAccessLevel == true))
+					{
+						classNode->IsEnum = true;
+						readingAttributes = false;
+					}
+					else
+					{
+						m_context->FatalError(CStringHelper::FormatString("Attributes cannot have any attributes applied except public/private/protected.", token.Literal.c_str(), (int)token.Type), token);					
+					}
+					break;
+				}
+
 			case TokenIdentifier::KEYWORD_CLASS:
 				{
 					readingAttributes = false;
@@ -724,6 +753,7 @@ CClassASTNode* CParser::ParseClassStatement()
 		if (readingAttributes == true)
 		{
 			token = NextToken();
+			attributeCount++;
 		}
 	}
 	
@@ -732,100 +762,181 @@ CClassASTNode* CParser::ParseClassStatement()
 	classNode->Identifier = ident_token.Literal;
 	classNode->Token = ident_token;
 
-	// Read in generic tags.
-	if (LookAheadToken().Type == TokenIdentifier::OP_LESS)
+	// Enums and class are read entirely differently :3.
+	if (classNode->IsEnum == true)
 	{
-		if (classNode->IsInterface == true)
-		{
-			m_context->FatalError("Interfaces cannot be generic.", token);
-		}
-	//	if (classNode->IsNative == true)
-	//	{
-	//		m_context->FatalError("Native classes cannot be generics.", token);
-	//	}
-
-		classNode->IsGeneric = true;
-
 		PushScope(classNode);
-		ExpectToken(TokenIdentifier::OP_LESS);
 
-		while (true)
+		CClassBodyASTNode* body = new CClassBodyASTNode(CurrentScope(), CurrentToken());
+		PushScope(body);
+
+		classNode->Body = body;
+
+		std::vector<int> used_indexes;
+
+		ExpectToken(TokenIdentifier::OPEN_BRACE);
+		while (LookAheadToken().Type != TokenIdentifier::CLOSE_BRACE)
 		{
-			CToken& generic_token = ExpectToken(TokenIdentifier::IDENTIFIER);
-			classNode->GenericTypeTokens.push_back(generic_token);
+			CToken& token = ExpectToken(TokenIdentifier::IDENTIFIER);
 
-			if (LookAheadToken().Type == TokenIdentifier::OP_GREATER)
+			CClassMemberASTNode* member = new CClassMemberASTNode(CurrentScope(), token);
+			member->AccessLevel = AccessLevel::PUBLIC;
+			member->Identifier = token.Literal;
+			member->IsConst = true;
+			member->IsStatic = true;
+			member->MemberType = MemberType::Field;
+			member->ReturnType = new CIntDataType(token);
+
+			if (LookAheadToken().Type == TokenIdentifier::OP_ASSIGN)
 			{
-				break;
+				NextToken();
+
+				CToken& lit = ExpectToken(TokenIdentifier::INT_LITERAL);
+				int index = CStringHelper::ToInt(lit.Literal);
+
+				member->Assignment = new CExpressionASTNode(member, token);
+				member->Assignment->LeftValue = new CLiteralExpressionASTNode(member->Assignment, lit, member->ReturnType, lit.Literal);				
+
+				used_indexes.push_back(index);
 			}
 			else
 			{
-				ExpectToken(TokenIdentifier::COMMA);
-			}
-		}
+				int use_index = 0;
 
-		ExpectToken(TokenIdentifier::OP_GREATER);
-		PopScope();
-	}
+				while (true)
+				{
+					bool found = false;
 
-	// Read in all inherited classes.
-	if (LookAheadToken().Type == TokenIdentifier::COLON)
-	{
-		NextToken();
-		PushScope(classNode);
+					for (int i = 0; i < used_indexes.size(); i++)
+					{
+						if (used_indexes[i] == use_index)
+						{
+							found = true;
+							break;
+						}
+					}
 
-		bool continueParsing = true;
-
-		if (LookAheadToken().Type == TokenIdentifier::KEYWORD_NULL)
-		{
-			ExpectToken(TokenIdentifier::KEYWORD_NULL);
-
-			classNode->InheritsNull = true;
-			if (classNode->IsNative == false)
-			{
-				m_context->FatalError("Only native classes can inherit from NULL.", token);
-			}
-			if (classNode->IsInterface == true)
-			{
-				m_context->FatalError("Interfaces cannot inherit from NULL.", token);
-			}
-
-			continueParsing = false;
+					if (found == false)
+					{
+						break;
+					}
+				}
+				
+				member->Assignment = new CExpressionASTNode(member, token);
+				member->Assignment->LeftValue = new CLiteralExpressionASTNode(member->Assignment, token, member->ReturnType, CStringHelper::ToString(use_index));
+			}			
+			
 			if (LookAheadToken().Type == TokenIdentifier::COMMA)
 			{
-				continueParsing = true;
-				ExpectToken(TokenIdentifier::COMMA);
+				NextToken();
+			}
+			else
+			{
+				break;
 			}
 		}
-		
-		if (continueParsing == true)
+		ExpectToken(TokenIdentifier::CLOSE_BRACE);
+
+		PopScope();
+		PopScope();
+	}
+	else
+	{
+		// Read in generic tags.
+		if (LookAheadToken().Type == TokenIdentifier::OP_LESS)
 		{
+		//	if (classNode->IsInterface == true)
+		//	{
+		//		m_context->FatalError("Interfaces cannot be generic.", token);
+		//	}
+		//	if (classNode->IsNative == true)
+		//	{
+		//		m_context->FatalError("Native classes cannot be generics.", token);
+		//	}
+
+			classNode->IsGeneric = true;
+
+			PushScope(classNode);
+			ExpectToken(TokenIdentifier::OP_LESS);
+
 			while (true)
 			{
-				classNode->InheritedTypes.push_back(ParseIdentifierDataType());
-			
-				if (LookAheadToken().Type == TokenIdentifier::COMMA)
-				{
-					NextToken();
-				}
-				else
+				CToken& generic_token = ExpectToken(TokenIdentifier::IDENTIFIER);
+				classNode->GenericTypeTokens.push_back(generic_token);
+
+				if (LookAheadToken().Type == TokenIdentifier::OP_GREATER)
 				{
 					break;
 				}
+				else
+				{
+					ExpectToken(TokenIdentifier::COMMA);
+				}
 			}
+
+			ExpectToken(TokenIdentifier::OP_GREATER);
+			PopScope();
 		}
 
+		// Read in all inherited classes.
+		if (LookAheadToken().Type == TokenIdentifier::COLON)
+		{
+			NextToken();
+			PushScope(classNode);
+
+			bool continueParsing = true;
+
+			if (LookAheadToken().Type == TokenIdentifier::KEYWORD_NULL)
+			{
+				ExpectToken(TokenIdentifier::KEYWORD_NULL);
+
+				classNode->InheritsNull = true;
+				if (classNode->IsNative == false)
+				{
+					m_context->FatalError("Only native classes can inherit from NULL.", token);
+				}
+				if (classNode->IsInterface == true)
+				{
+					m_context->FatalError("Interfaces cannot inherit from NULL.", token);
+				}
+
+				continueParsing = false;
+				if (LookAheadToken().Type == TokenIdentifier::COMMA)
+				{
+					continueParsing = true;
+					ExpectToken(TokenIdentifier::COMMA);
+				}
+			}
+		
+			if (continueParsing == true)
+			{
+				while (true)
+				{
+					classNode->InheritedTypes.push_back(ParseIdentifierDataType());
+			
+					if (LookAheadToken().Type == TokenIdentifier::COMMA)
+					{
+						NextToken();
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
+			PopScope();
+		}
+
+		// Read in class block.
+		ExpectToken(TokenIdentifier::OPEN_BRACE);
+
+		PushScope(classNode);
+		classNode->Body = ParseClassBody();
 		PopScope();
+
+		ExpectToken(TokenIdentifier::CLOSE_BRACE);
 	}
-
-	// Read in class block.
-	ExpectToken(TokenIdentifier::OPEN_BRACE);
-
-	PushScope(classNode);
-	classNode->Body = ParseClassBody();
-	PopScope();
-
-	ExpectToken(TokenIdentifier::CLOSE_BRACE);
 
 	return classNode;
 }
@@ -1257,11 +1368,11 @@ CClassMemberASTNode* CParser::ParseClassMemberStatement()
 
 		if (classMemberNode->IsConst == true)
 		{
-			classMemberNode->Assignment = ParseConstExpr();
+			classMemberNode->Assignment = ParseConstExpr(false);
 		}
 		else
 		{
-			classMemberNode->Assignment = ParseExpr();
+			classMemberNode->Assignment = ParseExpr(false);
 		}
 	}
 	else if (classMemberNode->MemberType == MemberType::Field)
@@ -1313,7 +1424,7 @@ CClassMemberASTNode* CParser::ParseClassMemberStatement()
 // =================================================================
 //	Parses a data type value.
 // =================================================================
-CDataType* CParser::ParseDataType()
+CDataType* CParser::ParseDataType(bool acceptArrays)
 {
 	CToken& token = NextToken();
 
@@ -1367,7 +1478,8 @@ CDataType* CParser::ParseDataType()
 	
 	// Read in array type.
 	if (LookAheadToken(1).Type == TokenIdentifier::OPEN_BRACKET &&
-		LookAheadToken(2).Type == TokenIdentifier::CLOSE_BRACKET)
+		LookAheadToken(2).Type == TokenIdentifier::CLOSE_BRACKET &&
+		acceptArrays == true)
 	{
 		ExpectToken(TokenIdentifier::OPEN_BRACKET);
 		ExpectToken(TokenIdentifier::CLOSE_BRACKET);
@@ -1468,12 +1580,13 @@ void CParser::ParseMethodArguments(CClassMemberASTNode* method)
 		// Parse identifier.
 		argumentNode->Identifier = ExpectToken(TokenIdentifier::IDENTIFIER).Literal;
 		argumentNode->Token = CurrentToken();
+		argumentNode->IsParameter = true;
 		
 		// Read in equal value.
 		if (LookAheadToken().Type == TokenIdentifier::OP_ASSIGN)
 		{
 			ExpectToken(TokenIdentifier::OP_ASSIGN);
-			argumentNode->AssignmentExpression = ParseConstExpr(true);
+			argumentNode->AssignmentExpression = ParseConstExpr(false, true);
 		}
 
 		PopScope();
@@ -1663,7 +1776,7 @@ CASTNode* CParser::ParseMethodBodyStatement()
 
 				// Otherwise its a general expression.
 				RewindStream();
-				CASTNode* node = ParseExpr();
+				CASTNode* node = ParseExpr(false);
 				ExpectToken(TokenIdentifier::SEMICOLON);
 				return node;
 			}
@@ -1672,7 +1785,7 @@ CASTNode* CParser::ParseMethodBodyStatement()
 		default:
 			{				
 				RewindStream();
-				CASTNode* node = ParseExpr();
+				CASTNode* node = ParseExpr(false);
 				ExpectToken(TokenIdentifier::SEMICOLON);
 				return node;
 			}
@@ -1720,7 +1833,7 @@ CIfStatementASTNode* CParser::ParseIfStatement()
 	PushScope(node);
 
 	ExpectToken(TokenIdentifier::OPEN_PARENT);	
-	node->ExpressionStatement = ParseExpr();
+	node->ExpressionStatement = ParseExpr(false);
 	ExpectToken(TokenIdentifier::CLOSE_PARENT);
 
 	node->BodyStatement = ParseMethodBodyStatement();
@@ -1745,7 +1858,7 @@ CWhileStatementASTNode* CParser::ParseWhileStatement()
 	PushScope(node);
 
 	ExpectToken(TokenIdentifier::OPEN_PARENT);	
-	node->ExpressionStatement = ParseExpr();
+	node->ExpressionStatement = ParseExpr(false);
 	ExpectToken(TokenIdentifier::CLOSE_PARENT);
 
 	node->BodyStatement = ParseMethodBodyStatement();
@@ -1785,7 +1898,7 @@ CReturnStatementASTNode* CParser::ParseReturnStatement()
 
 	if (LookAheadToken().Type != TokenIdentifier::SEMICOLON)
 	{
-		node->ReturnExpression = ParseExpr();
+		node->ReturnExpression = ParseExpr(false);
 	}
 	
 	ExpectToken(TokenIdentifier::SEMICOLON);	
@@ -1808,7 +1921,7 @@ CDoStatementASTNode* CParser::ParseDoStatement()
 	{
 		ExpectToken(TokenIdentifier::KEYWORD_WHILE);	
 		ExpectToken(TokenIdentifier::OPEN_PARENT);	
-		node->ExpressionStatement = ParseExpr();
+		node->ExpressionStatement = ParseExpr(false);
 		ExpectToken(TokenIdentifier::CLOSE_PARENT);
 	}
 
@@ -1826,7 +1939,7 @@ CSwitchStatementASTNode* CParser::ParseSwitchStatement()
 	PushScope(node);
 	
 	ExpectToken(TokenIdentifier::OPEN_PARENT);	
-	node->ExpressionStatement = ParseExpr(true);
+	node->ExpressionStatement = ParseExpr(false, true);
 	ExpectToken(TokenIdentifier::CLOSE_PARENT);
 
 	ExpectToken(TokenIdentifier::OPEN_BRACE);
@@ -1854,7 +1967,7 @@ CSwitchStatementASTNode* CParser::ParseSwitchStatement()
 					
 					while (true)
 					{
-						CExpressionASTNode* node = ParseExpr(true);
+						CExpressionASTNode* node = ParseExpr(false, true);
 						if (node != NULL)
 						{
 							caseNode->Expressions.push_back(node);
@@ -1957,13 +2070,13 @@ CForStatementASTNode* CParser::ParseForStatement()
 
 	if (LookAheadToken().Type != TokenIdentifier::SEMICOLON)
 	{
-		node->ConditionExpression = ParseExpr();
+		node->ConditionExpression = ParseExpr(false);
 	}
 	ExpectToken(TokenIdentifier::SEMICOLON);	
 
 	if (LookAheadToken().Type != TokenIdentifier::CLOSE_PARENT)
 	{
-		node->IncrementExpression = ParseExpr();
+		node->IncrementExpression = ParseExpr(false);
 	}
 
 	ExpectToken(TokenIdentifier::CLOSE_PARENT);	
@@ -2061,7 +2174,7 @@ CForEachStatementASTNode* CParser::ParseForEachStatement()
 		if (isVarDeclaration == false)
 		{
 			RewindStream();
-			node->VariableStatement = ParseExpr();
+			node->VariableStatement = ParseExpr(false);
 		}
 	}
 	else
@@ -2070,7 +2183,7 @@ CForEachStatementASTNode* CParser::ParseForEachStatement()
 	}
 
 	ExpectToken(TokenIdentifier::KEYWORD_IN);	
-	node->ExpressionStatement = ParseExpr();
+	node->ExpressionStatement = ParseExpr(false);
 	ExpectToken(TokenIdentifier::CLOSE_PARENT);
 	
 	node->BodyStatement = ParseMethodBodyStatement();
@@ -2140,7 +2253,7 @@ CThrowStatementASTNode* CParser::ParseThrowStatement()
 	CThrowStatementASTNode* node = new CThrowStatementASTNode(CurrentScope(), CurrentToken());
 	PushScope(node);
 	
-	node->Expression = ParseExpr();
+	node->Expression = ParseExpr(false);
 
 	ExpectToken(TokenIdentifier::SEMICOLON);
 
@@ -2185,11 +2298,11 @@ CVariableStatementASTNode* CParser::ParseLocalVariableStatement(bool acceptMulti
 
 				if (acceptNonConstAssignment == true)
 				{
-					node->AssignmentExpression = ParseExpr();
+					node->AssignmentExpression = ParseExpr(false);
 				}
 				else
 				{
-					node->AssignmentExpression = ParseConstExpr();
+					node->AssignmentExpression = ParseConstExpr(false);
 				}
 			}
 		}
@@ -2210,9 +2323,38 @@ CVariableStatementASTNode* CParser::ParseLocalVariableStatement(bool acceptMulti
 }
 
 // =================================================================
+//	Parses an array initialization list.
+//
+//	{ 1, 2, 3, 4, 5 }
+// =================================================================	
+CArrayInitializerASTNode* CParser::ParseArrayInitializer()
+{
+	ExpectToken(TokenIdentifier::OPEN_BRACE);
+
+	CArrayInitializerASTNode* node = new CArrayInitializerASTNode(NULL, CurrentToken());
+	PushScope(node);
+
+	while (true)
+	{
+		node->Expressions.push_back(ParseExpr(false, true));
+
+		if (LookAheadToken().Type != TokenIdentifier::COMMA)
+		{
+			break;
+		}
+		ExpectToken(TokenIdentifier::COMMA);
+	}
+
+	PopScope();
+	ExpectToken(TokenIdentifier::CLOSE_BRACE);
+
+	return node;
+}
+
+// =================================================================
 //	Parses an expression.
 // =================================================================	
-CExpressionASTNode* CParser::ParseExpr(bool noSequencePoints)
+CExpressionASTNode* CParser::ParseExpr(bool useNullScope, bool noSequencePoints)
 {
 	CASTNode* lvalue = 
 		noSequencePoints == true ?
@@ -2221,7 +2363,7 @@ CExpressionASTNode* CParser::ParseExpr(bool noSequencePoints)
 
 	if (lvalue != NULL)
 	{
-		CExpressionASTNode* node = new CExpressionASTNode(CurrentScope(), CurrentToken());
+		CExpressionASTNode* node = new CExpressionASTNode(useNullScope == true ? NULL : CurrentScope(), CurrentToken());
 		node->LeftValue = lvalue;
 		node->AddChild(lvalue);
 		return node;
@@ -2237,7 +2379,7 @@ CExpressionASTNode* CParser::ParseExpr(bool noSequencePoints)
 // =================================================================
 //	Parses a constant expression.
 // =================================================================	
-CExpressionASTNode* CParser::ParseConstExpr(bool noSequencePoints)
+CExpressionASTNode* CParser::ParseConstExpr(bool useNullScope, bool noSequencePoints)
 {
 	CASTNode* lvalue = 
 		noSequencePoints == true ?
@@ -2246,7 +2388,7 @@ CExpressionASTNode* CParser::ParseConstExpr(bool noSequencePoints)
 
 	if (lvalue != NULL)
 	{
-		CExpressionASTNode* node = new CExpressionASTNode(CurrentScope(), CurrentToken());
+		CExpressionASTNode* node = new CExpressionASTNode(useNullScope == true ? NULL : CurrentScope(), CurrentToken());
 		node->IsConstant = true;
 		node->LeftValue = lvalue;
 		node->AddChild(lvalue);
@@ -2747,7 +2889,7 @@ CASTNode* CParser::ParseExprPostfix()
 				// [:(end)]
 				else
 				{
-					CASTNode* slice_end = ParseExprComma();
+					CASTNode* slice_end = ParseExpr(true);
 
 					node = new CSliceExpressionASTNode(NULL, op);
 					((CSliceExpressionASTNode*)node)->LeftValue = lvalue;
@@ -2760,8 +2902,8 @@ CASTNode* CParser::ParseExprPostfix()
 			// [(start)]
 			else
 			{
-				CASTNode* slice_start = ParseExprComma();
-				
+				CASTNode* slice_start = ParseExpr(true);
+
 				// [(start):] 
 				if (LookAheadToken().Type == TokenIdentifier::COLON)
 				{					
@@ -2780,7 +2922,7 @@ CASTNode* CParser::ParseExprPostfix()
 					// [(start):(end)]
 					else
 					{
-						CASTNode* slice_end = ParseExprComma();
+						CASTNode* slice_end = ParseExpr(true);
 
 						node = new CSliceExpressionASTNode(NULL, op);
 						((CSliceExpressionASTNode*)node)->LeftValue = lvalue;
@@ -2827,7 +2969,8 @@ CASTNode* CParser::ParseExprPostfix()
 				// Read in arguments.
 				while (LookAheadToken().Type != TokenIdentifier::CLOSE_PARENT)
 				{
-					CASTNode* expr = ParseExprComma();
+					CASTNode* expr = ParseExpr(true, true);
+
 					((CMethodCallExpressionASTNode*)node)->ArgumentExpressions.push_back(expr);
 					node->AddChild(expr);
 
@@ -2903,7 +3046,7 @@ CASTNode* CParser::ParseExprFactor()
 					// Read in arguments.
 					while (LookAheadToken().Type != TokenIdentifier::CLOSE_PARENT)
 					{
-						CASTNode* expr = ParseExpr(true);
+						CASTNode* expr = ParseExpr(true, true);
 						((CMethodCallExpressionASTNode*)node)->ArgumentExpressions.push_back(expr);
 						node->AddChild(expr);
 
@@ -2916,7 +3059,7 @@ CASTNode* CParser::ParseExprFactor()
 							break;
 						}
 					}
-
+					
 					ExpectToken(TokenIdentifier::CLOSE_PARENT);
 
 					return node;
@@ -2971,7 +3114,7 @@ CASTNode* CParser::ParseExprFactor()
 				CNewExpressionASTNode* node = new CNewExpressionASTNode(NULL, token);				
 				PushScope(node);
 
-				node->DataType = ParseDataType();
+				node->DataType = ParseDataType(false);
 
 				if (LookAheadToken().Type == TokenIdentifier::OPEN_BRACKET)
 				{				
@@ -2979,7 +3122,10 @@ CASTNode* CParser::ParseExprFactor()
 					node->DataType = node->DataType->ArrayOf();
 
 					ExpectToken(TokenIdentifier::OPEN_BRACKET);
-					node->ArgumentExpressions.push_back(ParseExpr(true));
+					if (LookAheadToken().Type != TokenIdentifier::CLOSE_BRACKET)
+					{
+						node->ArgumentExpressions.push_back(ParseExpr(false, true));
+					}
 					ExpectToken(TokenIdentifier::CLOSE_BRACKET);
 
 					while (LookAheadToken().Type == TokenIdentifier::OPEN_BRACKET)
@@ -3000,7 +3146,7 @@ CASTNode* CParser::ParseExprFactor()
 					ExpectToken(TokenIdentifier::OPEN_PARENT);
 					while (LookAheadToken().Type != TokenIdentifier::CLOSE_PARENT)
 					{
-						node->ArgumentExpressions.push_back(ParseExpr(true));
+						node->ArgumentExpressions.push_back(ParseExpr(false, true));
 
 						if (LookAheadToken().Type == TokenIdentifier::CLOSE_PARENT)
 						{
@@ -3014,10 +3160,33 @@ CASTNode* CParser::ParseExprFactor()
 					ExpectToken(TokenIdentifier::CLOSE_PARENT);
 				}
 
+				// Read array initialization.
+				if (dynamic_cast<CArrayDataType*>(node->DataType) != NULL)
+				{
+					if (LookAheadToken().Type == TokenIdentifier::OPEN_BRACE)
+					{
+						node->ArrayInitializer = ParseArrayInitializer();
+						node->AddChild(node->ArrayInitializer);
+					}
+					else
+					{
+						if (node->ArgumentExpressions.size() == 0)
+						{
+							m_context->FatalError("Arrays must have either a length expression or an initialization list.", CurrentToken());					
+							break;
+						}
+					}
+				}
+
 				PopScope();
 
 				return node;
 			}			
+		case TokenIdentifier::OPEN_BRACE:
+			{
+				RewindStream();
+				return ParseArrayInitializer();
+			}
 		case TokenIdentifier::KEYWORD_THIS:
 			{
 				return new CThisExpressionASTNode(NULL, token);
@@ -3050,7 +3219,8 @@ CASTNode* CParser::ParseExprFactor()
 			}
 		case TokenIdentifier::OPEN_PARENT:
 			{
-				CASTNode* node = ParseExprComma();
+				CASTNode* node = ParseExpr(true);
+
 				ExpectToken(TokenIdentifier::CLOSE_PARENT);
 				return node;
 			}
@@ -3081,7 +3251,7 @@ bool CParser::IsGenericTypeListFollowing(int& final_token_offset)
 
 	// Keep reading till we get to the end of our potential "generic type list"
 	while (EndOfTokens(lookAheadIndex) == false && 
-			lookAheadIndex < 64)
+			lookAheadIndex < 32)
 	{
 		CToken& lat = LookAheadToken(lookAheadIndex);
 		if (lat.Type == TokenIdentifier::OP_LESS)

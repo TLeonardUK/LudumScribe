@@ -18,6 +18,8 @@
 #include "CStringDataType.h"
 #include "CNullDataType.h"
 
+#include "CTranslationUnit.h"
+
 #include "CSemanter.h"
 
 // =================================================================
@@ -87,4 +89,36 @@ std::string	CObjectDataType::ToString()
 CClassASTNode* CObjectDataType::GetClass(CSemanter* semanter)
 {
 	return m_class;
+}
+
+// =================================================================
+//	Semants this data type and returns its output type.
+// =================================================================
+CDataType* CObjectDataType::Semant(CSemanter* semanter, CASTNode* node)
+{
+	if (m_class->IsEnum == true)
+	{
+		return new CIntDataType(Token);
+	}
+	else
+	{
+		return this;
+	}
+}
+
+// =================================================================
+//	Semants this data type and returns a class reference.
+// =================================================================
+CClassASTNode* CObjectDataType::SemantAsClass(CSemanter* semanter, CASTNode* node)
+{
+	CObjectDataType* type = dynamic_cast<CObjectDataType*>(Semant(semanter, node));
+	if (type != NULL)
+	{
+		return type->GetClass(semanter);
+	}
+	else
+	{
+		semanter->GetContext()->FatalError("Identifier does not reference a class or interface.", Token);
+	}
+	return NULL;
 }

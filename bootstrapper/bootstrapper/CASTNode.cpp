@@ -22,11 +22,15 @@
 
 #include "CObjectDataType.h"
 
+int CASTNode::g_create_index_tracker = 0;
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
 CASTNode::CASTNode()
 {
+	m_create_index = g_create_index_tracker++;
+
 	Parent = NULL;
 	Children.clear();
 }
@@ -36,6 +40,8 @@ CASTNode::CASTNode()
 // =================================================================
 CASTNode::CASTNode(CASTNode* parent, CToken token)
 {
+	m_create_index = g_create_index_tracker++;
+
 	Parent = parent;
 	Token = token;
 	Semanted = false;
@@ -559,7 +565,7 @@ void CASTNode::CheckForDuplicateMethodIdentifier(CSemanter* semanter,
 		method->IsVirtual		== true &&
 		ignore_node->IsVirtual	== true &&
 		method->Parent			!= ignore_node->Parent &&
-		ignore_node->IsOverride	== true)
+		(ignore_node->IsOverride == true || ignore_node->IsAbstract == true))
 	{
 		method = NULL;
 	}

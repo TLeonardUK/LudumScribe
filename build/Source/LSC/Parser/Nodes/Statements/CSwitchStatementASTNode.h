@@ -1,0 +1,39 @@
+/* *****************************************************************
+
+		CSwitchStatementASTNode.h
+
+		Copyright (C) 2012 Tim Leonard - All Rights Reserved
+
+   ***************************************************************** */
+#pragma once
+#ifndef _CSWITCHSTATEMENTASTNODE_H_
+#define _CSWITCHSTATEMENTASTNODE_H_
+
+#include <string>
+#include <vector>
+
+#include "CToken.h"
+#include "CASTNode.h"
+
+class CExpressionASTNode;
+
+// =================================================================
+//	Stores information on an block statement.
+// =================================================================
+class CSwitchStatementASTNode : public CASTNode
+{
+protected:	
+
+public:
+	CExpressionBaseASTNode*	ExpressionStatement;
+
+	CSwitchStatementASTNode(CASTNode* parent, CToken token);
+
+	virtual CASTNode* Clone(CSemanter* semanter);
+	virtual CASTNode* Semant(CSemanter* semanter);
+
+	virtual void Translate(CTranslator* translator);
+
+};
+
+#endif

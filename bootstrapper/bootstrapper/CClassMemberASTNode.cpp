@@ -24,6 +24,7 @@
 #include "CFloatDataType.h"
 #include "CStringDataType.h"
 #include "CNullDataType.h"
+#include "CArrayDataType.h"
 
 #include "CClassASTNode.h"
 #include "CClassBodyASTNode.h"
@@ -231,6 +232,13 @@ CASTNode* CClassMemberASTNode::Semant(CSemanter* semanter)
 		}
 	}
 
+	// We need to make sure to return a value.
+	if (MemberType == MemberType::Method &&
+		dynamic_cast<CVoidDataType*>(ReturnType) == NULL)
+	{
+		AddDefaultReturnExpression(semanter);
+	}
+
 	// Entry point.
 	if (Identifier == "Main")
 	{
@@ -238,9 +246,9 @@ CASTNode* CClassMemberASTNode::Semant(CSemanter* semanter)
 		{
 			semanter->GetContext()->FatalError("Entry point is expected to be static.", Token);
 		}
-		else if (argument_types.size() != 0 || dynamic_cast<CVoidDataType*>(ReturnType) == NULL)
+		else if (argument_types.size() != 1 || dynamic_cast<CIntDataType*>(ReturnType) == NULL || dynamic_cast<CArrayDataType*>(argument_types.at(0)) == NULL || dynamic_cast<CStringDataType*>(dynamic_cast<CArrayDataType*>(argument_types.at(0))->ElementType) == NULL)
 		{
-			semanter->GetContext()->FatalError("Entry point is expected to take no arguments and return a void data type.", Token);
+			semanter->GetContext()->FatalError("Entry point must match signature: int Main(string[] args).", Token);
 		}
 		else
 		{
@@ -298,6 +306,24 @@ bool CClassMemberASTNode::EqualToMember(CSemanter* semanter, CClassMemberASTNode
 	}
 
 	return true;
+}
+
+// =================================================================
+//	Adds a return expression to the end of a method if required.
+// =================================================================
+void CClassMemberASTNode::AddDefaultReturnExpression(CSemanter* semanter)
+{
+	// Make sure we don't already end with a return statement.
+	if (Body == NULL || (Body->Children.size() >= 1 && dynamic_cast<CReturnStatementASTNode*>(Body->Children.at(Body->Children.size() - 1)) != NULL))
+	{
+		return;
+	}
+
+	// Add default return statement.  
+	CReturnStatementASTNode* node = new CReturnStatementASTNode(Body, Token);
+	node->ReturnExpression = semanter->ConstructDefaultAssignmentExpr(node, Token, ReturnType);
+
+	node->Semant(semanter);
 }
 
 // =================================================================
@@ -483,18 +509,25 @@ CASTNode* CClassMemberASTNode::Finalize(CSemanter* semanter)
 			}
 			else
 			{
-				MangledIdentifier = semanter->GetMangled("ls_" + scope->Identifier + "_ext_f" + Identifier);
+				MangledIdentifier = semanter->GetMangled(scope->MangledIdentifier + "_f" + Identifier);
 			}
 		}
 		else
 		{
 			if (IsExtension == false)
 			{
-				MangledIdentifier = semanter->GetMangled("ls_m" + Identifier);
+				if (scope->IsInterface == true)
+				{
+					MangledIdentifier = semanter->GetMangled("ls_" + scope->Identifier + "_" + Identifier);
+				}
+				else
+				{
+					MangledIdentifier = semanter->GetMangled("ls_" + Identifier);
+				}
 			}
 			else
 			{
-				MangledIdentifier = semanter->GetMangled("ls_" + scope->Identifier + "_ext_m" + Identifier);
+				MangledIdentifier = semanter->GetMangled(scope->MangledIdentifier + "_" + Identifier);
 			}
 		}
 	}
@@ -518,6 +551,10 @@ CASTNode* CClassMemberASTNode::Finalize(CSemanter* semanter)
 			if (node != NULL && 
 				((IsOverride == true && node->IsVirtual == true) || scope->IsInterface == true))
 			{
+				if (node->MangledIdentifier == "")
+				{
+					node->Finalize(semanter);
+				}
 				MangledIdentifier = node->MangledIdentifier;
 			}
 
@@ -527,6 +564,10 @@ CASTNode* CClassMemberASTNode::Finalize(CSemanter* semanter)
 				CClassMemberASTNode* interf_node = interf->FindClassMethod(semanter, Identifier, types, true, this, this);
 				if (interf_node != NULL)
 				{
+					if (interf_node->MangledIdentifier == "")
+					{
+						interf_node->Finalize(semanter);
+					}
 					MangledIdentifier = interf_node->MangledIdentifier;
 				}
 			}

@@ -220,7 +220,7 @@ bool CMSBuildBuilder::Build()
 	project_file += "  <PropertyGroup Label=\"UserMacros\" />\n";
 	project_file += 
 		std::string("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + config_name + "|Win32'\">\n") +
-					"    <LinkIncremental>true</LinkIncremental>\n" +
+					"    <LinkIncremental>false</LinkIncremental>\n" +
 					"    <IncludePath>$(ProjectDir)Source;$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + ";$(IncludePath)</IncludePath>" + 
 					"    <OutDir>$(SolutionDir)\\</OutDir>" + 
 					"  </PropertyGroup>\n";

@@ -25,7 +25,8 @@
 CVariableStatementASTNode::CVariableStatementASTNode(CASTNode* parent, CToken token) :
 	CDeclarationASTNode(parent, token),
 	AssignmentExpression(NULL),
-	Type(NULL)
+	Type(NULL),
+	IsParameter(false)
 {
 }
 
@@ -89,7 +90,7 @@ CASTNode* CVariableStatementASTNode::Semant(CSemanter* semanter)
 	Type = Type->Semant(semanter, this);
 
 	// Default assignment?
-	if (AssignmentExpression == NULL)
+	if (AssignmentExpression == NULL && IsParameter == false)
 	{
 		AssignmentExpression = semanter->ConstructDefaultAssignmentExpr(this, Token, Type);
 	}
@@ -117,6 +118,7 @@ CASTNode* CVariableStatementASTNode::Clone(CSemanter* semanter)
 	clone->Identifier = this->Identifier;
 	clone->IsNative = this->IsNative;
 	clone->MangledIdentifier = this->MangledIdentifier;
+	clone->IsParameter = this->IsParameter;
 
 	if (AssignmentExpression != NULL)
 	{

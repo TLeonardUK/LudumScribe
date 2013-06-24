@@ -80,6 +80,10 @@ EvaluationResult CLiteralExpressionASTNode::Evaluate(CTranslationUnit* unit)
 	{
 		return EvaluationResult(Literal);
 	}
+	else if (dynamic_cast<CNullDataType*>(ExpressionResultType) != NULL)
+	{
+		return EvaluationResult(0);
+	}
 	
 	unit->FatalError("Invalid constant operation.", Token);
 	return EvaluationResult(false);

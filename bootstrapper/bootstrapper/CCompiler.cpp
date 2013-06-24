@@ -322,10 +322,12 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 		printf("Could not parse project file: %s\n", path.c_str());			
 		return false;
 	}
+
 	m_project_config = m_platform_config;
 	m_project_config = m_project_config.Merge(m_translator_config);
 	m_project_config = m_project_config.Merge(m_builder_config);
 	m_project_config = m_project_config.Merge(CConfigState(path, unit->GetDefines()));
+	m_project_config.Path = path;
 
 	// Check this platform is supported.
 	std::vector<std::string> platforms = CStringHelper::Split(m_project_config.GetString("SUPPORTED_PLATFORMS"), '|');

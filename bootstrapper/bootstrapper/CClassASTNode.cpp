@@ -52,6 +52,7 @@ CClassASTNode::CClassASTNode(CASTNode* parent, CToken token) :
 	InstancedBy				= NULL;
 	HasBoxClass				= false;
 	BoxClassIdentifier		= "";
+	IsEnum					= false;
 }
 
 // =================================================================
@@ -89,6 +90,7 @@ CASTNode* CClassASTNode::Clone(CSemanter* semanter)
 	clone->InheritedTypes	 = this->InheritedTypes;	
 	clone->HasBoxClass		 = this->HasBoxClass;
 	clone->BoxClassIdentifier = this->BoxClassIdentifier;
+	clone->IsEnum			 = this->IsEnum;
 	clone->Body				 = dynamic_cast<CClassBodyASTNode*>(this->Body->Clone(semanter));
 	clone->ObjectDataType	 = new CObjectDataType(Token, clone);
 	clone->AddChild(clone->Body);
@@ -171,14 +173,6 @@ std::string CClassASTNode::ToString()
 // =================================================================
 CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 { 
-	// Flag this class as semanting - we do this so we can detect
-	// inheritance loops.
-	if (m_semanting == true)
-	{
-		semanter->GetContext()->FatalError("Detected illegal cyclic inheritance.", Token);
-	}
-	m_semanting = true;
-	
 	// Only semant once.
 	if (Semanted == true)
 	{
@@ -187,108 +181,122 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 	}
 	Semanted = true;
 	
-	// Work out mangled identifier.
-	if (MangledIdentifier == "")
-	{
-		MangledIdentifier = semanter->GetMangled("ls_" + Identifier);
-	}
-
 	// Check for duplicate identifiers (only if we are not an instanced class).
 	if (GenericInstanceOf == NULL)
 	{
 		Parent->CheckForDuplicateIdentifier(semanter, Identifier, this);
 	}
-
-	// Interface cannot use inheritance.
-	if (InheritedTypes.size() > 0 && IsInterface == true)
+	
+	if (IsGeneric		  == false ||
+		GenericInstanceOf != NULL)
 	{
-		semanter->GetContext()->FatalError("Interfaces cannot inherit from other interfaces or classes.", Token);
-	}		
-	if (InheritedTypes.size() > 0 && IsStatic == true)
-	{
-		semanter->GetContext()->FatalError("Static classes cannot inherit from interfaces.", Token);
-	}
-
-	// Semant inherited types.
-	bool foundSuper = false;
-	for (auto iter = InheritedTypes.begin(); iter != InheritedTypes.end(); iter++)
-	{
-		CIdentifierDataType* type = *iter;
-		CClassASTNode* node = type->SemantAsClass(semanter, this);
-
-		if (type->Identifier == Identifier)
+	
+		// Work out mangled identifier.
+		if (MangledIdentifier == "")
 		{
-			semanter->GetContext()->FatalError("Attempt to inherit class from itself.", Token);
+			MangledIdentifier = semanter->GetMangled("ls_" + Identifier);
 		}
 
-		if (node->IsInterface == true)
+		// Interface cannot use inheritance.
+		if (InheritedTypes.size() > 0 && IsInterface == true)
 		{
-			Interfaces.push_back(node);
-		}
-		else
+			semanter->GetContext()->FatalError("Interfaces cannot inherit from other interfaces or classes.", Token);
+		}		
+		if (InheritedTypes.size() > 0 && IsStatic == true)
 		{
-			if (foundSuper == true)
-			{
-				semanter->GetContext()->FatalError("Multiple inheritance is not supported. Use interfaces instead.", Token);
-			}
-			SuperClass = node;
-			foundSuper = true;
-		}
-	}
-
-	// Native classes are not allowed to implement interfaces.
-	//if (IsNative == true && Interfaces.size() > 0)
-	//{
-	//	semanter->GetContext()->FatalError("Native classes cannot implement interfaces.", Token);
-	//}
-
-	// If no inherited types the we inherit from object.
-	if (SuperClass == NULL && IsNative == false)
-	{
-		SuperClass = dynamic_cast<CClassASTNode*>(FindDeclaration(semanter, "object"));
-
-		if (SuperClass == NULL)
-		{
-			semanter->GetContext()->FatalError("Could not find base class to inherit from.", Token);
-		}
-	}
-	else if (SuperClass != NULL)
-	{
-		// Check super class is valid.
-		if (SuperClass->IsSealed == true)
-		{
-			semanter->GetContext()->FatalError("Classes cannot inherit from sealed class.", Token);
+			semanter->GetContext()->FatalError("Static classes cannot inherit from interfaces.", Token);
 		}
 		
-		// Cannot inherit in static classes.
-		if (IsStatic == true)
+		// Flag this class as semanting - we do this so we can detect
+		// inheritance loops.
+		if (m_semanting == true)
 		{
-			semanter->GetContext()->FatalError("Static classes cannot inherit from other classes.", Token);
+			semanter->GetContext()->FatalError("Detected illegal cyclic inheritance of '" + Identifier + "'.", Token);
 		}
-	}
+		m_semanting = true;
 	
-	// Look for interface in parent classes.
-	if (SuperClass != NULL)
-	{
-		for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+		// Semant inherited types.
+		bool foundSuper = false;
+		for (auto iter = InheritedTypes.begin(); iter != InheritedTypes.end(); iter++)
 		{
-			CClassASTNode* interfaceClass = *iter;
-			if (SuperClass->InheritsFromClass(semanter, interfaceClass) != NULL)
+			CIdentifierDataType* type = *iter;
+			CClassASTNode* node = type->SemantAsClass(semanter, this);
+
+			if (type->Identifier == Identifier)
 			{
-				semanter->GetContext()->FatalError(CStringHelper::FormatString("Attempt to implement interface '%s' that is already implemented by a parent class.", interfaceClass->Identifier.c_str()), Token);
+				semanter->GetContext()->FatalError("Attempt to inherit class from itself.", Token);
+			}
+
+			if (node->IsInterface == true)
+			{
+				Interfaces.push_back(node);
+			}
+			else
+			{
+				if (foundSuper == true)
+				{
+					semanter->GetContext()->FatalError("Multiple inheritance is not supported. Use interfaces instead.", Token);
+				}
+				SuperClass = node;
+				foundSuper = true;
 			}
 		}
+
+		// Native classes are not allowed to implement interfaces.
+		//if (IsNative == true && Interfaces.size() > 0)
+		//{
+		//	semanter->GetContext()->FatalError("Native classes cannot implement interfaces.", Token);
+		//}
+
+		// If no inherited types the we inherit from object.
+		if (SuperClass == NULL && IsNative == false)
+		{
+			SuperClass = dynamic_cast<CClassASTNode*>(FindDeclaration(semanter, "object"));
+
+			if (SuperClass == NULL)
+			{
+				semanter->GetContext()->FatalError("Could not find base class to inherit from.", Token);
+			}
+		}
+		else if (SuperClass != NULL)
+		{
+			// Check super class is valid.
+			if (SuperClass->IsSealed == true)
+			{
+				semanter->GetContext()->FatalError("Classes cannot inherit from sealed class.", Token);
+			}
+		
+			// Cannot inherit in static classes.
+			if (IsStatic == true)
+			{
+				semanter->GetContext()->FatalError("Static classes cannot inherit from other classes.", Token);
+			}
+		}
+	
+		// Look for interface in parent classes.
+		if (SuperClass != NULL)
+		{
+			for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+			{
+				CClassASTNode* interfaceClass = *iter;
+				if (SuperClass->InheritsFromClass(semanter, interfaceClass) != NULL)
+				{
+					semanter->GetContext()->FatalError(CStringHelper::FormatString("Attempt to implement interface '%s' that is already implemented by a parent class.", interfaceClass->Identifier.c_str()), Token);
+				}
+			}
+		}
+
+		// Remove semanting flag.
+		m_semanting = false;	
+	
 	}
-	
-	// Remove semanting flag.
-	m_semanting = false;
-	
+
 	// If we are generic we only semant children of instanced classes.
 	if (IsGeneric		  == false ||
 		GenericInstanceOf != NULL)
 	{
 		// If no argument-less constructor has been provided, lets create a default one.
-		if (IsStatic == false && IsAbstract == false && IsInterface == false && IsNative == false)
+		if (IsStatic == false && IsAbstract == false && IsInterface == false && IsNative == false && IsEnum == false)
 		{
 			CClassMemberASTNode* defaultCtor = FindClassMethod(semanter, Identifier, std::vector<CDataType*>(), false);
 			if (defaultCtor == NULL)
@@ -324,7 +332,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 				ClassConstructor				= member; 
 			}
 
-			if (IsNative == false)
+			if (IsNative == false && IsEnum == false)
 			{
 				// Create instance constructor.
 				CClassMemberASTNode* instanceCtor = FindClassMethod(semanter, "__"+Identifier+"_InstanceConstructor", std::vector<CDataType*>(), false);
@@ -520,8 +528,42 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 					member				!= ignoreNode &&
 					arguments.size()	<= member->Arguments.size())
 				{
-					member->Semant(semanter);
-					nodes.push_back(member);
+
+					// Has one of the other members overridcen this method already?
+					bool alreadyExists = false;
+					for (auto iter2 = nodes.begin(); iter2 != nodes.end(); iter2++)
+					{
+						CClassMemberASTNode* member2 = *iter2;
+						if (member->Identifier == member2->Identifier &&
+							member->Arguments.size() == member2->Arguments.size() &&
+							member->IsVirtual == true && member2->IsOverride == true)
+						{
+							bool argsSame = true;
+
+							for (unsigned int i = 0; i < member->Arguments.size(); i++)
+							{
+								CVariableStatementASTNode* arg = member->Arguments.at(i);
+								CVariableStatementASTNode* arg2 = member2->Arguments.at(i);
+								if (!arg->Type->IsEqualTo(semanter, arg2->Type))
+								{
+									argsSame = false;
+									break;
+								}
+							}
+
+							if (argsSame == true)
+							{
+								alreadyExists = true;
+								break;
+							}
+						}
+					}
+
+					if (alreadyExists == false)
+					{
+						member->Semant(semanter);
+						nodes.push_back(member);
+					}
 				}
 			}
 		}

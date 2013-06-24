@@ -28,6 +28,6 @@ using native Native.{PLATFORM}.System.GC;
 // -----------------------------------------------------------------------------
 public static native("lsGC") class GC
 {
-	public static native("Collect") 		  void Collect(bool full = false);
-	public static native("GetBytesAllocated") int  GetBytesAllocated();
+	public static native("Collect") 		  void Collect				(bool full = false);
+	public static native("GetBytesAllocated") int  GetBytesAllocated	();
 }

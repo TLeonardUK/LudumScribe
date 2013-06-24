@@ -16,6 +16,55 @@
 #include <stdio.h>
 #include <cstring>
 #include <cstdlib>
+#include <cstdarg>
+
+// Forward declarations.
+class lsString;
+template<typename T> class lsArray;
+
+// -----------------------------------------------------------------------------
+//	All objects that derive from this class are garbage collected.
+// -----------------------------------------------------------------------------
+class lsGCObject 
+{
+private:
+
+public:
+	virtual ~lsGCObject					();
+
+	void* operator new					(size_t size);	
+	void  operator delete				(void* ptr);		
+	
+	static lsGCObject* 	GCAllocate		(int size);
+	static void 		GCCollect		(bool full);	
+	
+};
+
+// -----------------------------------------------------------------------------
+//	All objects derive from the base object class.
+// -----------------------------------------------------------------------------
+class lsObject : public virtual lsGCObject
+{
+public:
+	virtual lsString ToString();
+	
+};
+
+// -----------------------------------------------------------------------------
+//	This function is responsible for determening if an object can be cast
+//	to another type of object at runtime. Invoked when either upcasting or 
+//	casting to an interface.
+// -----------------------------------------------------------------------------
+template<typename ToType, typename FromType>
+ToType lsCast(FromType val, bool throw_error_on_fail)
+{
+	ToType result = dynamic_cast<ToType>(val);
+	if (result == NULL && throw_error_on_fail == true)
+	{
+		throw new lsInvalidCastException();
+	}	
+	return result;
+}
 
 // -----------------------------------------------------------------------------
 //	Used as an internal reference-counted representation of a strings character
@@ -64,6 +113,8 @@ public:
 	lsString(lsStringBuffer* buffer);
 	lsString(const char* buffer);
 	lsString(const char* buffer, int length);
+	lsString(char chr);
+	lsString(lsArray<int>* chrs);
 	lsString(int value);
 	lsString(float value);
 	
@@ -81,6 +132,9 @@ public:
 	const char* ToCString() const;
 	float ToFloat() const;
 	int ToInt() const;
+
+	static lsString FromChar(int chr);
+	static lsString FromChars(lsArray<int>* chr);
 	
 	// -------------------------------------------------------------------------
 	//	Comparisons.
@@ -100,50 +154,6 @@ public:
 };
 
 // -----------------------------------------------------------------------------
-//	All objects that derive from this class are garbage collected.
-// -----------------------------------------------------------------------------
-class lsGCObject 
-{
-private:
-
-public:
-	virtual ~lsGCObject					();
-
-	void* operator new					(size_t size);	
-	void  operator delete				(void* ptr);		
-	
-	static lsGCObject* 	GCAllocate		(int size);
-	static void 		GCCollect		(bool full);	
-	
-};
-
-// -----------------------------------------------------------------------------
-//	All objects derive from the base object class.
-// -----------------------------------------------------------------------------
-class lsObject : public virtual lsGCObject
-{
-public:
-	virtual lsString ToString();
-	
-};
-
-// -----------------------------------------------------------------------------
-//	This function is responsible for determening if an object can be cast
-//	to another type of object at runtime. Invoked when either upcasting or 
-//	casting to an interface.
-// -----------------------------------------------------------------------------
-template<typename ToType, typename FromType>
-ToType lsCast(FromType val, bool throw_error_on_fail)
-{
-	ToType result = dynamic_cast<ToType>(val);
-	if (result == NULL && throw_error_on_fail == true)
-	{
-		throw lsInvalidCastException();
-	}	
-	return result;
-}
-
-// -----------------------------------------------------------------------------
 //	The array is a special class that all arrays are derived from. Arrays do
 //	not derive themselves from object and are handled differently. This class
 //	is private as it is used internally and should not be handled directly by the 
@@ -153,6 +163,7 @@ template<typename T>
 class lsArray : public lsObject
 {
 private:
+	T   m_default;
 	T*  m_buffer;
 	int m_length;
 	
@@ -167,14 +178,15 @@ public:
 		m_buffer = NULL;
 	}
 	
-	lsArray(int size)
+	lsArray(int size) :
+		m_length(size),
+		m_buffer(new T[size])
 	{
-		m_length = size;
-		m_buffer = new T[size];
 	}
 	
 	lsArray(lsArray<T>* other, int offset, int length) :
-		lsArray(length)
+		m_length(length),
+		m_buffer(new T[length])
 	{
 		for (int i = offset; i < offset + length; i++)
 		{
@@ -182,9 +194,14 @@ public:
 		}
 	}
 	
-	lsArray(lsArray<T>* other)
-		: lsArray(other, 0, other->m_length)
-	{		
+	lsArray(lsArray<T>* other) :
+		m_length(other->m_length),
+		m_buffer(new T[other->m_length])
+	{	
+		for (int i = 0; i < other->m_length; i++)
+		{
+			m_buffer[i] = other->m_buffer[i];
+		}	
 	}
 
 	lsArray* Init(T value)
@@ -193,6 +210,7 @@ public:
 		{
 			m_buffer[i] = value;
 		}
+		m_default = value;
 		return this;
 	}
 
@@ -203,13 +221,33 @@ public:
 	{
 		return m_length;
 	}
+	
+	void Resize(int size)
+	{
+		T* new_buffer = new T[size];
+		for (int i = 0; i < size; i++)
+		{
+			if (i < m_length)
+			{
+				new_buffer[i] = m_buffer[i];
+			}
+			else
+			{
+				new_buffer[i] = m_default;
+			}
+		}
+		
+		delete[] m_buffer;
+		m_buffer = new_buffer;
+		m_length = size;
+	}
 
 	T GetIndex(int index) const
 	{
 #ifdef _DEBUG
 		if (index < 0 || index >= m_length)
 		{
-			throw lsOutOfBoundsException();		
+			throw new lsOutOfBoundsException();		
 		}
 #endif
 		return m_buffer[index];
@@ -220,7 +258,7 @@ public:
 #ifdef _DEBUG
 		if (index < 0 || index >= m_length)
 		{
-			throw lsOutOfBoundsException();		
+			throw new lsOutOfBoundsException();		
 		}
 #endif
 		T old_value = m_buffer[index];
@@ -235,13 +273,24 @@ public:
 			return value;
 		}
 	}
-
-	lsArray<T>* GetSlice(int start_pos) const
+	
+	void ClearIndex(int index)
+	{
+#ifdef _DEBUG
+		if (index < 0 || index >= m_length)
+		{
+			throw new lsOutOfBoundsException();		
+		}
+#endif
+		m_buffer[index] = m_default;
+	}
+	
+	lsArray<T>* GetSlice(int start_pos) 
 	{
 		return GetSlice(start_pos, m_length);
 	}
 
-	lsArray<T>* GetSlice(int start_pos, int end_pos) const
+	lsArray<T>* GetSlice(int start_pos, int end_pos) 
 	{
 		if (start_pos < 0)
 		{
@@ -269,13 +318,13 @@ public:
 		{
 			return new lsArray<T>(0);
 		}
-		else if (start_pos == 0 && end_pos == m_buffer->Length)
+		else if (start_pos == 0 && end_pos == m_length)
 		{
 			return new lsArray<T>(this);	
 		}
 		else
 		{
-			return new lsArray<T>(this, m_buffer->Buffer + start_pos, end_pos - start_pos);	
+			return new lsArray<T>(this, start_pos, end_pos - start_pos);	
 		}
 	}
 	
@@ -290,6 +339,25 @@ public:
 	}
 	
 };
+
+// -----------------------------------------------------------------------------
+//	Used to construct an array from an initialization list.
+// -----------------------------------------------------------------------------
+template<typename ElementType>
+lsArray<ElementType>* lsConstructArray(int length, ...)
+{
+	va_list args;
+	lsArray<ElementType>* arr = new lsArray<ElementType>(length);
+
+	va_start(args, length);          
+	for (int i = 0; i < length; i++) 
+	{
+		arr->SetIndex(i, va_arg(args, ElementType));
+	}
+	va_end(args);    
+
+	return arr;
+}
 
 #endif // __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_TYPES__
 

@@ -106,6 +106,8 @@ CASTNode* CFieldAccessExpressionASTNode::Semant(CSemanter* semanter)
 	// Resulting type is always our right hand type.
 	ExpressionResultClassMember	 = declaration;
 	ExpressionResultType		 = declaration->ReturnType;
+
+	ExpressionResultType		 = ExpressionResultType->Semant(semanter, this);
 	
 	return this;
 }

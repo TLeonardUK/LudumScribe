@@ -7,6 +7,8 @@
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
 
+#define _CRT_SECURE_NO_WARNINGS // Gtfo microsoft.
+
 #include "Packages/Native/Win32/System/GC/include/gc.h"
 
 #include "Packages/Native/Win32/Compiler/Support/Types.hpp"
@@ -119,6 +121,21 @@ lsString::lsString(const char* buffer, int length)
 	memcpy(m_buffer->Buffer, buffer, length); 
 }
 
+lsString::lsString(char chr)
+{
+	m_buffer = lsStringBuffer::Allocate(1);
+	m_buffer->Buffer[0] = chr;
+}
+
+lsString::lsString(lsArray<int>* chrs)
+{
+	m_buffer = lsStringBuffer::Allocate(chrs->Length());
+	for (int i = 0; i < chrs->Length(); i++)
+	{
+		m_buffer->Buffer[i] = (char)((*chrs)[i]);
+	}
+}
+
 lsString::lsString(int value)
 {
 	char buffer[128];
@@ -211,6 +228,16 @@ float lsString::ToFloat() const
 int lsString::ToInt() const
 {
 	return atoi(ToCString());
+}
+
+lsString lsString::FromChar(int chr)
+{
+	return lsString((char)chr);
+}
+
+lsString lsString::FromChars(lsArray<int>* chr)
+{
+	return lsString(chr);
 }
 
 int lsString::Compare(const lsString& other) const 

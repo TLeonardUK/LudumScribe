@@ -44,6 +44,7 @@
 #include "CTryStatementASTNode.h"
 #include "CWhileStatementASTNode.h"
 
+#include "CArrayInitializerASTNode.h"
 #include "CAssignmentExpressionASTNode.h"
 #include "CBaseExpressionASTNode.h"
 #include "CBinaryMathExpressionASTNode.h"
@@ -109,31 +110,16 @@ std::vector<std::string> CCPPTranslator::GetTranslatedFiles()
 // =================================================================
 void CCPPTranslator::OpenSourceFile(std::string path)
 {
-	m_source_file_handle = fopen((path + ".cpp").c_str(), "w");
+	m_source_file_path = (path + ".cpp");
 
 	EmitSourceFile("/* *****************************************************************\n"); 
 	EmitSourceFile("          LudumScribe Compiler\n"); 
-	EmitSourceFile("          Generated at %s\n", CStringHelper::GetDateTimeStamp().c_str()); 
 	EmitSourceFile("   ***************************************************************** */\n"); 
 	EmitSourceFile("\n");	
 	
 	// Emit include declarations.
 	std::string relative = CPathHelper::GetRelativePath(path, m_source_directory);
 	EmitSourceFile("#include \"%s.hpp\"\n", relative.c_str());
-	
-	// Emit include declarations.
-//	for (unsigned int i = 0; i < m_file_paths.size(); i++)
-//	{
-//		std::string file_path = m_file_paths.at(i);
-//		if (file_path != path)
-//		{
-//			//std::string relative = CPathHelper::GetRelativePath(file_path, path);
-//			std::string relative = CPathHelper::GetRelativePath(file_path, m_file_paths.at(0));
-//			EmitSourceFile("#include \"%s.hpp\"\n", relative.c_str());
-//		}
-//	}
-
-//	EmitSourceFile("\n");
 
 	m_created_files.push_back(path + ".cpp");
 }
@@ -143,33 +129,18 @@ void CCPPTranslator::OpenSourceFile(std::string path)
 // =================================================================
 void CCPPTranslator::OpenHeaderFile(std::string path)
 {	
-	m_header_file_handle = fopen((path + ".hpp").c_str(), "w");
+	m_header_file_path = (path + ".hpp");
 
 	std::string relative = CPathHelper::GetRelativePath(path, m_source_directory);
 	m_include_guard = CStringHelper::ToUpper("__" + CStringHelper::CleanExceptAlphaNum(relative, '_') + "__");
 	
 	EmitHeaderFile("/* *****************************************************************\n"); 
 	EmitHeaderFile("          LudumScribe Compiler\n"); 
-	EmitHeaderFile("          Generated at %s\n", CStringHelper::GetDateTimeStamp().c_str()); 
 	EmitHeaderFile("   ***************************************************************** */\n"); 
 	EmitHeaderFile("\n");
 	EmitHeaderFile("#ifndef %s\n", m_include_guard.c_str());
 	EmitHeaderFile("#define %s\n", m_include_guard.c_str());
 	EmitHeaderFile("\n");
-	
-	// Emit native include declarations.
-//	for (unsigned int i = 0; i < m_native_file_paths.size(); i++)
-//	{
-//		std::string file_path = m_native_file_paths.at(i);
-//		if (file_path != path)
-//		{
-//			//std::string relative = CPathHelper::GetRelativePath(file_path, path);
-//			std::string relative = CPathHelper::GetRelativePath(file_path, m_file_paths.at(0));
-//			EmitHeaderFile("#include \"%s.hpp\"\n", relative.c_str());
-//		}
-//	}
-
-//	EmitHeaderFile("\n");
 
 	m_created_files.push_back(path + ".hpp");
 }
@@ -179,10 +150,15 @@ void CCPPTranslator::OpenHeaderFile(std::string path)
 // =================================================================
 void CCPPTranslator::CloseSourceFile()
 {
-	fwrite(m_source_source.c_str(), 1, m_source_source.size(), m_source_file_handle);
-	m_source_source = "";
+	std::string output;
 
-	fclose(m_source_file_handle);
+	CPathHelper::LoadFile(m_source_file_path, output);
+	if (output != m_source_source)
+	{		
+		CPathHelper::SaveFile(m_source_file_path, m_source_source);
+	}
+
+	m_source_source = "";
 }
 
 // =================================================================
@@ -192,11 +168,16 @@ void CCPPTranslator::CloseHeaderFile()
 {
 	EmitHeaderFile("#endif // %s\n", m_include_guard.c_str());
 	EmitHeaderFile("\n");
-	
-	fwrite(m_header_source.c_str(), 1, m_header_source.size(), m_header_file_handle);
-	m_header_source = "";
 
-	fclose(m_header_file_handle);
+	std::string output;
+
+	CPathHelper::LoadFile(m_header_file_path, output);
+	if (output != m_header_source)
+	{
+		CPathHelper::SaveFile(m_header_file_path, m_header_source);
+	}
+
+	m_header_source = "";
 }
 
 // =================================================================
@@ -317,12 +298,12 @@ std::string CCPPTranslator::EscapeCString(std::string val)
 		char chr = val.at(i);
 		if (chr == '\\')
 		{
-			result += chr;
-			result += chr;
+			result += "\\";
+			result += "\\";
 		}
 		else if (chr == '"')
 		{
-			result += "\\" + chr;
+			result += "\\\"";
 		}
 		else if (chr == '\a')
 		{
@@ -539,14 +520,25 @@ void CCPPTranslator::GenerateEntryPoint(CPackageASTNode* node)
 	}
 	EmitSourceFile("\n");
 
+	EmitSourceFile("lsArray<lsString>* cmdArgs = new lsArray<lsString>(argc);\n");
+	EmitSourceFile("for (int i = 0; i < argc; i++)\n");
+	EmitSourceFile("{\n");
+	EmitSourceFile("cmdArgs->SetIndex(i, lsString(argv[i]));\n");
+	EmitSourceFile("}\n");
+	EmitSourceFile("\n");
+
 	// Call user-define entry point.
 	CClassMemberASTNode* entryPoint = m_context->GetEntryPoint();
 	CClassASTNode* entryPointScope = entryPoint->FindClassScope(m_context->GetSemanter());
-	EmitSourceFile(entryPointScope->MangledIdentifier + "::" + entryPoint->MangledIdentifier + "();\n");
+	EmitSourceFile("int exitcode = " + entryPointScope->MangledIdentifier + "::" + entryPoint->MangledIdentifier + "(cmdArgs);\n");
 	EmitSourceFile("\n");
 
 	// Call runtime deinitialization.
 	EmitSourceFile("lsRuntimeDeInit();\n");
+	EmitSourceFile("\n");
+	
+	// Return to OS.
+	EmitSourceFile("return exitcode;\n");
 
 	EmitSourceFile("}\n");
 	EmitSourceFile("\n");
@@ -1000,7 +992,7 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 			// Translate body.
 			node->Body->TranslateChildren(this);
 			
-			EmitGCCollect();
+			//EmitGCCollect();
 			EmitSourceFile("}\n");
 			EmitSourceFile("\n");				
 		}		
@@ -1038,7 +1030,9 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 			}
 			if (node->IsConst == true)
 			{
-				EmitHeaderFile("const ");
+				// Constness should be checked by compiler, not natively.
+				// This allows us to instantiate consts in our instance constructor.
+				// EmitHeaderFile("const ");
 			}
 		}
 		else
@@ -1150,9 +1144,16 @@ void CCPPTranslator::TranslateVariableStatement(CVariableStatementASTNode* node)
 // =================================================================	
 void CCPPTranslator::TranslateBlockStatement(CBlockStatementASTNode* node)
 {
-	EmitGCCollect();
 	node->TranslateChildren(this);
-	EmitGCCollect();	
+
+	// Always emit a collect in iterative blocks.
+//	if (dynamic_cast<CDoStatementASTNode*>(node->Parent) != NULL ||
+//		dynamic_cast<CForEachStatementASTNode*>(node->Parent) != NULL ||
+//		dynamic_cast<CForStatementASTNode*>(node->Parent) != NULL ||
+//		dynamic_cast<CWhileStatementASTNode*>(node->Parent) != NULL)
+//	{
+//		EmitGCCollect();	
+//	}
 }
 
 // =================================================================
@@ -1336,7 +1337,14 @@ void CCPPTranslator::TranslateReturnStatement(CReturnStatementASTNode* node)
 {
 	EmitSourceFile("{\n");
 	EmitGCCollect();
-	EmitSourceFile("return (%s);\n", dynamic_cast<CExpressionBaseASTNode*>(node->ReturnExpression)->TranslateExpr(this).c_str());
+	if (node->ReturnExpression != NULL)
+	{
+		EmitSourceFile("return (%s);\n", dynamic_cast<CExpressionBaseASTNode*>(node->ReturnExpression)->TranslateExpr(this).c_str());
+	}
+	else
+	{
+		EmitSourceFile("return;\n");
+	}
 	EmitSourceFile("}\n");
 }
 
@@ -1619,7 +1627,7 @@ std::string	CCPPTranslator::TranslateComparisonExpression(CComparisonExpressionA
 
 	switch (node->Token.Type)
 	{			
-		case TokenIdentifier::OP_EQUAL:			return Enclose(left_base->TranslateExpr(this) + " = " + right_base->TranslateExpr(this));
+		case TokenIdentifier::OP_EQUAL:			return Enclose(left_base->TranslateExpr(this) + " == " + right_base->TranslateExpr(this));
 		case TokenIdentifier::OP_NOT_EQUAL:		return Enclose(left_base->TranslateExpr(this) + " != " + right_base->TranslateExpr(this)); 
 		case TokenIdentifier::OP_GREATER:		return Enclose(left_base->TranslateExpr(this) + " > " + right_base->TranslateExpr(this));
 		case TokenIdentifier::OP_LESS:			return Enclose(left_base->TranslateExpr(this) + " < " + right_base->TranslateExpr(this)); 
@@ -1833,6 +1841,7 @@ std::string	CCPPTranslator::TranslatePreFixExpression(CPreFixExpressionASTNode* 
 
 	switch (node->Token.Type)
 	{	
+		case TokenIdentifier::OP_LOGICAL_NOT:	return Enclose("!" + left_base->TranslateExpr(this));
 		case TokenIdentifier::OP_ADD:			return Enclose("+" + left_base->TranslateExpr(this));
 		case TokenIdentifier::OP_SUB:			return Enclose("-" + left_base->TranslateExpr(this));
 		case TokenIdentifier::OP_DECREMENT:		
@@ -1933,7 +1942,7 @@ std::string	CCPPTranslator::TranslateMethodCallExpression(CMethodCallExpressionA
 
 	CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(node->ResolvedDeclaration);
 
-	if (member != NULL && member->IsExtension == true)
+	if (member != NULL && member->IsExtension == true && member->IsStatic == false)
 	{
 		args += left_base->TranslateExpr(this);
 	}
@@ -2085,32 +2094,39 @@ std::string	CCPPTranslator::TranslateNewExpression(CNewExpressionASTNode* node)
 
 	if (node->IsArray == true)
 	{
-		CExpressionASTNode* expr = dynamic_cast<CExpressionASTNode*>(node->ArgumentExpressions.at(0));
-		CArrayDataType* arrayType = dynamic_cast<CArrayDataType*>(node->DataType);
-
-		std::string defaultValue = "";
-		if (dynamic_cast<CBoolDataType*>(arrayType->ElementType) != NULL)
+		if (node->ArrayInitializer != NULL)
 		{
-			defaultValue = "false";
-		}
-		else if (dynamic_cast<CIntDataType*>(arrayType->ElementType) != NULL)
-		{
-			defaultValue = "0";
-		}
-		else if (dynamic_cast<CFloatDataType*>(arrayType->ElementType) != NULL)
-		{
-			defaultValue = "0.0f";
-		}
-		else if (dynamic_cast<CStringDataType*>(arrayType->ElementType) != NULL)
-		{
-			defaultValue = "lsString(\"\")";
+			result = node->ArrayInitializer->TranslateExpr(this);
 		}
 		else
 		{
-			defaultValue = "NULL";
-		}
+			CExpressionASTNode* expr = dynamic_cast<CExpressionASTNode*>(node->ArgumentExpressions.at(0));
+			CArrayDataType* arrayType = dynamic_cast<CArrayDataType*>(node->DataType);
 
-		result = "((new lsArray<" + TranslateDataType(arrayType->ElementType) + ">(" + expr->TranslateExpr(this) + "))->Init(" + defaultValue + "))";
+			std::string defaultValue = "";
+			if (dynamic_cast<CBoolDataType*>(arrayType->ElementType) != NULL)
+			{
+				defaultValue = "false";
+			}
+			else if (dynamic_cast<CIntDataType*>(arrayType->ElementType) != NULL)
+			{
+				defaultValue = "0";
+			}
+			else if (dynamic_cast<CFloatDataType*>(arrayType->ElementType) != NULL)
+			{
+				defaultValue = "0.0f";
+			}
+			else if (dynamic_cast<CStringDataType*>(arrayType->ElementType) != NULL)
+			{
+				defaultValue = "lsString(\"\")";
+			}
+			else
+			{
+				defaultValue = "NULL";
+			}
+
+			result = "((new lsArray<" + TranslateDataType(arrayType->ElementType) + ">(" + expr->TranslateExpr(this) + "))->Init(" + defaultValue + "))";
+		}
 	}
 	else
 	{
@@ -2193,3 +2209,20 @@ std::string	CCPPTranslator::TranslateTypeExpression(CTypeExpressionASTNode* node
 	return "";
 }
 
+
+// =================================================================
+//	Translates a array initializer expression.
+// =================================================================
+std::string	CCPPTranslator::TranslateArrayInitializerExpression(CArrayInitializerASTNode* node)
+{
+	std::string result = "lsConstructArray<" + TranslateDataType(dynamic_cast<CArrayDataType*>(node->ExpressionResultType)->ElementType) + ">(" + CStringHelper::ToString(node->Expressions.size());
+
+	for (auto iter = node->Expressions.begin(); iter != node->Expressions.end(); iter++)
+	{
+		result += ", " + dynamic_cast<CExpressionBaseASTNode*>(*iter)->TranslateExpr(this);
+	}
+
+	result += ")";
+
+	return result;
+}

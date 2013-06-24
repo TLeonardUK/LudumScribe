@@ -168,6 +168,8 @@ CASTNode* CIdentifierExpressionASTNode::Semant(CSemanter* semanter)
 		ExpressionResultType = classNode->ClassReferenceDataType;
 	}
 
+	ExpressionResultType = ExpressionResultType->Semant(semanter, this);
+
 	return this;
 }
 

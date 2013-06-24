@@ -18,6 +18,7 @@
 #include "CExpressionASTNode.h"
 #include "CExpressionBaseASTNode.h"
 #include "CVariableStatementASTNode.h"
+#include "CArrayInitializerASTNode.h"
 
 #include "CSemanter.h"
 #include "CTranslationUnit.h"
@@ -33,7 +34,8 @@ CNewExpressionASTNode::CNewExpressionASTNode(CASTNode* parent, CToken token) :
 	CExpressionBaseASTNode(parent, token),
 	DataType(NULL),
 	IsArray(false),
-	ResolvedConstructor(NULL)
+	ResolvedConstructor(NULL),
+	ArrayInitializer(NULL)
 {
 }
 
@@ -53,6 +55,12 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 		node = dynamic_cast<CExpressionBaseASTNode*>(node->Semant(semanter));
 		argument_datatypes.push_back(node->ExpressionResultType);
 		(*iter) = node;
+	}
+
+	// Semant array initializer.
+	if (ArrayInitializer != NULL)
+	{
+		ArrayInitializer->Semant(semanter);
 	}
 
 	// Create new array of objects.
@@ -107,6 +115,11 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 		{
 			semanter->GetContext()->FatalError(CStringHelper::FormatString("No suitable constructor to instantiate class '%s'.", DataType->ToString().c_str()), Token);
 		}
+
+	//	if (classNode->Identifier == "MapPair")
+	//	{
+	//		printf("WUT");
+	//	}
 
 		ResolvedConstructor = node;
 
@@ -187,6 +200,7 @@ CASTNode* CNewExpressionASTNode::Clone(CSemanter* semanter)
 {
 	CNewExpressionASTNode* clone = new CNewExpressionASTNode(NULL, Token);
 	clone->DataType = DataType;
+	clone->IsArray = IsArray;
 
 	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{

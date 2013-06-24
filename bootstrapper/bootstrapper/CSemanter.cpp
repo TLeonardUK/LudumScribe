@@ -120,7 +120,7 @@ std::string	CSemanter::GetMangled(std::string mangled)
 		}
 	}
 	m_mangled.push_back(mangled);
-
+	
 	return mangled;
 }
 

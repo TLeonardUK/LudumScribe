@@ -37,6 +37,9 @@ public:
 	virtual bool			CanCastTo	(CSemanter* semanter, CDataType* type);
 	virtual std::string		ToString	();
 
+	virtual CDataType*		Semant			(CSemanter* semanter, CASTNode* node);
+	virtual CClassASTNode*	SemantAsClass	(CSemanter* semanter, CASTNode* node);
+
 };
 
 #endif

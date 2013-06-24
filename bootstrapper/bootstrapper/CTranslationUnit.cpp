@@ -271,7 +271,7 @@ void CTranslationUnit::FatalError(std::string msg, std::string source, int row, 
 	printf("%s\n", line.c_str());
 	printf("%s\n", arrow_line.c_str());
 
- 	throw std::runtime_error("Fatal Error");
+	throw std::runtime_error("Fatal Error");
 }
 
 // =================================================================
@@ -566,6 +566,12 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 		// Check semantics are correct for AST.
 		//Info("Semantic Analysis ...");
 		m_semanter.Process(this);
+		
+		// Check we have an entry point.
+		if (GetEntryPoint() == NULL)
+		{
+			FatalError("No entry point was found in program. Entry point with the following signature is expected: int Main(string[])");
+		}
 
 		// Translate into target language.
 		int tick_count = GetTickCount();

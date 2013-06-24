@@ -11,6 +11,9 @@
 #include "CObjectDataType.h"
 #include "CTranslationUnit.h"
 
+#include "CClassASTNode.h"
+#include "CClassBodyASTNode.h"
+
 #include "CASTNode.h"
 
 #include "CStringHelper.h"
@@ -85,9 +88,22 @@ CDataType* CIdentifierDataType::Semant(CSemanter* semanter, CASTNode* node)
 		generic_arguments.push_back((*iter)->Semant(semanter, node));
 	}
 
+
 	CDataType* type = node->FindDataType(semanter, Identifier, generic_arguments);
 	if (type == NULL)
 	{
+
+		// If we are a class node try finding data type in our body as we may be using alias's
+//		CClassASTNode* classNode = dynamic_cast<CClassASTNode*>(node);
+//		if (classNode != NULL)
+//		{
+//			CDataType* type2 = classNode->Body->FindDataType(semanter, Identifier, generic_arguments);
+//			if (type2 != NULL)
+//			{
+//				return type2;
+//			}
+//		}
+
 		semanter->GetContext()->FatalError(CStringHelper::FormatString("Unknown data type '%s'.", ToString().c_str()), Token);
 	}
 	
