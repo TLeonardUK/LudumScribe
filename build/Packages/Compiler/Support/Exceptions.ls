@@ -47,6 +47,13 @@ public native("lsOutOfMemoryException") class OutOfMemoryException : Exception
 }
 
 // -----------------------------------------------------------------------------
+//	Generic operation failed exception.
+// -----------------------------------------------------------------------------
+public native("lsOperationFailedException") class OperationFailedException : Exception
+{
+}
+
+// -----------------------------------------------------------------------------
 //	Throw when we attempt to get a non-existant key.
 // -----------------------------------------------------------------------------
 public class NonExistantKeyException : Exception

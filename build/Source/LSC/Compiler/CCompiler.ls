@@ -115,7 +115,7 @@ public class CConfigState
 // =================================================================
 public class CCompiler
 {
-	private CCommandLineParser						m_cmdLineParser;
+	private CCommandLineParser						m_cmdLineParser				= new CCommandLineParser();
 	private string									m_packageDirectory;
 	private string									m_platformDirectory;
 	private string									m_builderDirectory;
@@ -124,19 +124,19 @@ public class CCompiler
 
 	private string									m_fileExtension;
 
-	private List<CDefine>							m_defines;
+	private List<CDefine>							m_defines 					= new List<CDefine>();
 	
-	private Map<string, CConfigState>				m_translator_configs;
-	private Map<string, CTranslator>				m_translators;
+	private Map<string, CConfigState>				m_translator_configs 		= new Map<string, CConfigState>();
+	private Map<string, CTranslator>				m_translators 				= new Map<string, CTranslator>();;
 	private CConfigState							m_translator_config;
 	private CTranslator								m_translator;
 	
-	private Map<string, CConfigState>				m_builder_configs;
-	private Map<string, CBuilder>					m_builders;
+	private Map<string, CConfigState>				m_builder_configs 			= new Map<string, CConfigState>();
+	private Map<string, CBuilder>					m_builders 					= new Map<string, CBuilder>();
 	private CConfigState							m_builder_config;
 	private CBuilder								m_builder;
 
-	private Map<string, CConfigState>				m_platform_configs;
+	private Map<string, CConfigState>				m_platform_configs 			= new Map<string, CConfigState>();
 	private CConfigState							m_platform_config;
 
 	private CConfigState							m_project_config;
@@ -247,49 +247,49 @@ public class CCompiler
 		}
 
 		// Check platform given is valid.
-		string platform_name  = m_cmdLineParser.GetString("-platform");
-		m_platform_config = m_platform_configs.GetValue(platform_name);
-		if (m_platform_config == null)
+		string platform_name  = m_cmdLineParser.GetString("-platform");		
+		if (!m_platform_configs.ContainsKey(platform_name))
 		{
 			Console.WriteLine("Platform '" + platform_name + "' does not exist.");
 			return false;
 		}
+		m_platform_config = m_platform_configs.GetValue(platform_name);
 
 		// Check translator config is valid.
 		string translator_name = m_platform_config.GetString("PLATFORM_TRANSLATOR");
-		m_translator_config = m_translator_configs.GetValue(translator_name);
-		if (m_translator_config == null)
+		if (!m_translator_configs.ContainsKey(translator_name))
 		{
 			Console.WriteLine("Translator '" + translator_name + "' configuration does not exist.");
 			return false;
 		}
+		m_translator_config = m_translator_configs.GetValue(translator_name);
 		
 		// Grab the actual translator instance.
 		string internal_translator_name = m_translator_config.GetString("TRANSLATOR_INTERNAL_NAME");
-		m_translator = m_translators.GetValue(internal_translator_name);
-		if (m_translator == null)
+		if (!m_translators.ContainsKey(internal_translator_name))
 		{
 			Console.WriteLine("Translator '" + internal_translator_name + "' is not implemented.");
 			return false;
 		}
+		m_translator = m_translators.GetValue(internal_translator_name);
 		
 		// Check builder config is valid.
 		string builder_name = m_platform_config.GetString("PLATFORM_BUILDER");
-		m_builder_config = m_builder_configs.GetValue(builder_name);
-		if (m_builder_config == null)
+		if (!m_builder_configs.ContainsKey(builder_name))
 		{
 			Console.WriteLine("Builder '" + builder_name + "' configuration does not exist.");
 			return false;
 		}
+		m_builder_config = m_builder_configs.GetValue(builder_name);
 		
 		// Grab the actual builder instance.
 		string internal_builder_name = m_builder_config.GetString("BUILDER_INTERNAL_NAME");
-		m_builder = m_builders.GetValue(internal_builder_name);
-		if (m_builder == null)
+		if (!m_builders.ContainsKey(internal_builder_name))
 		{
 			Console.WriteLine("Builder '" + internal_builder_name + "' is not implemented.");
 			return false;
 		}
+		m_builder = m_builders.GetValue(internal_builder_name);
 
 		// All is good!
 		return true;
@@ -303,16 +303,16 @@ public class CCompiler
 		bool showHelp = false;
 
 		// Banner.
-		Console.WriteLine("=============================================================\n");
-		Console.WriteLine(" LudumScribe Self-Hosting Transcompiler, version 1.0\n");
-		Console.WriteLine(" Copyright (C) TwinDrills. All rights reserved.\n");
-		Console.WriteLine("=============================================================\n");
-		Console.WriteLine("\n");
+		Console.WriteLine("=============================================================");
+		Console.WriteLine(" LudumScribe Self-Hosting Transcompiler, version 1.0");
+		Console.WriteLine(" Copyright (C) TwinDrills. All rights reserved.");
+		Console.WriteLine("=============================================================");
+		Console.WriteLine("");
 
 		// Store executable info.
 		m_cmdline_args			= args;
 		m_executable_path		= args[0];
-		m_executable_dir		= Path.StripFilename(args[0]);
+		m_executable_dir		= Path.StripFilename(Path.GetAbsolute(args[0]));
 
 		// Check configuration.
 		if (ValidateConfig())
@@ -393,7 +393,7 @@ public class CCompiler
 
 		if (found == false)
 		{
-			Console.WriteLine("Project does not support platform: " + platform + "\n");			
+			Console.WriteLine("Project does not support platform: " + platform);			
 			return false;
 		}
 
@@ -413,7 +413,7 @@ public class CCompiler
 
 		if (found == false)
 		{
-			Console.WriteLine("Project does not support configuration: " + config + "\n");			
+			Console.WriteLine("Project does not support configuration: " + config);			
 			return false;
 		}
 
@@ -425,7 +425,7 @@ public class CCompiler
 		}
 		if (!File.Exists(compile_file_path))
 		{
-			Console.WriteLine("Could not find file to compile: " + compile_file_path + "\n");			
+			Console.WriteLine("Could not find file to compile: " + compile_file_path);			
 			return false;
 		}
 
@@ -441,7 +441,7 @@ public class CCompiler
 		}
 		if (!Directory.Exists(m_buildDirectory))
 		{
-			Console.WriteLine("Could not create build directory '" + m_buildDirectory + "'.\n");
+			Console.WriteLine("Could not create build directory '" + m_buildDirectory + "'.");
 			return false;
 		}
 
@@ -468,7 +468,7 @@ public class CCompiler
 				CTranslationUnit unit = new CTranslationUnit(this, platformfile, m_defines);
 				if (!unit.PreProcess())
 				{
-					Console.WriteLine("Could not process platform configuration file at: " + platformfile + "\n");			
+					Console.WriteLine("Could not process platform configuration file at: " + platformfile);			
 					return false;
 				}
 
@@ -477,7 +477,7 @@ public class CCompiler
 			}
 			else
 			{
-				Console.WriteLine("Could not find expected platform configuration file at: " + platformfile + "\n");
+				Console.WriteLine("Could not find expected platform configuration file at: " + platformfile);
 				return false;
 			}
 		}
@@ -501,7 +501,7 @@ public class CCompiler
 				CTranslationUnit unit = new CTranslationUnit(this, platformfile, m_defines);
 				if (!unit.PreProcess())
 				{
-					Console.WriteLine("Could not process builder configuration file at: " + platformfile + "\n");			
+					Console.WriteLine("Could not process builder configuration file at: " + platformfile);			
 					return false;
 				}
 
@@ -510,7 +510,7 @@ public class CCompiler
 			}
 			else
 			{
-				Console.WriteLine("Could not find expected builder configuration file at: " + platformfile + "\n");
+				Console.WriteLine("Could not find expected builder configuration file at: " + platformfile);
 				return false;
 			}
 		}
@@ -534,7 +534,7 @@ public class CCompiler
 				CTranslationUnit unit = new CTranslationUnit(this, platformfile, m_defines);
 				if (!unit.PreProcess())
 				{
-					Console.WriteLine("Could not process translator configuration file at: " + platformfile + "\n");			
+					Console.WriteLine("Could not process translator configuration file at: " + platformfile);			
 					return false;
 				}
 
@@ -543,7 +543,7 @@ public class CCompiler
 			}
 			else
 			{
-				Console.WriteLine("Could not find expected translator configuration file at: " + platformfile + "\n");
+				Console.WriteLine("Could not find expected translator configuration file at: " + platformfile);
 				return false;
 			}
 		}

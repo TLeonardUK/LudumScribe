@@ -87,5 +87,17 @@ public:
 	}
 };
 
+// -----------------------------------------------------------------------------
+//	Generic fail exception.
+// -----------------------------------------------------------------------------
+class lsOperationFailedException : public lsException
+{
+public:
+	lsOperationFailedException() : 
+		lsException("Operation failed to complete.")
+	{
+	}
+};
+
 #endif // __LS_PACKAGES_NATIVE_WIN32_COMPILER_SUPPORT_EXCEPTIONS__
 

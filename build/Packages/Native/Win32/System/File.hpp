@@ -22,6 +22,9 @@ public:
 	static bool Copy	(lsString path, lsString from, bool overwrite);
 	static bool Rename	(lsString from, lsString to);
 	static bool Exists	(lsString path);
+	
+	static lsString LoadText(lsString path);
+	static void     SaveText(lsString path, lsString value);
 
 };
 

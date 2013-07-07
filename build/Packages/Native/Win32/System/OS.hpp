@@ -17,6 +17,8 @@ class lsOS
 {
 public:
 	static void Exit(int exitcode);
+	static int GetTicks();
+	static bool Execute(lsString path, lsString cmd_line);
 	static lsString GetEnvironmentString();
 
 };

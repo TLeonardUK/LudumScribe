@@ -7,6 +7,7 @@
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
 using native Native.{PLATFORM}.Compiler.Support.Types;
+using System.Collections.*;
 
 // =============================================================================
 //	Values Types
@@ -45,14 +46,17 @@ public sealed native("float") box("FloatBox") class @float : null
 // -----------------------------------------------------------------------------
 public sealed native("lsString") box("StringBox") class @string : null, IEnumerable
 {
-	public native("ToInt")		int 			ToInt		();
-	public native("ToFloat")	float 			ToFloat		();
-	public native("Length")		int 			Length		();
-	public native("GetIndex")	int 			GetIndex	(int index);
-	public native("GetSlice")	string 			GetSlice	(int start_index);
-	public native("GetSlice")	string 			GetSlice	(int start_index, int end_index);
-	public native("FromChar")	static string 	FromChar	(int chr);
-	public native("FromChars")	static string 	FromChars	(int[] chr);
+	public native("ToInt")			int 			ToInt		();
+	public native("ToFloat")		float 			ToFloat		();
+	public native("ToChar")			int 			ToChar		();
+	public native("Length")			int 			Length		();
+	public native("GetIndex")		string 			GetIndex	(int index);
+	public native("GetSlice")		string 			GetSlice	(int start_index);
+	public native("GetSlice")		string 			GetSlice	(int start_index, int end_index);
+	public native("FromIntToHex")	static string 	FromIntToHex(int chr);
+	public native("FromChar")		static string 	FromChar	(int chr);
+	public native("FromChars")		static string 	FromChars	(int[] chr);
+	public native("HexToInt")		int 			HexToInt	();
 		
 	// -------------------------------------------------------------------------
 	//
@@ -127,13 +131,13 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
-	public string PadLeft(int length, string padding = "")
+	public string PadRight(int length, string padding = "")
 	{	
 		string result = this;
 		int offset = 0;
 		while (result.Length() < length)
 		{
-			result += string.FromChar(padding[(offset++) % padding.Length()]);
+			result += padding[(offset++) % padding.Length()];
 		}		
 		return result;
 	}	
@@ -141,23 +145,15 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
-	public string PadRight(int length, string padding = "")
+	public string PadLeft(int length, string padding = "")
 	{	
 		string result = this;
 		int offset = 0;
 		while (result.Length() < length)
 		{
-			result = string.FromChar(padding[(offset++) % padding.Length()]) + result;
+			result = padding[(offset++) % padding.Length()] + result;
 		}		
 		return result;
-	}
-	
-	// -------------------------------------------------------------------------
-	//
-	// -------------------------------------------------------------------------
-	public int ToChar()
-	{
-		return Length() > 0 ? this[0] : 0;
 	}
 	
 	// -------------------------------------------------------------------------
@@ -200,7 +196,7 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 		
 		for (int i = Length() - 1; i >= 0; i--)
 		{
-			result += string.FromChar(this[i]);
+			result += this[i];
 		}
 		
 		return result;
@@ -216,13 +212,14 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 		int lower_bound = 65;//"A"[0];
 		int higher_bound = 90;//"Z"[0];
 		
-		foreach (int chr in this)
+		foreach (string chr in this)
 		{
-			if (chr >= lower_bound && chr <= higher_bound)
+			int asc = chr.ToChar();
+			if (asc >= lower_bound && asc <= higher_bound)
 			{
-				chr += 32;
+				asc += 32;
 			}
-			result += string.FromChar(chr);
+			result += string.FromChar(asc);
 		}
 		
 		return result;
@@ -238,13 +235,14 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 		int lower_bound = 97;//"a"[0];
 		int higher_bound = 122;//"z"[0];
 		
-		foreach (int chr in this)
+		foreach (string chr in this)
 		{
-			if (chr >= lower_bound && chr <= higher_bound)
+			int asc = chr.ToChar();
+			if (asc >= lower_bound && asc <= higher_bound)
 			{
-				chr -= 32;
+				asc -= 32;
 			}
-			result += string.FromChar(chr);
+			result += string.FromChar(asc);
 		}
 		
 		return result;
@@ -444,6 +442,73 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
+	public string Filter(string allowed_chars, string replacement_char = "")
+	{
+		string result = "";
+		for (int i = 0; i < Length(); i++)
+		{
+			string chr = GetIndex(i);
+			bool found = false;
+			
+			for (int j = 0; j < allowed_chars.Length(); j++)
+			{
+				string chr2 = allowed_chars.GetIndex(j);
+				if (chr == chr2)
+				{
+					found = true;
+					break;
+				}
+			}
+			
+			if (found == true)
+			{
+				result += chr;
+			}
+			else
+			{
+				result += replacement_char;
+			}
+		}
+		return result;
+	}
+	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public bool IsHex()
+	{
+		for (int i = 0; i < Length(); i++)
+		{
+			int chr = GetIndex(i).ToChar();
+			if (!(chr >= '0'.ToChar() && chr <= '9'.ToChar()) ||
+				(chr >= 'A'.ToChar() && chr <= 'F'.ToChar()) ||
+				(chr >= 'a'.ToChar() && chr <= 'f'.ToChar()))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public bool IsNumeric()
+	{
+		for (int i = 0; i < Length(); i++)
+		{
+			int chr = GetIndex(i).ToChar();
+			if (!(chr >= '0'.ToChar() && chr <= '9'.ToChar()))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+		
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
 	public string Join(string[] haystack)
 	{
 		string result = "";
@@ -456,6 +521,63 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 			result += s;
 		}
 		return result;
+	}
+		
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public string Join(List<string> haystack)
+	{
+		string result = "";
+		foreach (string s in haystack)
+		{
+			if (result != "")
+			{
+				result += this;
+			}
+			result += s;
+		}
+		return result;
+	}
+	
+	// -------------------------------------------------------------------------
+	//	TODO: Move into another class, this is to specialized for the
+	//		  string class.
+	// -------------------------------------------------------------------------
+	public string GetLine(int lineIndex)
+	{
+		string line;
+		int lineOffset = 0;
+		int startIndex = 0;
+
+		while (true)
+		{
+			int offset = this.IndexOf('\n', startIndex);
+			if (offset <= 0)
+			{
+				break;
+			}
+		
+			line = this.SubString(startIndex, offset - startIndex);
+			if (lineOffset == lineIndex)
+			{
+				return line;
+			}
+			lineOffset++;
+
+			startIndex = offset + 1;
+		}
+
+		line = this.SubString(startIndex, this.Length() - startIndex);
+
+		if (lineOffset == lineIndex)
+		{
+			return line;
+		}
+		else
+		{
+			return "";
+		}
 	}
 	
 	// -------------------------------------------------------------------------
@@ -501,6 +623,73 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 			split = "";
 		}
 		
+		return result;
+	}
+	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public string Format(object[] args)
+	{		
+		int arg_index = 0;
+		
+		string result = "";
+		for (int i = 0; i < this.Length(); i++)
+		{
+			string chr = this[i];
+			if (chr == "%" && i < this.Length() - 1)
+			{
+				string next = this[++i];
+				switch (next)
+				{
+					case "i":
+					{
+						result += <int>args[arg_index++];
+						break;
+					}
+					case "f":
+					{
+						result += <float>args[arg_index++];
+						break;
+					}
+					case "s":
+					{
+						result += <string>args[arg_index++];
+						break;
+					}
+					case "x":
+					{
+						result += string.FromIntToHex(<int>args[arg_index++]).ToLower();
+						break;
+					}
+					case "X":
+					{
+						result += string.FromIntToHex(<int>args[arg_index++]).ToUpper();
+						break;
+					}
+					case "f":
+					{
+						result += <float>args[arg_index++];
+						break;
+					}
+					case "%":
+					{
+						result += "%";
+						break;
+					}					
+					default:
+					{
+						i--;
+						result += "%";
+						break;
+					}
+				}		
+			}
+			else
+			{
+				result += chr;
+			}
+		}		
 		return result;
 	}
 	

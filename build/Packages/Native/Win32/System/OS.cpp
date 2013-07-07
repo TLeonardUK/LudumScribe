@@ -14,6 +14,18 @@
 #include <Windows.h>
 
 #include "Packages/Native/Win32/System/OS.hpp"
+#include "Packages/Native/Win32/System/Path.hpp"
+
+// String methods declared in ludumscribe code.
+extern lsString lsString_Replace(lsString haystack, lsString needle, lsString needle_to);
+
+// -------------------------------------------------------------------------
+//	Gets an arbitrary tick counter (in milliseconds).
+// -------------------------------------------------------------------------
+int lsOS::GetTicks()
+{
+	return GetTickCount();
+}
 
 // -------------------------------------------------------------------------
 //	Prematurely returns control to the OS with the given exit code.
@@ -21,6 +33,33 @@
 void lsOS::Exit(int exitcode)
 {
 	exit(exitcode);
+}
+
+// -------------------------------------------------------------------------
+//	Executes a program and returns true on success.
+// -------------------------------------------------------------------------
+bool lsOS::Execute(lsString path, lsString cmd_line)
+{
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFOA		si = { sizeof(si) };
+	
+	path = lsString_Replace(path, "/", "\\");
+
+	lsString dir = lsPath::StripFilename(path);
+
+	if (!CreateProcessA(NULL, (LPSTR)((lsString("\"") + path + "\" " + cmd_line).ToCString()), NULL, NULL, true, CREATE_DEFAULT_ERROR_MODE, NULL, (LPSTR)dir.ToCString(), &si, &pi)) 
+	{
+		return false;		
+	}
+
+	WaitForSingleObject(pi.hProcess, INFINITE);
+
+	int res = GetExitCodeProcess(pi.hProcess, (DWORD*)&res) ? res : -1;
+
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+
+	return (res == 0);
 }
 
 // -------------------------------------------------------------------------

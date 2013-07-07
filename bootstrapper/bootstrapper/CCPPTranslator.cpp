@@ -367,10 +367,10 @@ std::string CCPPTranslator::EscapeCString(std::string val)
 // =================================================================
 std::string CCPPTranslator::Enclose(std::string val)
 {
-	if (val[0] == '(' && val[val.size() - 1] == ')')
-	{
-		return val;
-	}
+//	if (val[0] == '(' && val[val.size() - 1] == ')')
+//	{
+//		return val;
+//	}
 
 	return "(" + val + ")";
 }
@@ -1428,7 +1428,7 @@ void CCPPTranslator::TranslateSwitchStatement(CSwitchStatementASTNode* node)
 	}
 
 	// Emit the break label.
-	EmitSourceFile(internal_var_name_jump_statement + ":\n");
+	EmitSourceFile(internal_var_name_jump_statement + ": ;\n");
 
 	return;
 }
@@ -2138,7 +2138,7 @@ std::string	CCPPTranslator::TranslateNewExpression(CNewExpressionASTNode* node)
 
 		for (auto iter = node->ArgumentExpressions.begin(); iter != node->ArgumentExpressions.end(); iter++)
 		{
-			CExpressionASTNode* expr = dynamic_cast<CExpressionASTNode*>(*iter);
+			CExpressionBaseASTNode* expr = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 			if (iter != node->ArgumentExpressions.begin())
 			{
 				result += ", ";

@@ -382,7 +382,7 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 	}
 
 	// Create output directory.
-	m_buildDirectory = m_project_config.GetString("OUTPUT_DIR");
+	m_buildDirectory = m_project_config.GetString("BUILD_DIR");
 	if (CPathHelper::IsRelative(m_buildDirectory) == true)
 	{
 		m_buildDirectory = CPathHelper::CleanPath(CPathHelper::StripFilename(path) + "/" + m_buildDirectory);

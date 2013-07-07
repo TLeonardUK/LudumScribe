@@ -17,9 +17,15 @@ public class CDeclarationASTNode : CASTNode
 	
 	public CDeclarationASTNode(CASTNode parent, CToken token)
 	{
+		Identifier			= "";
+		MangledIdentifier	= "";
+		IsNative			= false;
 	}
 	
 	// Semanting.
-	public abstract void CheckAccess(CSemanter semanter, CASTNode referenceBy);
+	public virtual void CheckAccess(CSemanter semanter, CASTNode referenceBy)
+	{
+		semanter.GetContext().FatalError("Internal error. Invalid access validation.", Token);
+	}
 }
 

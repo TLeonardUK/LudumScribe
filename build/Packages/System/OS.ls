@@ -15,8 +15,10 @@ using native Native.{PLATFORM}.System.OS;
 // -----------------------------------------------------------------------------
 public static native("lsOS") class OS
 {
-	public static native("Exit") void Exit(int exitcode = 0);
-	public static native("GetEnvironmentString") string GetEnvironmentString();
+	public static native("GetTicks") 				int 	GetTicks			();
+	public static native("Exit") 					void 	Exit				(int exitcode = 0);
+	public static native("Execute") 				bool 	Execute				(string executable, string command_line);
+	public static native("GetEnvironmentString") 	string	GetEnvironmentString();
 
 	public static Map<string,string> GetEnvironmentMap()
 	{

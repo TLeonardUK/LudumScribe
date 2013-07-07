@@ -13,13 +13,27 @@ public class CTranslator
 {
 	protected CTranslationUnit m_context;
 	protected CSemanter m_semanter;
-	
+		
+	// =================================================================
+	//	Processes input and performs the actions requested.
+	// =================================================================
 	public bool Process(CTranslationUnit context)
 	{
+		m_context = context;
+		m_semanter = context.GetSemanter();
+
+		CPackageASTNode pkg = <CPackageASTNode>(m_context.GetASTRoot());
+		TranslatePackage(pkg);
+
+		return true;
 	}
-	
+		
+	// =================================================================
+	//	Returns the context being translated.
+	// =================================================================
 	public CTranslationUnit GetContext()
 	{
+		return m_context;
 	}
 
 	public abstract List<string> GetTranslatedFiles();

@@ -231,7 +231,7 @@ CASTNode* CForEachStatementASTNode::Semant(CSemanter* semanter)
 		CExpressionBaseASTNode* right_base = dynamic_cast<CExpressionBaseASTNode*>(value_assign->RightValue);
 		left_base->Semant(semanter);
 		right_base->Semant(semanter);
-		value_assign->RightValue = right_base->CastTo(semanter, left_base->ExpressionResultType, Token, true, true);
+		value_assign->RightValue = value_assign->ReplaceChild(value_assign->RightValue, right_base->CastTo(semanter, left_base->ExpressionResultType, Token, true, true));
 	}
 	else
 	{		

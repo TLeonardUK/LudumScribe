@@ -71,7 +71,7 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 		for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 		{
 			CExpressionBaseASTNode* subnode = dynamic_cast<CExpressionBaseASTNode*>(*iter);
-			subnode = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, new CIntDataType(Token), Token));
+			subnode->Parent->ReplaceChild(subnode, subnode = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, new CIntDataType(Token), Token)));
 			(*iter) = subnode;
 		}
 
@@ -130,8 +130,10 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 			CDataType* dataType = node->Arguments.at(index++)->Type;
 
 			CExpressionBaseASTNode* subnode = dynamic_cast<CExpressionBaseASTNode*>(*iter);
-			subnode = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, dataType, Token));
-			(*iter) = subnode;
+			CExpressionBaseASTNode* subnode_casted = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, dataType, Token));
+			this->ReplaceChild(subnode, subnode_casted);
+
+			(*iter) = subnode_casted;
 		}
 
 		ExpressionResultType = DataType;

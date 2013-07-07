@@ -184,7 +184,7 @@ public class CToken
 	// =================================================================
 	//	Mnemonic table.
 	// =================================================================
-	public TokenMnemonicTableEntry[] TOKEN_MNEMONIC_TABLE = 
+	public static TokenMnemonicTableEntry[] TOKEN_MNEMONIC_TABLE = 
 	{
 		new TokenMnemonicTableEntry("abstract",		TokenIdentifier.KEYWORD_ABSTRACT),
 		new TokenMnemonicTableEntry("event",		TokenIdentifier.KEYWORD_EVENT),

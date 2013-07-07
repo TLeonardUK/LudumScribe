@@ -12,14 +12,30 @@ public class CPackageASTNode : CASTNode
 {
 	public CPackageASTNode(CASTNode parent, CToken token)
 	{
+		this.CASTNode(parent, token);
 	}
 	
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		// Only semant once.
+		if (Semanted == true)
+		{
+			return this;
+		}
+		Semanted = true;
+
+		SemantChildren(semanter);
+		return this;
 	}
+	
 	public virtual override CASTNode Clone(CSemanter semanter)
 	{
+		CPackageASTNode clone = new CPackageASTNode(null, Token);
+
+		CloneChildren(semanter, clone);
+
+		return clone;
 	}	
 }
 

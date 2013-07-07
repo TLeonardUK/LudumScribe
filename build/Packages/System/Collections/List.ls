@@ -137,7 +137,7 @@ public class List<T> : IEnumerable
 		ListNode<T> node = m_head.Next;
 		while (node != m_head)
 		{
-			if (index == index)
+			if (i == index)
 			{
 				return node.Value;
 			}

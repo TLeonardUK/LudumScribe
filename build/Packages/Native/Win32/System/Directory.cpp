@@ -166,24 +166,25 @@ lsArray<lsString>* lsDirectory::ListInternal(lsString from, int types, lsString 
 	WIN32_FIND_DATAA	data;
 	HANDLE				handle;
 	
-	handle = FindFirstFileA((from + "*").ToCString(), &data);
+	handle = FindFirstFileA((from + "\\*").ToCString(), &data);
 	if (handle == INVALID_HANDLE_VALUE)
 	{
 		return NULL;
 	}
 
+
 	while (true)
 	{
-		lsString rel_path = from + "\\" + data.cFileName;
-		lsString full_path = base + "\\" + data.cFileName;
+		lsString full_path = from + "\\" + data.cFileName;
+		lsString rel_path = base + (base != "" ? "\\" : "") + data.cFileName;
 		
 		if (strcmp(data.cFileName, ".") != 0 && 
 			strcmp(data.cFileName, "..") != 0)
 		{
 			// Is it a directory?
-			if (Exists(rel_path) && (types & 1) != 0)
+			if (Exists(full_path) && (types & 1) != 0)
 			{
-				result->Resize(result->Length());
+				result->Resize(result->Length() + 1);
 				result->SetIndex(result->Length() - 1, rel_path);
 
 				if (recursive == true)
@@ -197,9 +198,9 @@ lsArray<lsString>* lsDirectory::ListInternal(lsString from, int types, lsString 
 			}
 			
 			// A file?
-			else if (lsFile::Exists(rel_path) && (types & 2) != 0)
+			else if (lsFile::Exists(full_path) && (types & 2) != 0)
 			{
-				result->Resize(result->Length());
+				result->Resize(result->Length() + 1);
 				result->SetIndex(result->Length() - 1, rel_path);			
 			}
 		}

@@ -314,7 +314,7 @@ bool CASTNode::AcceptContinueStatement()
 // =================================================================
 //	Finds the given type on the scope stack.
 // =================================================================
-CDataType* CASTNode::FindDataType(CSemanter* semanter, std::string identifier, std::vector<CDataType*> generic_arguments, bool ignore_access)
+CDataType* CASTNode::FindDataType(CSemanter* semanter, std::string identifier, std::vector<CDataType*> generic_arguments, bool ignore_access, bool do_not_semant)
 {
 	CDeclarationASTNode* decl = FindDataTypeDeclaration(semanter, identifier);
 
@@ -339,7 +339,10 @@ CDataType* CASTNode::FindDataType(CSemanter* semanter, std::string identifier, s
 			class_decl->CheckAccess(semanter, this);
 		}
 		class_decl = class_decl->GenerateClassInstance(semanter, this, generic_arguments);
-		class_decl->Semant(semanter);
+		if (do_not_semant == false)
+		{
+			class_decl->Semant(semanter);
+		}
 		return class_decl->ObjectDataType;
 	}
 

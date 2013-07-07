@@ -67,3 +67,45 @@ bool lsFile::Exists(lsString path)
 	}
 	return true;
 }
+
+lsString lsFile::LoadText(lsString path)
+{
+	FILE* file = fopen(path.ToCString(), "r");
+	if (file == NULL)
+	{
+		throw new lsOperationFailedException();
+		return "";
+	}
+
+	lsString output = "";
+	while (!feof(file))
+	{
+		int c = fgetc(file);
+		if (c != EOF)
+		{
+			output += (char)c;
+		}
+	}
+
+	fclose(file);
+	return output;
+}
+
+void lsFile::SaveText(lsString path, lsString value)
+{
+	FILE* file = fopen(path.ToCString(), "w");
+	if (file == NULL)
+	{
+		throw new lsOperationFailedException();
+		return;
+	}
+
+	unsigned int counter = 0;
+	while (counter < value.Length())
+	{
+		counter += fwrite(value.ToCString() + counter, 1, value.Length() - counter, file);
+	}
+
+	fclose(file);
+	return;
+}

@@ -35,6 +35,13 @@ bool CMSBuildBuilder::Build()
 
 	std::vector<std::string> files = m_context->GetTranslatedFiles();
 
+	std::string output_dir = project_config.GetString("OUTPUT_DIR");
+	if (CPathHelper::IsRelative(output_dir))
+	{
+		output_dir = build_dir + "/" + output_dir;
+	}
+	output_dir = CPathHelper::CleanPath(output_dir);
+
 	// Gather all source files in the build folder.
 	std::vector<std::string> source_files;// = CPathHelper::ListRecursiveFiles(build_dir, "cpp");
 	std::vector<std::string> header_files;// = CPathHelper::ListRecursiveFiles(build_dir, "hpp");
@@ -222,7 +229,7 @@ bool CMSBuildBuilder::Build()
 		std::string("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" + config_name + "|Win32'\">\n") +
 					"    <LinkIncremental>false</LinkIncremental>\n" +
 					"    <IncludePath>$(ProjectDir)Source;$(VCInstallDir)include;$(VCInstallDir)atlmfc\\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\\include;" + include_path + ";$(IncludePath)</IncludePath>" + 
-					"    <OutDir>$(SolutionDir)\\</OutDir>" + 
+					"    <OutDir>" + output_dir + "</OutDir>" + 
 					"  </PropertyGroup>\n";
 
 	if (config_name == "Debug")
@@ -241,7 +248,7 @@ bool CMSBuildBuilder::Build()
 						"	   <AdditionalLibraryDirectories>" + library_paths + ";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>" + 
 						"      <SubSystem>Console</SubSystem>\n" +
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
-						"      <OutputFile>$(SolutionDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
+						"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
 						"    </Link>\n" +
 						"  </ItemDefinitionGroup>\n";
 	}
@@ -265,6 +272,7 @@ bool CMSBuildBuilder::Build()
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
 						"      <EnableCOMDATFolding>true</EnableCOMDATFolding>\n" +
 						"      <OptimizeReferences>true</OptimizeReferences>\n" +
+						"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
 						"    </Link>\n" +
 						"  </ItemDefinitionGroup>\n";
 	}

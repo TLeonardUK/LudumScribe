@@ -26,6 +26,7 @@ CIdentifierDataType::CIdentifierDataType(CToken& token, std::string identifier, 
 {
 	Identifier = identifier;
 	GenericTypes = genericTypes;
+	m_do_not_semant_dt = false;
 }
 
 // =================================================================
@@ -33,6 +34,7 @@ CIdentifierDataType::CIdentifierDataType(CToken& token, std::string identifier, 
 // =================================================================
 bool CIdentifierDataType::IsEqualTo(CSemanter* semanter, CDataType* type)
 {
+	semanter->GetContext()->FatalError("CIdentifierDataType::IsEqualTo invoked! This should have already been resolved!", Token);
 	return false;
 }
 
@@ -88,34 +90,24 @@ CDataType* CIdentifierDataType::Semant(CSemanter* semanter, CASTNode* node)
 		generic_arguments.push_back((*iter)->Semant(semanter, node));
 	}
 
-
-	CDataType* type = node->FindDataType(semanter, Identifier, generic_arguments);
+	CDataType* type = node->FindDataType(semanter, Identifier, generic_arguments, false, m_do_not_semant_dt);
 	if (type == NULL)
 	{
-
-		// If we are a class node try finding data type in our body as we may be using alias's
-//		CClassASTNode* classNode = dynamic_cast<CClassASTNode*>(node);
-//		if (classNode != NULL)
-//		{
-//			CDataType* type2 = classNode->Body->FindDataType(semanter, Identifier, generic_arguments);
-//			if (type2 != NULL)
-//			{
-//				return type2;
-//			}
-//		}
-
 		semanter->GetContext()->FatalError(CStringHelper::FormatString("Unknown data type '%s'.", ToString().c_str()), Token);
 	}
-	
+
 	return type->Semant(semanter, node);//type;
 }
 
 // =================================================================
 //	Semants this data type and returns a class reference.
 // =================================================================
-CClassASTNode* CIdentifierDataType::SemantAsClass(CSemanter* semanter, CASTNode* node)
+CClassASTNode* CIdentifierDataType::SemantAsClass(CSemanter* semanter, CASTNode* node, bool do_not_semant)
 {
+	m_do_not_semant_dt = do_not_semant;
 	CObjectDataType* type = dynamic_cast<CObjectDataType*>(Semant(semanter, node));
+	m_do_not_semant_dt = false;
+
 	if (type != NULL)
 	{
 		return type->GetClass(semanter);

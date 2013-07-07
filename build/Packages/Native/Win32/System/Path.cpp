@@ -101,27 +101,40 @@ lsString lsPath::GetAbsolute(lsString path)
 	// Strip out all .. and . references.
 	lsArray<lsString>* crackedPath = Crack(path);
 	lsString		   finalPath   = "";
+	int 			   ignoreCounter = 0;
 
 	for (int i = crackedPath->Length() - 1; i >= 0; i--)
 	{
 		lsString part = crackedPath->GetIndex(i);
 		if (part == "..")
 		{
-			i--;
+			ignoreCounter++;
 		}
 		else if (part == ".")
 		{
+			if (ignoreCounter > 0)
+			{			
+				ignoreCounter--;
+			}
 			continue;
 		}
 		else
 		{
-			if (finalPath == "")
+			if (ignoreCounter <= 0)
 			{
-				finalPath = part;
+				if (finalPath == "")
+				{
+					finalPath = part;
+				}
+				else
+				{
+					finalPath = part + "/" + finalPath;
+				}
 			}
-			else
+
+			if (ignoreCounter > 0)
 			{
-				finalPath = part + "/" + finalPath;
+				ignoreCounter--;
 			}
 		}
 	}
@@ -131,7 +144,7 @@ lsString lsPath::GetAbsolute(lsString path)
 
 lsString lsPath::StripDirectory(lsString path)
 {
-	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, "/", "\\"), 0);
+	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, lsString("/"), lsString("\\")), -1);
 	if (offset < 0)
 	{
 		return path;
@@ -144,7 +157,7 @@ lsString lsPath::StripDirectory(lsString path)
 
 lsString lsPath::StripFilename(lsString path)
 {
-	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, "/", "\\"), 0);
+	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, lsString("/"), lsString("\\")), -1);
 	if (offset < 0)
 	{
 		return path;
@@ -157,7 +170,7 @@ lsString lsPath::StripFilename(lsString path)
 
 lsString lsPath::StripExtension(lsString path)
 {
-	int offset = lsString_LastIndexOf(path, ".", 0);
+	int offset = lsString_LastIndexOf(path, ".", -1);
 	if (offset < 0)
 	{
 		return path;
@@ -170,7 +183,7 @@ lsString lsPath::StripExtension(lsString path)
 
 lsString lsPath::StripVolume(lsString path)
 {
-	int offset = lsString_IndexOf(path, ":", 0);
+	int offset = lsString_IndexOf(path, ":", -1);
 	if (offset < 0)
 	{
 		return path;
@@ -207,7 +220,7 @@ lsString lsPath::ChangeVolume(lsString path, lsString newFragment)
 
 lsString lsPath::ExtractDirectory(lsString path)
 {
-	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, "/", "\\"), 0);
+	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, lsString("/"), lsString("\\")), -1);
 	if (offset < 0)
 	{
 		return "";
@@ -220,7 +233,7 @@ lsString lsPath::ExtractDirectory(lsString path)
 
 lsString lsPath::ExtractFilename(lsString path)
 {
-	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, "/", "\\"), 0);
+	int offset = lsString_LastIndexOfAny(path, lsConstructArray<lsString>(2, lsString("/"), lsString("\\")), -1);
 	if (offset < 0)
 	{
 		return path;
@@ -233,7 +246,7 @@ lsString lsPath::ExtractFilename(lsString path)
 
 lsString lsPath::ExtractExtension(lsString path)
 {
-	int offset = lsString_LastIndexOf(path, ".", 0);
+	int offset = lsString_LastIndexOf(path, ".", -1);
 	if (offset < 0)
 	{
 		return "";
@@ -246,7 +259,7 @@ lsString lsPath::ExtractExtension(lsString path)
 
 lsString lsPath::ExtractVolume(lsString path)
 {
-	int offset = lsString_IndexOf(path, ":", 0);
+	int offset = lsString_IndexOf(path, ":", -1);
 	if (offset < 0)
 	{
 		return "";

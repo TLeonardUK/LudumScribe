@@ -122,7 +122,7 @@ public:
 	//	Properties.
 	// -------------------------------------------------------------------------
 	int Length() const;
-	char GetIndex(int index) const;
+	lsString GetIndex(int index) const;
 	lsString GetSlice(int start_pos) const;
 	lsString GetSlice(int start_pos, int end_pos) const;
 	
@@ -132,7 +132,10 @@ public:
 	const char* ToCString() const;
 	float ToFloat() const;
 	int ToInt() const;
+	int ToChar() const;
+	int HexToInt() const;
 
+	static lsString FromIntToHex(int value);
 	static lsString FromChar(int chr);
 	static lsString FromChars(lsArray<int>* chr);
 	

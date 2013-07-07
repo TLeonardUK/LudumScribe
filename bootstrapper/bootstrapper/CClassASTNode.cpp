@@ -176,7 +176,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 	// Only semant once.
 	if (Semanted == true)
 	{
-		m_semanting = false;
+		//m_semanting = false;
 		return this;
 	}
 	Semanted = true;
@@ -220,7 +220,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 		for (auto iter = InheritedTypes.begin(); iter != InheritedTypes.end(); iter++)
 		{
 			CIdentifierDataType* type = *iter;
-			CClassASTNode* node = type->SemantAsClass(semanter, this);
+			CClassASTNode* node = type->SemantAsClass(semanter, this, true);
 
 			if (type->Identifier == Identifier)
 			{
@@ -272,6 +272,17 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 				semanter->GetContext()->FatalError("Static classes cannot inherit from other classes.", Token);
 			}
 		}
+		
+		// Semant inherited classes.
+		if (SuperClass != NULL)
+		{
+			SuperClass->Semant(semanter);
+		}
+		for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+		{
+			CClassASTNode* interfaceClass = *iter;
+			interfaceClass->Semant(semanter);
+		}
 	
 		// Look for interface in parent classes.
 		if (SuperClass != NULL)
@@ -287,31 +298,13 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 		}
 
 		// Remove semanting flag.
-		m_semanting = false;	
-	
+		m_semanting = false;		
 	}
 
 	// If we are generic we only semant children of instanced classes.
 	if (IsGeneric		  == false ||
 		GenericInstanceOf != NULL)
 	{
-		// If no argument-less constructor has been provided, lets create a default one.
-		if (IsStatic == false && IsAbstract == false && IsInterface == false && IsNative == false && IsEnum == false)
-		{
-			CClassMemberASTNode* defaultCtor = FindClassMethod(semanter, Identifier, std::vector<CDataType*>(), false);
-			if (defaultCtor == NULL)
-			{
-				CClassMemberASTNode* member = new CClassMemberASTNode(NULL, Token);
-				member->MemberType			= MemberType::Method;
-				member->Identifier			= Identifier;
-				member->AccessLevel			= AccessLevel::PUBLIC;
-				member->Body				= new CMethodBodyASTNode(member, Token);
-				member->IsConstructor		= true;
-				member->ReturnType			= new CVoidDataType(Token);
-				Body->AddChild(member);
-			}
-		}
-	
 		// Create static class constructor.
 		if (IsInterface == false)
 		{
@@ -351,6 +344,24 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 					InstanceConstructor				= member; 
 				}
 			}
+
+			// If no argument-less constructor has been provided, lets create a default one.
+			if (IsStatic == false && IsAbstract == false && IsInterface == false && IsNative == false && IsEnum == false)
+			{
+				CClassMemberASTNode* defaultCtor = FindClassMethod(semanter, Identifier, std::vector<CDataType*>(), false);
+				if (defaultCtor == NULL)
+				{
+					CClassMemberASTNode* member = new CClassMemberASTNode(NULL, Token);
+					member->MemberType			= MemberType::Method;
+					member->Identifier			= Identifier;
+					member->AccessLevel			= AccessLevel::PUBLIC;
+					member->Body				= new CMethodBodyASTNode(member, Token);
+					member->IsConstructor		= true;
+					member->ReturnType			= new CVoidDataType(Token);
+					Body->AddChild(member);
+				}
+			}
+	
 		}
 		
 		// Semant all members.
@@ -768,6 +779,7 @@ bool CClassASTNode::InheritsFromClass(CSemanter* semanter, CClassASTNode* node)
 		return true;
 	}
 
+	Semant(semanter);
 	node->Semant(semanter);
 
 	CClassASTNode* check = this;

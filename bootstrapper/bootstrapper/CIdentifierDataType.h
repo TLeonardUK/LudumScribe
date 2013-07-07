@@ -28,6 +28,7 @@ class CASTNode;
 class CIdentifierDataType : public CDataType
 {
 protected:
+	bool m_do_not_semant_dt;
 
 public:
 	std::string				Identifier;
@@ -41,7 +42,7 @@ public:
 	virtual std::string		ToString		();
 	
 	virtual CDataType*		Semant			(CSemanter* semanter, CASTNode* node);
-	virtual CClassASTNode*	SemantAsClass	(CSemanter* semanter, CASTNode* node);
+	virtual CClassASTNode*	SemantAsClass	(CSemanter* semanter, CASTNode* node, bool do_not_semant = false);
 
 };
 

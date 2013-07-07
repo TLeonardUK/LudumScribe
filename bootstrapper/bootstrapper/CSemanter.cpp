@@ -166,15 +166,18 @@ CDataType* CSemanter::BalanceDataTypes(CDataType* lvalue, CDataType* rvalue)
 	{
 		return rvalue;	
 	}
-	
+
+//	LVALUE = CASTNode
+//	RVALUE = CAliasASTNode
+
 	// Check which values we can cast too.
 	if (rvalue->CanCastTo(this, lvalue))
 	{
-		return rvalue;
+		return lvalue;
 	}
 	if (lvalue->CanCastTo(this, rvalue))
 	{
-		return lvalue;
+		return rvalue;
 	}
 
 	// o_o

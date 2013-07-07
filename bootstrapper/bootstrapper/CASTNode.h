@@ -87,7 +87,7 @@ public:
 	virtual CAliasASTNode*			FindAlias							(CSemanter* semanter, std::string identifier, CASTNode* ignoreNode=NULL);
 	virtual CDeclarationASTNode*	FindDeclaration						(CSemanter* semanter, std::string identifier, CASTNode* ignoreNode=NULL);
 	virtual CDeclarationASTNode*	FindDataTypeDeclaration				(CSemanter* semanter, std::string identifier, CASTNode* ignoreNode=NULL);
-	virtual CDataType*				FindDataType						(CSemanter* semanter, std::string identifier, std::vector<CDataType*> generic_arguments, bool ignore_access = false);
+	virtual CDataType*				FindDataType						(CSemanter* semanter, std::string identifier, std::vector<CDataType*> generic_arguments, bool ignore_access = false, bool do_not_semant = false);
 	virtual CPackageASTNode* 		FindNodePackageScope				(CSemanter* semanter);
 	virtual CClassASTNode*	 		FindClassScope						(CSemanter* semanter);
 	virtual CClassMemberASTNode*	FindClassMethodScope				(CSemanter* semanter);

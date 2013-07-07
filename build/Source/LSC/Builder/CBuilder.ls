@@ -14,15 +14,23 @@ public class CBuilder
 	protected CTranslationUnit m_context;
 	
 	protected abstract bool Build();
-	
+		
+	// =================================================================
+	//	Processes input and performs the actions requested.
+	// =================================================================
 	public bool Process(CTranslationUnit context)
 	{
+		m_context = context;
+		return Build();
 	}
-	
+		
+	// =================================================================
+	//	Returns the context being translated.
+	// =================================================================
 	public CTranslationUnit GetContext()
 	{
+		return m_context;
 	}
-	
 }
 
 

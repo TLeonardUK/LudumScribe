@@ -1640,7 +1640,8 @@ CASTNode* CParser::ParseMethodBodyStatement()
 		// Empty Statement.
 		case TokenIdentifier::SEMICOLON:
 			{
-				return NULL;
+				// Return empty block.
+				return new CBlockStatementASTNode(CurrentScope(), CurrentToken());;
 			}
 
 		// Block Statement.
@@ -2358,7 +2359,7 @@ CExpressionASTNode* CParser::ParseExpr(bool useNullScope, bool noSequencePoints)
 {
 	CASTNode* lvalue = 
 		noSequencePoints == true ?
-		ParseExprTernary() :
+		ParseExprAssignment() :
 		ParseExprComma();
 
 	if (lvalue != NULL)
@@ -2383,7 +2384,7 @@ CExpressionASTNode* CParser::ParseConstExpr(bool useNullScope, bool noSequencePo
 {
 	CASTNode* lvalue = 
 		noSequencePoints == true ?
-		ParseExprTernary() :
+		ParseExprAssignment() :
 		ParseExprComma();
 
 	if (lvalue != NULL)
@@ -2408,7 +2409,7 @@ CExpressionASTNode* CParser::ParseConstExpr(bool useNullScope, bool noSequencePo
 // =================================================================	
 CASTNode* CParser::ParseExprComma()
 {
-	CASTNode* lvalue = ParseExprTernary();
+	CASTNode* lvalue = ParseExprAssignment();
 
 	while (true)
 	{
@@ -2421,7 +2422,7 @@ CASTNode* CParser::ParseExprComma()
 		NextToken();
 
 		// Create and parse operator
-		CASTNode* rvalue = ParseExprTernary();
+		CASTNode* rvalue = ParseExprAssignment();
 
 		// Create operator node.
 		CCommaExpressionASTNode* node = new CCommaExpressionASTNode(NULL, op);
@@ -2434,40 +2435,6 @@ CASTNode* CParser::ParseExprComma()
 	}
 
 	return lvalue;
-}
-
-// =================================================================
-//	Parses a ternary expression.
-//		expr ? expr : expr
-// =================================================================	
-CASTNode* CParser::ParseExprTernary()
-{	
-	CASTNode* lvalue = ParseExprAssignment();
-
-	// Operator next?
-	CToken& op = LookAheadToken();
-	if (op.Type != TokenIdentifier::OP_TERNARY)
-	{
-		return lvalue;
-	}
-	NextToken();
-
-	// Create and parse operator
-	CASTNode* rvalue = ParseExprAssignment();
-	ExpectToken(TokenIdentifier::COLON);
-	CASTNode* rrvalue = ParseExprAssignment();
-
-	// Create operator node.
-	CTernaryExpressionASTNode* node = new CTernaryExpressionASTNode(NULL, op);
-	node->Expression	= lvalue;
-	node->LeftValue		= rvalue;
-	node->RightValue	= rrvalue;
-
-	node->AddChild(lvalue);
-	node->AddChild(rvalue);
-	node->AddChild(rrvalue);
-
-	return node;
 }
 
 // =================================================================
@@ -2487,7 +2454,7 @@ CASTNode* CParser::ParseExprTernary()
 // =================================================================	
 CASTNode* CParser::ParseExprAssignment()
 {
-	CASTNode* lvalue = ParseExprIsAs();
+	CASTNode* lvalue = ParseExprTernary();
 
 	// Operator next?
 	CToken& op = LookAheadToken();
@@ -2508,7 +2475,7 @@ CASTNode* CParser::ParseExprAssignment()
 	NextToken();
 
 	// Create and parse operator
-	CASTNode* rvalue = ParseExprIsAs();
+	CASTNode* rvalue = ParseExprTernary();
 
 	// Create operator node.
 	CAssignmentExpressionASTNode* node = new CAssignmentExpressionASTNode(NULL, op);
@@ -2521,13 +2488,83 @@ CASTNode* CParser::ParseExprAssignment()
 }
 
 // =================================================================
+//	Parses a ternary expression.
+//		expr ? expr : expr
+// =================================================================	
+CASTNode* CParser::ParseExprTernary()
+{	
+	CASTNode* lvalue = ParseExprLogical();
+
+	// Operator next?
+	CToken& op = LookAheadToken();
+	if (op.Type != TokenIdentifier::OP_TERNARY)
+	{
+		return lvalue;
+	}
+	NextToken();
+
+	// Create and parse operator
+	CASTNode* rvalue = ParseExpr(true);
+	ExpectToken(TokenIdentifier::COLON);
+	CASTNode* rrvalue = ParseExpr(true);
+
+	// Create operator node.
+	CTernaryExpressionASTNode* node = new CTernaryExpressionASTNode(NULL, op);
+	node->Expression	= lvalue;
+	node->LeftValue		= rvalue;
+	node->RightValue	= rrvalue;
+
+	node->AddChild(lvalue);
+	node->AddChild(rvalue);
+	node->AddChild(rrvalue);
+
+	return node;
+}
+
+// =================================================================
+//	Parses a logical expression.
+//		&&
+//		||
+// =================================================================	
+CASTNode* CParser::ParseExprLogical()
+{
+	CASTNode* lvalue = ParseExprIsAs();
+
+	while (true)
+	{
+		// Operator next?
+		CToken& op = LookAheadToken();
+		if (op.Type != TokenIdentifier::OP_LOGICAL_AND &&
+			op.Type != TokenIdentifier::OP_LOGICAL_OR)
+		{
+			return lvalue;
+		}
+		NextToken();
+
+		// Create and parse operator
+		CASTNode* rvalue = ParseExprIsAs();
+
+		// Create operator node.
+		CLogicalExpressionASTNode* node = new CLogicalExpressionASTNode(NULL, op);
+		node->LeftValue = lvalue;
+		node->RightValue = rvalue;
+		node->AddChild(lvalue);
+		node->AddChild(rvalue);
+
+		lvalue = node;
+	}
+
+	return lvalue;
+}
+
+// =================================================================
 //	Parses an is/as expression.
 //		x is y
 //		y as x
 // =================================================================	
 CASTNode* CParser::ParseExprIsAs()
 {
-	CASTNode* lvalue = ParseExprLogical();
+	CASTNode* lvalue = ParseExprBitwise();
 
 	// Operator next?
 	CToken& op = LookAheadToken();
@@ -2548,42 +2585,6 @@ CASTNode* CParser::ParseExprIsAs()
 	node->AddChild(lvalue);
 
 	return node;
-}
-
-// =================================================================
-//	Parses a logical expression.
-//		&&
-//		||
-// =================================================================	
-CASTNode* CParser::ParseExprLogical()
-{
-	CASTNode* lvalue = ParseExprBitwise();
-
-	while (true)
-	{
-		// Operator next?
-		CToken& op = LookAheadToken();
-		if (op.Type != TokenIdentifier::OP_LOGICAL_AND &&
-			op.Type != TokenIdentifier::OP_LOGICAL_OR)
-		{
-			return lvalue;
-		}
-		NextToken();
-
-		// Create and parse operator
-		CASTNode* rvalue = ParseExprBitwise();
-
-		// Create operator node.
-		CLogicalExpressionASTNode* node = new CLogicalExpressionASTNode(NULL, op);
-		node->LeftValue = lvalue;
-		node->RightValue = rvalue;
-		node->AddChild(lvalue);
-		node->AddChild(rvalue);
-
-		lvalue = node;
-	}
-
-	return lvalue;
 }
 
 // =================================================================
@@ -2816,7 +2817,7 @@ CASTNode* CParser::ParseExprTypeCast()
 		ExpectToken(TokenIdentifier::OP_GREATER);
 
 		// Read rvalue.	
-		CASTNode* rvalue = ParseExprComma();
+		CASTNode* rvalue = ParseExprPostfix();
 
 		// Create operator node.
 		CCastExpressionASTNode* node = new CCastExpressionASTNode(NULL, op, true);

@@ -9,6 +9,14 @@
 
 #define _CRT_SECURE_NO_WARNINGS // Gtfo microsoft.
 
+#include <stdio.h>
+#include <string>
+#include <assert.h>
+#include <algorithm>
+#include <stdarg.h>
+#include <sstream>
+#include <map>
+
 #include "Packages/Native/Win32/System/GC/include/gc.h"
 
 #include "Packages/Native/Win32/Compiler/Support/Types.hpp"
@@ -161,7 +169,7 @@ int lsString::Length() const
 	return m_buffer->Length;
 }
 
-char lsString::GetIndex(int index) const
+lsString lsString::GetIndex(int index) const
 {
 #ifdef _DEBUG
 	if (index < 0 || index >= m_buffer->Length)
@@ -169,7 +177,7 @@ char lsString::GetIndex(int index) const
 		throw lsOutOfBoundsException();		
 	}
 #endif
-	return m_buffer->Buffer[index];
+	return lsString(m_buffer->Buffer[index]);
 }
 
 lsString lsString::GetSlice(int start_pos) const
@@ -230,9 +238,26 @@ int lsString::ToInt() const
 	return atoi(ToCString());
 }
 
+int lsString::HexToInt() const
+{
+	return strtol(ToCString(), NULL, 16);
+}
+
+int lsString::ToChar() const
+{
+	return Length() <= 0 ? 0 : m_buffer->Buffer[0];
+}
+
 lsString lsString::FromChar(int chr)
 {
 	return lsString((char)chr);
+}
+
+lsString lsString::FromIntToHex(int chr)
+{
+	std::stringstream sstream;
+	sstream << std::hex << chr;
+	return lsString(sstream.str().c_str());
 }
 
 lsString lsString::FromChars(lsArray<int>* chr)
@@ -297,7 +322,7 @@ lsString& lsString::operator +=(const lsString& other)
 
 char lsString::operator [](int index) const
 {
-	return GetIndex(index);
+	return GetIndex(index).ToChar();
 }
 
 bool lsString::operator ==(const lsString& other) const

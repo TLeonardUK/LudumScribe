@@ -434,6 +434,11 @@ void CClassMemberASTNode::AddInstanceConstructorPrefix(CSemanter* semanter)
 {
 	CClassASTNode* classScope = FindClassScope(semanter);
 
+	//if (classScope->IsEnum == false && classScope->IsNative == false && classScope->IsGeneric == false && classScope->IsStatic == false && classScope->InstanceConstructor == NULL)
+	//{
+	//	printf("WTF!");
+	//}
+
 	// Call instance constructor.
 	if (classScope->InstanceConstructor != NULL)
 	{	

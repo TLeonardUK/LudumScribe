@@ -12,6 +12,7 @@ public class CNumericDataType : CDataType
 {
 	public CNumericDataType(CToken token)
 	{
+		Token = token;
 	}
 }
 
