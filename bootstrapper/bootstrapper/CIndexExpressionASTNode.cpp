@@ -64,6 +64,11 @@ CASTNode* CIndexExpressionASTNode::Semant(CSemanter* semanter)
 	{
 		semanter->GetContext()->FatalError("Data type does not support indexing, no GetIndex method defined.", Token);
 	}
+	// TODO: Remove this restriction.
+	else if (memberNode->MangledIdentifier != "GetIndex")
+	{
+		semanter->GetContext()->FatalError("Indexing using the GetIndex method is only supported on native members.", Token);
+	}
 	else
 	{
 		ExpressionResultType = memberNode->ReturnType;

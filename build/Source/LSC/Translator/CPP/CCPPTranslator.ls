@@ -1750,6 +1750,7 @@ public class CCPPTranslator : CTranslator
 
 		switch (node.Token.Type)
 		{	
+			case TokenIdentifier.OP_NOT:			return Enclose("~" + left_base.TranslateExpr(this));		
 			case TokenIdentifier.OP_LOGICAL_NOT:	return Enclose("!" + left_base.TranslateExpr(this));
 			case TokenIdentifier.OP_ADD:			return Enclose("+" + left_base.TranslateExpr(this));
 			case TokenIdentifier.OP_SUB:			return Enclose("-" + left_base.TranslateExpr(this));

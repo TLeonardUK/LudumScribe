@@ -17,6 +17,8 @@
 
 #include "CExpressionBaseASTNode.h"
 
+class CClassMemberASTNode;
+
 // =================================================================
 //	Stores information on an expression.
 // =================================================================

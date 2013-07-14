@@ -15,7 +15,7 @@ public class CPreprocessor
 	private string 				m_result;
 	private List<CDefine> 		m_defines		= new List<CDefine>();
 	private CTranslationUnit 	m_context;
-	private CToken 				m_lineToken;
+	private CToken 				m_lineToken		= new CToken();
 	private string 				m_currentLine;
 	private bool 				m_accept_input;	
 
@@ -24,7 +24,7 @@ public class CPreprocessor
 	// =================================================================
 	private List<string> SplitLine(string line)
 	{
-		List<string> result;
+		List<string> result = new List<string>();
 
 		// Find starting hash.
 		string starting_int		   = '\0';

@@ -13,7 +13,7 @@ public class CIdentifierDataType : CDataType
 	private bool m_do_not_semant_dt;
 
 	public string Identifier;
-	public List<CDataType> GenericTypes;
+	public List<CDataType> GenericTypes = new List<CDataType>();
 	
 	public CIdentifierDataType(CToken token, string identifier, List<CDataType> genericTypes)
 	{
@@ -61,7 +61,7 @@ public class CIdentifierDataType : CDataType
 	
 	public virtual override CDataType Semant(CSemanter semanter, CASTNode node)
 	{
-		List<CDataType> generic_arguments;
+		List<CDataType> generic_arguments = new List<CDataType>();
 
 		foreach (CDataType iter in GenericTypes)
 		{

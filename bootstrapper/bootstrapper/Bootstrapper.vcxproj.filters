@@ -455,9 +455,6 @@
     <ClInclude Include="CCatchStatementASTNode.h">
       <Filter>Header Files\Parser\Nodes\Statements</Filter>
     </ClInclude>
-    <ClInclude Include="CFinallyStatementASTNode.h">
-      <Filter>Header Files\Parser\Nodes\Statements</Filter>
-    </ClInclude>
     <ClInclude Include="CSemanter.h">
       <Filter>Header Files\Semanter</Filter>
     </ClInclude>

@@ -69,6 +69,9 @@ public:
 	CASTNode* ReplaceChild	(CASTNode* replace, CASTNode* with);
 
 	// Semantic analysis.
+	//void					PrepareChildren		(CSemanter* semanter);
+	//virtual CASTNode*		Prepare				(CSemanter* semanter);
+
 	void					SemantChildren		(CSemanter* semanter);
 	virtual CASTNode*		Semant				(CSemanter* semanter);
 

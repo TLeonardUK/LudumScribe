@@ -132,6 +132,37 @@ CASTNode* CASTNode::ReplaceChild(CASTNode* replace, CASTNode* with)
 	return with;
 }
 
+/*
+// =================================================================
+//	Performs semantic analysis on this node.
+// =================================================================
+CASTNode* CASTNode::Prepare(CSemanter* semanter)
+{
+	PrepareChildren(semanter);
+	return NULL;
+}
+
+// =================================================================
+//	Performs semantic analysis on this node.
+// =================================================================
+void CASTNode::PrepareChildren(CSemanter* semanter)
+{
+	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	{
+		(*iter)->Prepare(semanter);
+	}
+}
+*/
+
+// =================================================================
+//	Performs semantic analysis on this node.
+// =================================================================
+CASTNode* CASTNode::Semant(CSemanter* semanter)
+{
+	semanter->GetContext()->FatalError("AST node cannot be semanted.", Token);
+	return NULL;
+}
+
 // =================================================================
 //	Performs semantic analysis on this node.
 // =================================================================
@@ -169,15 +200,6 @@ void CASTNode::TranslateChildren(CTranslator* translator)
 CExpressionBaseASTNode* CASTNode::SemantAsExpression(CSemanter* semanter)
 {
 	return dynamic_cast<CExpressionBaseASTNode*>(Semant(semanter));
-}
-
-// =================================================================
-//	Performs semantic analysis on this node.
-// =================================================================
-CASTNode* CASTNode::Semant(CSemanter* semanter)
-{
-	semanter->GetContext()->FatalError("AST node cannot be semanted.", Token);
-	return NULL;
 }
 
 // =================================================================
@@ -341,7 +363,7 @@ CDataType* CASTNode::FindDataType(CSemanter* semanter, std::string identifier, s
 		class_decl = class_decl->GenerateClassInstance(semanter, this, generic_arguments);
 		if (do_not_semant == false)
 		{
-			class_decl->Semant(semanter);
+		//	class_decl->Semant(semanter);
 		}
 		return class_decl->ObjectDataType;
 	}

@@ -131,7 +131,7 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
-	public string PadRight(int length, string padding = "")
+	public string PadRight(int length, string padding = " ")
 	{	
 		string result = this;
 		int offset = 0;
@@ -145,7 +145,7 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
-	public string PadLeft(int length, string padding = "")
+	public string PadLeft(int length, string padding = " ")
 	{	
 		string result = this;
 		int offset = 0;
@@ -315,6 +315,14 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 		return result;		
 	}
 	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public string Replace(int start, int length, string mid)
+	{
+		return this[0:start] + mid + this[start+length:];
+	}	
+		
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------

@@ -125,6 +125,14 @@ public class CTranslationUnit
 	{
 		return m_entry_point;
 	}	
+	
+	// =================================================================
+	//	Sets entry point member.
+	// =================================================================
+	public void SetEntryPoint(CClassMemberASTNode member)
+	{
+		m_entry_point = member;
+	}	
 
 	// =================================================================
 	//	Get file-path for this translation unit.
@@ -514,7 +522,7 @@ public class CTranslationUnit
 			// Read source from disk.
 			try
 			{
-				m_source == File.LoadText(m_file_path);
+				m_source = File.LoadText(m_file_path);
 			}
 			catch (OperationFailedException ex)
 			{
@@ -569,7 +577,7 @@ public class CTranslationUnit
 				// If we are the main package, compile and import all packages.
 				else
 				{			
-					List<string> imported_files;
+					List<string> imported_files = new List<string>();
 					while (imported_files.Count() != m_using_files.Count())
 					{			
 						foreach (string iter in m_using_files)
@@ -659,7 +667,7 @@ public class CTranslationUnit
 			// Read source from disk.
 			try
 			{
-				m_source == File.LoadText(m_file_path);
+				m_source = File.LoadText(m_file_path);
 			}
 			catch (OperationFailedException ex)
 			{

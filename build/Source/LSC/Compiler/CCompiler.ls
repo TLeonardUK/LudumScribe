@@ -45,7 +45,7 @@ public class CDefine
 // =================================================================
 public class CConfigState
 {
-	List<CDefine> 	Defines;
+	List<CDefine> 	Defines = new List<CDefine>();
 	string 			ConfigPath;
 
 	public CConfigState()

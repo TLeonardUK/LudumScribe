@@ -324,19 +324,19 @@ public class CLexer
 				}		
 
 				// Hex digit.
-				else if (((next_char >= 'A' && next_char <= 'F') || (next_char >= 'a' && next_char <= 'f')) && isHex == true)
+				else if (((next_char.ToChar() >= 'A'.ToChar() && next_char.ToChar() <= 'F'.ToChar()) || (next_char.ToChar() >= 'a'.ToChar() && next_char.ToChar() <= 'f'.ToChar())) && isHex == true)
 				{
 					numberCount++;
 				}
 
 				// Standard digit.
-				else if (next_char >= '0' && next_char <= '9')
+				else if (next_char.ToChar() >= '0'.ToChar() && next_char.ToChar() <= '9'.ToChar())
 				{
 					numberCount++;
 				}
 				
 				// Character! Baaaad
-				else if ((next_char >= 'A' && next_char <= 'Z') || (next_char >= 'a' && next_char <= 'z'))
+				else if ((next_char.ToChar() >= 'A'.ToChar() && next_char.ToChar() <= 'Z'.ToChar()) || (next_char.ToChar() >= 'a'.ToChar() && next_char.ToChar() <= 'z'.ToChar()))
 				{
 					m_context.FatalError("Identifiers cannot start with numbers.", m_file_path, m_token_row, m_token_column);
 					return false;
@@ -367,8 +367,8 @@ public class CLexer
 		// ====================================================================================
 		// Identifier/Keyword
 		// ====================================================================================
-		else if ((next_char >= 'A' && next_char <= 'Z') ||
-				 (next_char >= 'a' && next_char <= 'z') ||
+		else if ((next_char.ToChar() >= 'A'.ToChar() && next_char.ToChar() <= 'Z'.ToChar()) ||
+				 (next_char.ToChar() >= 'a'.ToChar() && next_char.ToChar() <= 'z'.ToChar()) ||
 				 next_char == '_' ||
 				 next_char == '@') 	
 		{
@@ -389,9 +389,9 @@ public class CLexer
 				next_char = m_source[m_token_start];
 				
 				// A-Z, a-z, 0-9
-				if ((next_char >= 'A' && next_char <= 'Z') ||
-					(next_char >= 'a' && next_char <= 'z') ||
-					(next_char >= '0' && next_char <= '9') ||
+				if ((next_char.ToChar() >= 'A'.ToChar() && next_char.ToChar() <= 'Z'.ToChar()) ||
+					(next_char.ToChar() >= 'a'.ToChar() && next_char.ToChar() <= 'z'.ToChar()) ||
+					(next_char.ToChar() >= '0'.ToChar() && next_char.ToChar() <= '9'.ToChar()) ||
 					next_char == '_')
 				{
 					// Ok!

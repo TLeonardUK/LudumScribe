@@ -190,7 +190,6 @@
     <ClInclude Include="CDoStatementASTNode.h" />
     <ClInclude Include="CExpressionASTNode.h" />
     <ClInclude Include="CExpressionBaseASTNode.h" />
-    <ClInclude Include="CFinallyStatementASTNode.h" />
     <ClInclude Include="CFloatDataType.h" />
     <ClInclude Include="CForEachStatementASTNode.h" />
     <ClInclude Include="CForStatementASTNode.h" />

@@ -26,6 +26,59 @@ public class List<T> : IEnumerable
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
+	public void Replace(T other, T replacement)
+	{	
+		ListNode<T> node = m_head.Next;
+		while (node != m_head)
+		{
+			if (node.Value == other) 
+			{
+				node.Value = replacement;
+			}
+			node = node.Next;
+		}
+	}
+		
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public void Insert(int offset, T other)
+	{	
+		int index = 0;
+		ListNode<T> node = m_head.Next;
+		while (node != m_head)
+		{
+			if (index == offset)
+			{				
+				new ListNode<T>(other, node.Prev, node);
+				return;
+			}
+			node = node.Next;
+			index++;
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public void SetIndex(int offset, T other)
+	{	
+		ListNode<T> node = m_head.Next;
+		int index = 0;
+		while (node != m_head)
+		{
+			if (index == offset) 
+			{
+				node.Value = other;
+			}
+			node = node.Next;
+			index++;
+		}
+	}
+	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
 	public void AddLast(List<T> other)
 	{	
 		ListNode<T> node = other.m_head.Next;
@@ -82,6 +135,26 @@ public class List<T> : IEnumerable
 			node = node.Next;
 		}
 	}
+		
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public T RemoveFirst()
+	{	
+		T data = m_head.Prev.Value;
+		m_head.Prev.Remove();
+		return data;
+	}
+	
+	// -------------------------------------------------------------------------
+	//
+	// -------------------------------------------------------------------------
+	public T RemoveLast()
+	{	
+		T data = m_head.Next.Value;
+		m_head.Next.Remove();
+		return data;
+	}
 	
 	// -------------------------------------------------------------------------
 	//
@@ -106,13 +179,13 @@ public class List<T> : IEnumerable
 	// -------------------------------------------------------------------------
 	public bool Contains(T value)
 	{	
-		return (FindIndex(value) >= 0);
+		return (IndexOf(value) >= 0);
 	}
 	
 	// -------------------------------------------------------------------------
 	//
 	// -------------------------------------------------------------------------
-	public int FindIndex(T value)
+	public int IndexOf(T value)
 	{	
 		int index = 0;
 		ListNode<T> node = m_head.Next;

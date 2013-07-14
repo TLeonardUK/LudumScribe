@@ -26,7 +26,7 @@ public class CASTNode
 		
 	public CToken Token;
 	public CASTNode Parent;
-	public List<CASTNode> Children;
+	public List<CASTNode> Children = new List<CASTNode>();
 	
 	public bool Semanted;
 	

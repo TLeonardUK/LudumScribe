@@ -17,6 +17,8 @@ public class CDeclarationASTNode : CASTNode
 	
 	public CDeclarationASTNode(CASTNode parent, CToken token)
 	{
+		this.CASTNode(parent, token);
+		
 		Identifier			= "";
 		MangledIdentifier	= "";
 		IsNative			= false;

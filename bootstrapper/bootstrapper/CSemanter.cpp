@@ -41,8 +41,14 @@ bool CSemanter::Process(CTranslationUnit* context)
 {	
 	m_context = context;
 	m_internal_var_counter = 0;
+	
+	//context->Info("Semantic Analysis ...");
+//	context->GetASTRoot()->Prepare(this);
 
+	//context->Info("Semantic Analysis ...");
 	context->GetASTRoot()->Semant(this);
+
+	//context->Info("Semantic Finalization ...");
 	context->GetASTRoot()->Finalize(this);
 
 	return true;

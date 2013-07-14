@@ -11,8 +11,8 @@ using System.Collections.*;
 public class CSemanter
 {
 	private CTranslationUnit m_context;
-	private List<CASTNode> m_scope_stack;
-	private List<string> m_mangled;
+	private List<CASTNode> m_scope_stack = new List<CASTNode>();
+	private List<string> m_mangled = new List<string>();
 	
 	private int m_internal_var_counter;
 		
@@ -32,19 +32,19 @@ public class CSemanter
 	public CExpressionASTNode ConstructDefaultAssignmentExpr(CASTNode parent, CToken token, CDataType type)
 	{
 		CLiteralExpressionASTNode lit = null;
-		if (<CBoolDataType>(type) != null)
+		if (type is CBoolDataType)
 		{
 			lit =  new CLiteralExpressionASTNode(null, token, type, "false");
 		}
-		else if (<CIntDataType>(type) != null)
+		else if (type is CIntDataType)
 		{
 			lit =  new CLiteralExpressionASTNode(null, token, type, "0");
 		}
-		else if (<CFloatDataType>(type) != null)
+		else if (type is CFloatDataType)
 		{
 			lit =  new CLiteralExpressionASTNode(null, token, type, "0.0");
 		}
-		else if (<CStringDataType>(type) != null)
+		else if (type is CStringDataType)
 		{
 			lit =  new CLiteralExpressionASTNode(null, token, type, "");
 		}
@@ -120,31 +120,31 @@ public class CSemanter
 	public CDataType BalanceDataTypes(CDataType lvalue, CDataType rvalue)
 	{
 		// If either are string result is string.
-		if (<CStringDataType>(lvalue) != null) 
+		if (lvalue is CStringDataType) 
 		{
 			return lvalue;	
 		}
-		if (<CStringDataType>(rvalue) != null) 
+		if (rvalue is CStringDataType) 
 		{
 			return rvalue;	
 		}
 
 		// If either are float result is float.
-		if (<CFloatDataType>(lvalue) != null) 
+		if (lvalue is CFloatDataType) 
 		{
 			return lvalue;	
 		}
-		if (<CFloatDataType>(rvalue) != null) 
+		if (rvalue is CFloatDataType) 
 		{
 			return rvalue;	
 		}
 
 		// If either are int result is int.
-		if (<CIntDataType>(lvalue) != null) 
+		if (lvalue is CIntDataType) 
 		{
 			return lvalue;	
 		}
-		if (<CIntDataType>(rvalue) != null) 
+		if (rvalue is CIntDataType) 
 		{
 			return rvalue;	
 		}

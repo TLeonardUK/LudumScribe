@@ -20,7 +20,7 @@ public class CArrayDataType : CObjectDataType
 	
 	public virtual override CClassASTNode GetClass(CSemanter semanter)
 	{
-		List<CDataType> args;
+		List<CDataType> args = new List<CDataType>();
 		args.AddLast(ElementType);
 
 		CDataType type = semanter.GetContext().GetASTRoot().FindDataType(semanter, "array", args, true);

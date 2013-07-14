@@ -153,7 +153,7 @@ CASTNode* CCastExpressionASTNode::Semant(CSemanter* semanter)
 		// Implicitly cast to bool.
 		if (dynamic_cast<CBoolDataType*>(Type) != NULL)
 		{
-			if (dynamic_cast<CVoidDataType*>(Type) == NULL)// &&
+			if (dynamic_cast<CVoidDataType*>(rightValueDataType) == NULL)// &&
 //				Explicit == true)
 			{
 				ExpressionResultType = Type;

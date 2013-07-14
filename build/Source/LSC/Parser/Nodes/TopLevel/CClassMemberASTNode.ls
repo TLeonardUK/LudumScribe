@@ -32,7 +32,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 	
 	public CMethodBodyASTNode Body;
 	public CExpressionASTNode Assignment;
-	public List<CVariableStatementASTNode> Arguments;
+	public List<CVariableStatementASTNode> Arguments = new List<CVariableStatementASTNode>();
 	public CDataType ReturnType;
 	
 	// Constructors.
@@ -142,7 +142,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		}
 
 		// Semant arguments.	
-		List<CDataType> argument_types;
+		List<CDataType> argument_types = new List<CDataType>();
 		foreach (CVariableStatementASTNode arg in Arguments)
 		{
 			arg.Semant(semanter);
@@ -210,7 +210,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		}
 
 		// We need to make sure to return a value.
-		if (MemberType == MemberType.Method &&
+		if (MemberMemberType == MemberType.Method &&
 			(<CVoidDataType>ReturnType) == null)
 		{
 			AddDefaultReturnExpression(semanter);
@@ -223,7 +223,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 			{
 				semanter.GetContext().FatalError("Entry point is expected to be static.", Token);
 			}
-			else if (argument_types.size() != 1 || (<CIntDataType>ReturnType) == null || (<CArrayDataType>argument_types.GetIndex(0)) == null || (<CStringDataType>((<CArrayDataType>argument_types.GetIndex(0)).ElementType)) == null)
+			else if (argument_types.Count() != 1 || (<CIntDataType>ReturnType) == null || (<CArrayDataType>argument_types.GetIndex(0)) == null || (<CStringDataType>((<CArrayDataType>argument_types.GetIndex(0)).ElementType)) == null)
 			{
 				semanter.GetContext().FatalError("Entry point must match signature: int Main(string[] args).", Token);
 			}
@@ -287,7 +287,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		{
 
 			// Create a list of arguments.
-			List<CDataType> types;
+			List<CDataType> types = new List<CDataType>();
 			foreach (CVariableStatementASTNode arg in Arguments)
 			{
 				types.AddLast(arg.Type);
@@ -337,7 +337,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		clone.IsNative			 	= this.IsNative;
 		clone.MangledIdentifier 	= this.MangledIdentifier;
 		clone.Identifier		 	= this.Identifier;
-		clone.MemberAccessLevel		 	= this.AccessLevel;
+		clone.MemberAccessLevel		= this.MemberAccessLevel;
 		clone.IsStatic			 	= this.IsStatic;
 		clone.IsAbstract		 	= this.IsAbstract;
 		clone.IsVirtual		 		= this.IsVirtual;
@@ -469,7 +469,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		// and add their assignment to this constructor.
 		foreach (CASTNode iter in classScope.Body.Children)
 		{
-			CClassMemberASTNode* member = iter as CClassMemberASTNode;
+			CClassMemberASTNode member = iter as CClassMemberASTNode;
 			if (member != null)
 			{
 				if (member.IsStatic   == true && 
@@ -512,7 +512,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		// and add their assignment to this constructor.
 		foreach (CASTNode iter in classScope.Body.Children)
 		{
-			CClassMemberASTNode* member = iter as CClassMemberASTNode;
+			CClassMemberASTNode member = iter as CClassMemberASTNode;
 			if (member != null)
 			{
 				if (member.IsStatic   == false && 

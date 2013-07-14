@@ -271,7 +271,7 @@ void CTranslationUnit::FatalError(std::string msg, std::string source, int row, 
 	printf("%s\n", line.c_str());
 	printf("%s\n", arrow_line.c_str());
 
-	throw std::runtime_error("Fatal Error");
+  	throw std::runtime_error("Fatal Error");
 }
 
 // =================================================================
