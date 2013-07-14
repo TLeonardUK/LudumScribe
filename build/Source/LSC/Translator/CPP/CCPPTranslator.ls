@@ -1031,7 +1031,16 @@ public class CCPPTranslator : CTranslator
 	
 	public virtual override void TranslateBreakStatement(CBreakStatementASTNode node)
 	{
-		if (m_switchBreakJumpLabel != "")
+		// HACK: needs removing, there should be no reason to do this.
+		CASTNode accept_break_node = node.Parent;
+		while (accept_break_node != null &&
+			   accept_break_node.AcceptBreakStatement() == false)
+		{
+			accept_break_node = accept_break_node.Parent;
+		}
+
+		if (accept_break_node is CCaseStatementASTNode ||
+			accept_break_node is CDefaultStatementASTNode)
 		{
 			EmitSourceFile("goto " + m_switchBreakJumpLabel + ";\n");
 		}

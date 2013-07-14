@@ -22,7 +22,7 @@ public class CBoolDataType : CDataType
 	
 	public virtual override bool IsEqualTo(CSemanter semanter, CDataType type)
 	{
-		return (type as CFloatDataType) != null;
+		return (type as CBoolDataType) != null;
 	}
 	
 	public virtual override bool CanCastTo(CSemanter semanter, CDataType type)

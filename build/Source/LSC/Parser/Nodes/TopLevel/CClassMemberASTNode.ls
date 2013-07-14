@@ -149,7 +149,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 
 			argument_types.AddLast(arg.Type);
 
-			if ((arg.Type as CVoidDataType) != null)
+			if (arg.Type is CVoidDataType)
 			{
 				semanter.GetContext().FatalError("Methods arguments cannot be of type void.", Token);
 			}
@@ -211,7 +211,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 
 		// We need to make sure to return a value.
 		if (MemberMemberType == MemberType.Method &&
-			(<CVoidDataType>ReturnType) == null)
+			(ReturnType is CVoidDataType) == false)
 		{
 			AddDefaultReturnExpression(semanter);
 		}
@@ -477,11 +477,11 @@ public class CClassMemberASTNode : CDeclarationASTNode
 					member.IsNative   == false &&
 					member.Assignment != null)
 				{
-					CToken op	= member.Assignment.Token;
+					CToken op	= member.Assignment.Token.Copy();
 					op.Type		= TokenIdentifier.OP_ASSIGN;
 					op.Literal	= "=";
 					
-					CToken identTok	 = member.Assignment.Token;
+					CToken identTok	 = member.Assignment.Token.Copy();
 					identTok.Type	 = TokenIdentifier.IDENTIFIER;
 					identTok.Literal = member.Identifier;
 					
@@ -520,11 +520,11 @@ public class CClassMemberASTNode : CDeclarationASTNode
 					member.IsNative   == false &&
 					member.Assignment != null)
 				{
-					CToken op	= member.Assignment.Token;
+					CToken op	= member.Assignment.Token.Copy();
 					op.Type		= TokenIdentifier.OP_ASSIGN;
 					op.Literal	= "=";
 					
-					CToken identTok	 = member.Assignment.Token;
+					CToken identTok	 = member.Assignment.Token.Copy();
 					identTok.Type	 = TokenIdentifier.IDENTIFIER;
 					identTok.Literal = member.Identifier;
 					
@@ -568,7 +568,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		// Call instance constructor.
 		if (classScope.InstanceConstructor != null)
 		{	
-			CToken identTok	 = classScope.InstanceConstructor.Token;
+			CToken identTok	 = classScope.InstanceConstructor.Token.Copy();
 			identTok.Type	 = TokenIdentifier.IDENTIFIER;
 			identTok.Literal = classScope.InstanceConstructor.Identifier;
 
@@ -591,7 +591,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 			CClassMemberASTNode baseConstructor = classScope.SuperClass.FindClassMethod(semanter, classScope.SuperClass.Identifier, new List<CDataType>(), false);
 			if (classScope.SuperClass.IsNative == false)
 			{
-				CToken identTok	 = baseConstructor.Token;
+				CToken identTok	 = baseConstructor.Token.Copy();
 				identTok.Type	 = TokenIdentifier.IDENTIFIER;
 				identTok.Literal = baseConstructor.Identifier;
 
@@ -613,7 +613,7 @@ public class CClassMemberASTNode : CDeclarationASTNode
 	public void AddDefaultReturnExpression(CSemanter semanter)
 	{
 		// Make sure we don't already end with a return statement.
-		if (Body == null || (Body.Children.Count() >= 1 && (<CReturnStatementASTNode>(Body.Children.GetIndex(Body.Children.Count() - 1))) != null))
+		if (Body == null || (Body.Children.Count() >= 1 && (Body.Children.GetIndex(Body.Children.Count() - 1) is CReturnStatementASTNode)))
 		{
 			return;
 		}

@@ -17,14 +17,14 @@ public class CNullDataType : CDataType
 	
 	public virtual override bool IsEqualTo(CSemanter semanter, CDataType type)
 	{
-		return IsEqualTo(semanter, type);
+		return ((type as CNullDataType)   != null) ||
+			   ((type as CObjectDataType) != null) ||
+			   ((type as CArrayDataType)  != null);
 	}
 	
 	public virtual override bool CanCastTo(CSemanter semanter, CDataType type)
 	{
-		return ((type as CNullDataType)   != null) ||
-			   ((type as CObjectDataType) != null) ||
-			   ((type as CArrayDataType)  != null);
+		return IsEqualTo(semanter, type);
 	}
 	
 	public virtual override string ToString()

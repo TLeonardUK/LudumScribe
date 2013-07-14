@@ -1161,7 +1161,16 @@ void CCPPTranslator::TranslateBlockStatement(CBlockStatementASTNode* node)
 // =================================================================	
 void CCPPTranslator::TranslateBreakStatement(CBreakStatementASTNode* node)
 {
-	if (m_switchBreakJumpLabel != "")
+	// HACK: needs removing, there should be no reason to do this.
+	CASTNode* accept_break_node = node->Parent;
+	while (accept_break_node != NULL &&
+		   accept_break_node->AcceptBreakStatement() == false)
+	{
+		accept_break_node = accept_break_node->Parent;
+	}
+
+	if (dynamic_cast<CCaseStatementASTNode*>(accept_break_node) != NULL ||
+		dynamic_cast<CDefaultStatementASTNode*>(accept_break_node) != NULL)
 	{
 		EmitSourceFile("goto " + m_switchBreakJumpLabel + ";\n");
 	}

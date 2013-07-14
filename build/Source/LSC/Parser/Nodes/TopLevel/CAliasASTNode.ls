@@ -38,6 +38,7 @@ public class CAliasASTNode : CDeclarationASTNode
 	{
 		base.CDeclarationASTNode(parent, token);
 
+		Identifier  = identifier;
 		AliasedDeclaration = null;
 		AliasedDataType = decl;
 	}

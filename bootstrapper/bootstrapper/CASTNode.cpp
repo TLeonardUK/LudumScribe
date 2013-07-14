@@ -6,6 +6,8 @@
 
    ***************************************************************** */
 
+#include <Windows.h>
+
 #include "CASTNode.h"
 #include "CTranslator.h"
 #include "CSemanter.h"

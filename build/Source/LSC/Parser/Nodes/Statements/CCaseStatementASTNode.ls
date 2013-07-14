@@ -62,7 +62,7 @@ public class CCaseStatementASTNode : CASTNode
 
 		while (scope != null && switchScope == null)
 		{
-			switchScope = <CSwitchStatementASTNode>(scope);
+			switchScope = scope as CSwitchStatementASTNode;
 			scope = scope.Parent;
 		}
 

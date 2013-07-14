@@ -668,7 +668,7 @@ public class CClassASTNode : CDeclarationASTNode
 			{
 				foreach (CASTNode iter in scope.Body.Children)
 				{
-					CClassMemberASTNode member = <CClassMemberASTNode>(iter);
+					CClassMemberASTNode member = iter as CClassMemberASTNode;
 					if (member				!= null &&
 						member.MemberMemberType	== MemberType.Method && 
 						member.Identifier	== identifier &&

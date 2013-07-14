@@ -318,6 +318,18 @@ public class CToken
 		new TokenMnemonicTableEntry(".",			TokenIdentifier.SCOPE)			// .
 	};
 
+	public CToken Copy()
+	{
+		CToken t = new CToken();
+		t.Literal = this.Literal;
+		t.Type = this.Type;
+		t.SourceFile = this.SourceFile;
+		t.Row = this.Row;
+		t.Column = this.Column;
+		
+		return t;
+	}
+	
 	public string Literal;
 	public TokenIdentifier Type;
 	

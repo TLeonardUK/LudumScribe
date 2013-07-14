@@ -117,8 +117,7 @@ public class CParser
 	// =================================================================
 	private void PopScope()
 	{
-		m_scope = m_scope_stack.GetIndex(m_scope_stack.Count() - 1);
-		m_scope_stack.RemoveLast();
+		m_scope = m_scope_stack.RemoveLast();
 	}
 
 	// =================================================================
@@ -215,22 +214,14 @@ public class CParser
 	// =================================================================
 	private CClassMemberASTNode CurrentClassMemberScope()
 	{
-		/*
-		CASTNode scope = m_scope;
-
-		while (scope != null)
+		for (int i = 0; i < m_scope_stack.Count(); i++)
 		{
-			CClassMemberASTNode class_scope = dynamic_cast<CClassMemberASTNode*>(scope);
-			if (class_scope != null)
+			CASTNode iter = m_scope_stack.GetIndex(i);
+			if (iter == null)
 			{
-				return class_scope;
+				continue;
 			}
-			scope = scope.Parent;
-		}
-		*/
-
-		foreach (CASTNode iter in m_scope_stack)
-		{		
+		
 			CClassMemberASTNode class_scope = iter as CClassMemberASTNode;
 			if (class_scope != null)
 			{
@@ -583,12 +574,12 @@ public class CParser
 				// <float, test<int, float>>
 				if (LookAheadToken().Type == TokenIdentifier.OP_SHR)
 				{
-					CToken tok = LookAheadToken() ;
-					tok.Type = TokenIdentifier.OP_GREATER;
-					tok.Literal = ">";
+					CToken lookAhead = LookAheadToken();
+					lookAhead.Type = TokenIdentifier.OP_GREATER;
+					lookAhead.Literal = ">";
 
-					CToken newtoken = tok;
-					tok.Column++;
+					CToken newtoken = lookAhead.Copy();
+					newtoken.Column++;
 
 					m_context.GetTokenList().Insert(m_token_offset, newtoken);
 
@@ -2848,7 +2839,7 @@ public class CParser
 					else
 					{
 						node = new CIndexExpressionASTNode(null, op);
-						(<CSliceExpressionASTNode>node).LeftValue = lvalue;
+						(<CIndexExpressionASTNode>node).LeftValue = lvalue;
 						(<CIndexExpressionASTNode>node).IndexExpression = slice_start;
 						node.AddChild(slice_start);
 						node.AddChild(lvalue);
@@ -2941,6 +2932,7 @@ public class CParser
 						if (CurrentClassMemberScope().IsStatic == true)
 						{
 							node.LeftValue = new CClassRefExpressionASTNode(null, token);
+							node.LeftValue.Token = node.LeftValue.Token.Copy();
 							node.LeftValue.Token.Literal = CurrentClassScope().Identifier;
 						}
 						else

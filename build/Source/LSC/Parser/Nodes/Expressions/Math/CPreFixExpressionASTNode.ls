@@ -52,7 +52,7 @@ public class CPreFixExpressionASTNode : CExpressionBaseASTNode
 		LeftValue  = ReplaceChild(LeftValue,   LeftValue.Semant(semanter));
 		
 		// Get expression references.
-		CExpressionBaseASTNode leftValueBase  = <CExpressionBaseASTNode>(LeftValue);
+		CExpressionBaseASTNode leftValueBase  = LeftValue as CExpressionBaseASTNode;
 
 		// Balance types.
 		switch (Token.Type)
@@ -63,14 +63,14 @@ public class CPreFixExpressionASTNode : CExpressionBaseASTNode
 				// Try and find field the l-value is refering to.
 				CClassMemberASTNode 		   field_node		 = null;
 				CVariableStatementASTNode 	   var_node			 = null;
-				CFieldAccessExpressionASTNode  field_access_node = <CFieldAccessExpressionASTNode>(LeftValue);
-				CIdentifierExpressionASTNode   identifier_node   = <CIdentifierExpressionASTNode>(LeftValue);
-				CIndexExpressionASTNode 	   index_node		 = <CIndexExpressionASTNode>(LeftValue);
+				CFieldAccessExpressionASTNode  field_access_node = LeftValue as CFieldAccessExpressionASTNode;
+				CIdentifierExpressionASTNode   identifier_node   = LeftValue as CIdentifierExpressionASTNode;
+				CIndexExpressionASTNode 	   index_node		 = LeftValue as CIndexExpressionASTNode;
 
 				if (index_node != null)
 				{
 					// Should call CanAssignIndex or something
-					CExpressionBaseASTNode leftLeftValueBase  = <CExpressionBaseASTNode>(index_node.LeftValue);
+					CExpressionBaseASTNode leftLeftValueBase  = index_node.LeftValue as CExpressionBaseASTNode;
 
 					List<CDataType> args = new List<CDataType>();
 					args.AddLast(new CIntDataType(Token));

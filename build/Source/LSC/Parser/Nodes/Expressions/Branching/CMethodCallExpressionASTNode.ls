@@ -124,7 +124,7 @@ public class CMethodCallExpressionASTNode : CExpressionBaseASTNode
 		if (LeftValue is CThisExpressionASTNode &&
 			declaration.IsStatic == true)
 		{		
-			LeftValue = ReplaceChild(LeftValue, new CClassRefExpressionASTNode(null, Token));
+			LeftValue = ReplaceChild(LeftValue, new CClassRefExpressionASTNode(null, Token.Copy()));
 			LeftValue.Token.Literal = declaration.FindClassScope(semanter).Identifier;
 			LeftValue.Semant(semanter);
 

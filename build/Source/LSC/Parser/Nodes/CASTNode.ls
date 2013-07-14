@@ -325,7 +325,7 @@ public class CASTNode
 			class_decl = class_decl.GenerateClassInstance(semanter, this, generic_arguments);
 			if (do_not_semant == false)
 			{
-				class_decl.Semant(semanter);
+			//	class_decl.Semant(semanter);
 			}
 			return class_decl.ObjectDataType;
 		}

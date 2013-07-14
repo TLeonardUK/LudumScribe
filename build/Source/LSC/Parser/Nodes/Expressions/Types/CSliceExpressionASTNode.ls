@@ -74,9 +74,9 @@ public class CSliceExpressionASTNode : CExpressionBaseASTNode
 		}
 
 		// Get expression references.
-		CExpressionBaseASTNode lValueBase    = <CExpressionBaseASTNode>(LeftValue);
-		CExpressionBaseASTNode startExprBase = <CExpressionBaseASTNode>(StartExpression);
-		CExpressionBaseASTNode endExprBase   = <CExpressionBaseASTNode>(EndExpression);
+		CExpressionBaseASTNode lValueBase    = (LeftValue) as CExpressionBaseASTNode;
+		CExpressionBaseASTNode startExprBase = (StartExpression) as CExpressionBaseASTNode;
+		CExpressionBaseASTNode endExprBase   = (EndExpression) as CExpressionBaseASTNode;
 		
 		// Cast index to integer.
 		if (startExprBase != null)

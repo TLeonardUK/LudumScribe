@@ -6,6 +6,8 @@
 
    ***************************************************************** */
 
+#include <Windows.h>
+
 #include "CStringHelper.h"
 
 #include "CClassASTNode.h"
@@ -173,6 +175,14 @@ std::string CClassASTNode::ToString()
 // =================================================================
 CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 { 
+	//static int counter = 0;
+	//OutputDebugStringA(("SEMANT[" + CStringHelper::ToString(counter++) + "]: " + Identifier + "\n").c_str());
+	//if (counter - 1 ==  487)
+	//{
+	//	printf("UPDATE!");
+	//}
+
+
 	// Only semant once.
 	if (Semanted == true)
 	{

@@ -71,7 +71,7 @@ public class CForEachStatementASTNode : CASTNode
 		// Check expression is valid.
 		if (ExpressionStatement != null)
 		{
-			ExpressionStatement = <CExpressionBaseASTNode>(ExpressionStatement.Semant(semanter));
+			ExpressionStatement = (ExpressionStatement.Semant(semanter)) as CExpressionBaseASTNode;
 
 			CDataType dataType = ExpressionStatement.ExpressionResultType.GetClass(semanter).ObjectDataType;
 
@@ -83,20 +83,20 @@ public class CForEachStatementASTNode : CASTNode
 
 		// Check variable declaration is a valid l-value.
 		VariableStatement = VariableStatement.Semant(semanter);
-		CExpressionASTNode varExpr = <CExpressionASTNode>(VariableStatement);
+		CExpressionASTNode varExpr = (VariableStatement) as CExpressionASTNode;
 		if (varExpr != null)
 		{
 			// Try and find field the l-value is refering to.
 			CClassMemberASTNode		   		field_node		 	= null;
 			CVariableStatementASTNode	   	var_node			= null;
-			CFieldAccessExpressionASTNode 	field_access_node 	= <CFieldAccessExpressionASTNode>(varExpr.LeftValue);
-			CIdentifierExpressionASTNode  	identifier_node   	= <CIdentifierExpressionASTNode>(varExpr.LeftValue);
-			CIndexExpressionASTNode	  		index_node		 	= <CIndexExpressionASTNode>(varExpr.LeftValue);
+			CFieldAccessExpressionASTNode 	field_access_node 	= (varExpr.LeftValue) as CFieldAccessExpressionASTNode;
+			CIdentifierExpressionASTNode  	identifier_node   	= (varExpr.LeftValue) as CIdentifierExpressionASTNode;
+			CIndexExpressionASTNode	  		index_node		 	= (varExpr.LeftValue) as CIndexExpressionASTNode;
 
 			if (index_node != null)
 			{
 				// Should call CanAssignIndex or something
-				CExpressionBaseASTNode leftLeftValueBase  = <CExpressionBaseASTNode>(index_node.LeftValue);
+				CExpressionBaseASTNode leftLeftValueBase  = (index_node.LeftValue) as CExpressionBaseASTNode;
 
 				List<CDataType> args = new List<CDataType>();
 				args.AddLast(new CIntDataType(Token));
@@ -142,14 +142,14 @@ public class CForEachStatementASTNode : CASTNode
 		//		(body)
 		//	}
 		//
-		CBlockStatementASTNode			new_body									= new CBlockStatementASTNode(this, Token);
-		CVariableStatementASTNode		enumerator_var								= new CVariableStatementASTNode(new_body, Token);
-		CMethodCallExpressionASTNode	get_enum_method_call_expr					= new CMethodCallExpressionASTNode(enumerator_var, Token);
-		CIdentifierExpressionASTNode	get_enum_identifier_expr					= new CIdentifierExpressionASTNode(get_enum_method_call_expr, Token);
-		CWhileStatementASTNode			while_loop									= new CWhileStatementASTNode(new_body, Token);
-		CMethodCallExpressionASTNode	while_loop_method_call_expr					= new CMethodCallExpressionASTNode(while_loop, Token);
-		CIdentifierExpressionASTNode	while_loop_identifier_expr					= new CIdentifierExpressionASTNode(while_loop_method_call_expr, Token);
-		CIdentifierExpressionASTNode	while_loop_var_ref_expr						= new CIdentifierExpressionASTNode(while_loop_method_call_expr, Token);
+		CBlockStatementASTNode			new_body									= new CBlockStatementASTNode(this, Token.Copy());
+		CVariableStatementASTNode		enumerator_var								= new CVariableStatementASTNode(new_body, Token.Copy());
+		CMethodCallExpressionASTNode	get_enum_method_call_expr					= new CMethodCallExpressionASTNode(enumerator_var, Token.Copy());
+		CIdentifierExpressionASTNode	get_enum_identifier_expr					= new CIdentifierExpressionASTNode(get_enum_method_call_expr, Token.Copy());
+		CWhileStatementASTNode			while_loop									= new CWhileStatementASTNode(new_body, Token.Copy());
+		CMethodCallExpressionASTNode	while_loop_method_call_expr					= new CMethodCallExpressionASTNode(while_loop, Token.Copy());
+		CIdentifierExpressionASTNode	while_loop_identifier_expr					= new CIdentifierExpressionASTNode(while_loop_method_call_expr, Token.Copy());
+		CIdentifierExpressionASTNode	while_loop_var_ref_expr						= new CIdentifierExpressionASTNode(while_loop_method_call_expr, Token.Copy());
 		CBlockStatementASTNode			while_body									= new CBlockStatementASTNode(while_loop, Token);
 
 		//	CVariableStatementASTNode		value_var				= new CVariableStatementASTNode(while_body, Token);
@@ -193,11 +193,11 @@ public class CForEachStatementASTNode : CASTNode
 		// object value = internal.Current();
 		if (varExpr != null)
 		{	
-			CExpressionASTNode				value_assign_expr						= new CExpressionASTNode(while_body, Token);
-			CAssignmentExpressionASTNode	value_assign							= new CAssignmentExpressionASTNode(value_assign_expr, Token);
-			CMethodCallExpressionASTNode	value_assign_method_call_expr			= new CMethodCallExpressionASTNode(value_assign, Token);
-			CIdentifierExpressionASTNode	value_assign_method_call_lvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token);
-			CIdentifierExpressionASTNode	value_assign_method_call_rvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token);
+			CExpressionASTNode				value_assign_expr						= new CExpressionASTNode(while_body, Token.Copy());
+			CAssignmentExpressionASTNode	value_assign							= new CAssignmentExpressionASTNode(value_assign_expr, Token.Copy());
+			CMethodCallExpressionASTNode	value_assign_method_call_expr			= new CMethodCallExpressionASTNode(value_assign, Token.Copy());
+			CIdentifierExpressionASTNode	value_assign_method_call_lvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token.Copy());
+			CIdentifierExpressionASTNode	value_assign_method_call_rvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token.Copy());
 
 			value_assign_expr.LeftValue = value_assign;
 
@@ -213,19 +213,19 @@ public class CForEachStatementASTNode : CASTNode
 
 			value_assign.AddChild(varExpr.LeftValue);
 
-			CExpressionBaseASTNode left_base = <CExpressionBaseASTNode>(value_assign.LeftValue);
-			CExpressionBaseASTNode right_base = <CExpressionBaseASTNode>(value_assign.RightValue);
+			CExpressionBaseASTNode left_base = (value_assign.LeftValue) as CExpressionBaseASTNode;
+			CExpressionBaseASTNode right_base = (value_assign.RightValue) as CExpressionBaseASTNode;
 			left_base.Semant(semanter);
 			right_base.Semant(semanter);
 			value_assign.RightValue = value_assign.ReplaceChild(value_assign.RightValue, right_base.CastTo(semanter, left_base.ExpressionResultType, Token, true, true));
 		}
 		else
 		{		
-			CVariableStatementASTNode var_node = <CVariableStatementASTNode>(VariableStatement);
+			CVariableStatementASTNode var_node = (VariableStatement) as CVariableStatementASTNode;
 
-			CMethodCallExpressionASTNode	value_assign_method_call_expr			= new CMethodCallExpressionASTNode(VariableStatement, Token);
-			CIdentifierExpressionASTNode	value_assign_method_call_lvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token);
-			CIdentifierExpressionASTNode	value_assign_method_call_rvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token);
+			CMethodCallExpressionASTNode	value_assign_method_call_expr			= new CMethodCallExpressionASTNode(VariableStatement, Token.Copy());
+			CIdentifierExpressionASTNode	value_assign_method_call_lvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token.Copy());
+			CIdentifierExpressionASTNode	value_assign_method_call_rvalue_expr	= new CIdentifierExpressionASTNode(value_assign_method_call_expr, Token.Copy());
 
 			value_assign_method_call_lvalue_expr.Token.Literal	= enumerator_var.Identifier; 
 			value_assign_method_call_rvalue_expr.Token.Literal	= "Current"; 

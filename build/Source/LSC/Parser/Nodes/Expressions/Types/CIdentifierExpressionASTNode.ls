@@ -55,8 +55,8 @@ public class CIdentifierExpressionASTNode : CExpressionBaseASTNode
 		CClassASTNode		 classScope	 = this.FindClassScope(semanter);
 		CDeclarationASTNode declaration = null;
 
-		CFieldAccessExpressionASTNode parentFieldAccess = <CFieldAccessExpressionASTNode>(Parent);
-		CMethodCallExpressionASTNode  parentMethodCall  = <CMethodCallExpressionASTNode>(Parent);
+		CFieldAccessExpressionASTNode parentFieldAccess = Parent as CFieldAccessExpressionASTNode;
+		CMethodCallExpressionASTNode  parentMethodCall  = Parent as CMethodCallExpressionASTNode;
 
 		// Generic class reference?
 		if (GenericTypes.Count() > 0)
@@ -114,9 +114,9 @@ public class CIdentifierExpressionASTNode : CExpressionBaseASTNode
 		declaration.CheckAccess(semanter, this);
 
 		// Work out result type.
-		CClassASTNode				classNode		= <CClassASTNode>(declaration);
-		CClassMemberASTNode		memberNode			= <CClassMemberASTNode>(declaration);
-		CVariableStatementASTNode	localNode		= <CVariableStatementASTNode>(declaration);
+		CClassASTNode				classNode		= declaration as CClassASTNode;
+		CClassMemberASTNode		memberNode			= declaration as CClassMemberASTNode;
+		CVariableStatementASTNode	localNode		= declaration as CVariableStatementASTNode;
 		
 		// Check we are not accessing an instance
 		// variable from a static method.	

@@ -50,12 +50,13 @@ public class List<T> : IEnumerable
 		{
 			if (index == offset)
 			{				
-				new ListNode<T>(other, node.Prev, node);
+				new ListNode<T>(other, node, node.Prev);
+				m_size++;
 				return;
 			}
 			node = node.Next;
 			index++;
-		}
+		}	
 	}
 
 	// -------------------------------------------------------------------------
@@ -131,6 +132,7 @@ public class List<T> : IEnumerable
 			if (node.Value == value)
 			{
 				node.Remove();
+				m_size--;
 			}
 			node = node.Next;
 		}
@@ -141,8 +143,9 @@ public class List<T> : IEnumerable
 	// -------------------------------------------------------------------------
 	public T RemoveFirst()
 	{	
-		T data = m_head.Prev.Value;
-		m_head.Prev.Remove();
+		T data = m_head.Next.Value;
+		m_head.Next.Remove();
+		m_size--;
 		return data;
 	}
 	
@@ -151,8 +154,9 @@ public class List<T> : IEnumerable
 	// -------------------------------------------------------------------------
 	public T RemoveLast()
 	{	
-		T data = m_head.Next.Value;
-		m_head.Next.Remove();
+		T data = m_head.Prev.Value;
+		m_head.Prev.Remove();
+		m_size--;
 		return data;
 	}
 	
