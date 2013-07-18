@@ -39,6 +39,8 @@ CReturnStatementASTNode::CReturnStatementASTNode(CASTNode* parent, CToken token)
 // =================================================================
 CASTNode* CReturnStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CReturnStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

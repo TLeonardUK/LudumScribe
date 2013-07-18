@@ -15,6 +15,8 @@
 
 #include "CTranslator.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -31,6 +33,8 @@ CIfStatementASTNode::CIfStatementASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CIfStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CIfStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

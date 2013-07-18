@@ -41,6 +41,8 @@ public class CTryStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CTryStatementASTNode");
+		
 		SemantChildren(semanter);
 		return this;
 	}

@@ -106,6 +106,8 @@ CClassASTNode* CArrayDataType::GetBoxClass(CSemanter* semanter)
 // =================================================================
 CDataType* CArrayDataType::Semant(CSemanter* semanter, CASTNode* node)
 {	
+	SEMANT_TRACE("CArrayDataType");
+
 	CDataType* dt = ElementType->Semant(semanter, node)->ArrayOf();
 	dt->GetClass(semanter); // Initialises generic instances if neccessary.
 	return dt;

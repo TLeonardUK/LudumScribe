@@ -8,6 +8,8 @@
 
 #include "CDefaultStatementASTNode.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -31,6 +33,8 @@ bool CDefaultStatementASTNode::AcceptBreakStatement()
 // =================================================================
 CASTNode* CDefaultStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CDefaultStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

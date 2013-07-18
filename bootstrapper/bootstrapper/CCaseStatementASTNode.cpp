@@ -12,6 +12,8 @@
 #include "CExpressionASTNode.h"
 #include "CExpressionBaseASTNode.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -35,6 +37,8 @@ bool CCaseStatementASTNode::AcceptBreakStatement()
 // =================================================================
 CASTNode* CCaseStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CCaseStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

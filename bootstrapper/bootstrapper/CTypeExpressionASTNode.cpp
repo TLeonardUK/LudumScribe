@@ -38,6 +38,8 @@ CTypeExpressionASTNode::CTypeExpressionASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CTypeExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CTypeExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

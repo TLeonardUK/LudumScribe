@@ -47,6 +47,8 @@ public class CLogicalExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CLogicalExpressionASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

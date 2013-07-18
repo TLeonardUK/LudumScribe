@@ -36,6 +36,8 @@ CSliceExpressionASTNode::CSliceExpressionASTNode(CASTNode* parent, CToken token)
 // =================================================================
 CASTNode* CSliceExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CSliceExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

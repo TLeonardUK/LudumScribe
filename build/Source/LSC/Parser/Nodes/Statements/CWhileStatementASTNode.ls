@@ -47,6 +47,8 @@ public class CWhileStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CWhileStatementASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

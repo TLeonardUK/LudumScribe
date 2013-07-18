@@ -15,6 +15,8 @@
 
 #include "CTranslator.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -50,6 +52,8 @@ bool CForStatementASTNode::AcceptContinueStatement()
 // =================================================================
 CASTNode* CForStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CForStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

@@ -35,6 +35,8 @@ CIndexExpressionASTNode::CIndexExpressionASTNode(CASTNode* parent, CToken token)
 // =================================================================
 CASTNode* CIndexExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CIndexExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

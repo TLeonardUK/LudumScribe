@@ -22,6 +22,8 @@ CPackageASTNode::CPackageASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CPackageASTNode::Semant(CSemanter* semanter)
 {
+	SEMANT_TRACE("CPackageASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

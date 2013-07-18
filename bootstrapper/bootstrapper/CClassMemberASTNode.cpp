@@ -6,6 +6,8 @@
 
    ***************************************************************** */
 
+#include <Windows.h>
+
 #include "CStringHelper.h"
 #include "CCollectionHelper.h"
 
@@ -135,6 +137,8 @@ std::string CClassMemberASTNode::ToString()
 // =================================================================
 CASTNode* CClassMemberASTNode::Semant(CSemanter* semanter)
 {
+	SEMANT_TRACE("CClassMemberASTNode=%s", Identifier.c_str());
+
 	// Only semant once.
 	if (Semanted == true)
 	{
@@ -350,9 +354,13 @@ void CClassMemberASTNode::AddClassConstructorStub(CSemanter* semanter)
 		{
 			if (member->IsStatic   == true && 
 				member->MemberType == MemberType::Field &&
-				member->IsNative   == false &&
-				member->Assignment != NULL)
+				member->IsNative   == false)
 			{
+				if (member->Assignment == NULL)
+				{
+					member->Semant(semanter);
+				}
+
 				CToken op	= member->Assignment->Token;
 				op.Type		= TokenIdentifier::OP_ASSIGN;
 				op.Literal	= "=";
@@ -397,9 +405,13 @@ void CClassMemberASTNode::AddInstanceConstructorStub(CSemanter* semanter)
 		{
 			if (member->IsStatic   == false && 
 				member->MemberType == MemberType::Field &&
-				member->IsNative   == false &&
-				member->Assignment != NULL)
+				member->IsNative   == false)
 			{
+				if (member->Assignment == NULL)
+				{
+					member->Semant(semanter);
+				}
+
 				CToken op	= member->Assignment->Token;
 				op.Type		= TokenIdentifier::OP_ASSIGN;
 				op.Literal	= "=";

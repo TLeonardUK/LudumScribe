@@ -53,6 +53,8 @@ public class CIfStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CIfStatementASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

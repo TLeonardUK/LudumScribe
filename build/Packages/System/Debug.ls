@@ -8,6 +8,26 @@
 using native Native.{PLATFORM}.System.Debug;
 using System.OS;
 
+
+
+// -----------------------------------------------------------------------------
+//	Only for use during compiler dev.
+// -----------------------------------------------------------------------------
+public static native("lsTrace") class Trace
+{
+	static int counter = 0;
+	public static void Write(string val)
+	{
+		Console.Write("[Trace:"+(++counter)+"] " + val + "\n");
+	}
+	public static string GetName(object o)
+	{
+		return GetNameMangled(o).Replace("ls_", "");
+	}
+	public static native("GetNameMangled") string GetNameMangled(object o);
+}
+
+
 // -----------------------------------------------------------------------------
 //	This class is used to expose debugging functionality.
 // -----------------------------------------------------------------------------

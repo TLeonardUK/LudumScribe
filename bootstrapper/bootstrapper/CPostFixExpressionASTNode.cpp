@@ -57,6 +57,8 @@ CASTNode* CPostFixExpressionASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CPostFixExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CPostFixExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

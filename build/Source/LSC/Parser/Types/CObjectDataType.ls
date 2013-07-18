@@ -68,6 +68,8 @@ public class CObjectDataType : CDataType
 	
 	public virtual override CDataType Semant(CSemanter semanter, CASTNode node)
 	{
+		Trace.Write("CObjectDataType");
+		
 		if (m_class.IsEnum == true)
 		{
 			return new CIntDataType(Token);

@@ -67,6 +67,8 @@ bool CForEachStatementASTNode::AcceptContinueStatement()
 // =================================================================
 CASTNode* CForEachStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CForEachStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

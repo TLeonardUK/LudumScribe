@@ -33,6 +33,8 @@ public class CBreakStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CBreakStatementASTNode");
+		
 		CASTNode node = FindLoopScope(semanter);
 		if (node == null || node.AcceptBreakStatement() == false)
 		{

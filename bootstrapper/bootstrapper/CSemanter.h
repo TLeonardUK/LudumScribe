@@ -21,6 +21,18 @@ class CClassASTNode;
 class CClassMemberASTNode;
 class CExpressionASTNode;
 
+// Debug function used to make a trace of function calls during semantation.
+#ifdef _NDEBUG
+#define SEMANT_TRACE(...) 
+#else
+extern int g_semant_trace_index;
+#define SEMANT_TRACE(...) \
+	printf("[Trace:%i] ", ++g_semant_trace_index); \
+	printf(__VA_ARGS__); \
+	printf("\n");// \
+	//if (g_semant_trace_index == 301761) __debugbreak();
+#endif
+
 // =================================================================
 //	Responsible for semantic analysis of a parsed AST.
 // =================================================================

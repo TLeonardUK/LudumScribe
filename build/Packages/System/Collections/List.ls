@@ -278,7 +278,6 @@ public sealed class ListEnumerator<T> : IEnumerator
 {
 	private List<T>	 		m_list;
 	private ListNode<T> 	m_head;
-	private ListNode<T> 	m_previous;
 	private ListNode<T> 	m_current;
 
 	// -------------------------------------------------------------------------
@@ -288,7 +287,6 @@ public sealed class ListEnumerator<T> : IEnumerator
 	{
 		m_list = list;
 		m_head = head;
-		m_previous = null;
 		m_current = m_head;
 	}
 
@@ -305,7 +303,6 @@ public sealed class ListEnumerator<T> : IEnumerator
 	// -------------------------------------------------------------------------
 	public bool	Next()
 	{
-		m_previous = m_current;
 		m_current = m_current.Next;
 		return (m_current != m_head);
 	}
@@ -315,7 +312,6 @@ public sealed class ListEnumerator<T> : IEnumerator
 	// -------------------------------------------------------------------------
 	public void Reset()
 	{
-		m_previous = null;
 		m_current = m_head;
 	}	
 }

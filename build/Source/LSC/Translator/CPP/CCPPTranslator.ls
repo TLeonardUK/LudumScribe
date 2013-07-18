@@ -413,8 +413,9 @@ public class CCPPTranslator : CTranslator
 		EmitSourceFile("\n");
 
 		// Call class constructors.
-		foreach (CClassASTNode classNode in node.Children)
+		foreach (CASTNode n in node.Children)
 		{
+			CClassASTNode classNode = n as CClassASTNode;
 			if (classNode != null && classNode.ClassConstructor != null)
 			{
 				if (classNode.ClassConstructor.IsExtension == true)
@@ -1238,8 +1239,9 @@ public class CCPPTranslator : CTranslator
 		node.BodyStatement.Translate(this);
 		EmitSourceFile("}\n");
 
-		foreach (CCatchStatementASTNode catchStmt in node.Children)
+		foreach (CASTNode n in node.Children)
 		{
+			CCatchStatementASTNode catchStmt = n as CCatchStatementASTNode;
 			if (catchStmt != null)
 			{
 				EmitSourceFile("catch ("+TranslateDataType(catchStmt.VariableStatement.Type)+" " + catchStmt.VariableStatement.MangledIdentifier + ")\n");
@@ -1274,7 +1276,7 @@ public class CCPPTranslator : CTranslator
 		CExpressionBaseASTNode right_base = <CExpressionBaseASTNode>(node.RightValue);
 
 		// We need to deal with index based assignments slightly differently.
-		CIndexExpressionASTNode left_index_base = <CIndexExpressionASTNode>(left_base);
+		CIndexExpressionASTNode left_index_base = (left_base as CIndexExpressionASTNode);
 		if (left_index_base != null)
 		{
 			string set_expr = (<CExpressionBaseASTNode>left_index_base.LeftValue).TranslateExpr(this);
@@ -1800,9 +1802,9 @@ public class CCPPTranslator : CTranslator
 	
 	public virtual override string TranslateSliceExpression(CSliceExpressionASTNode node)
 	{
-		CExpressionBaseASTNode start_base  = <CExpressionBaseASTNode>(node.StartExpression);
-		CExpressionBaseASTNode end_base  = <CExpressionBaseASTNode>(node.EndExpression);
-		CExpressionBaseASTNode left_base  = <CExpressionBaseASTNode>(node.LeftValue);
+		CExpressionBaseASTNode start_base  = (node.StartExpression as CExpressionBaseASTNode);
+		CExpressionBaseASTNode end_base  = (node.EndExpression as CExpressionBaseASTNode);
+		CExpressionBaseASTNode left_base  = (node.LeftValue as CExpressionBaseASTNode);
 
 		string op = ".";
 

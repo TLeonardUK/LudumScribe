@@ -32,6 +32,8 @@ CThrowStatementASTNode::CThrowStatementASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CThrowStatementASTNode::Semant(CSemanter* semanter)
 { 	
+	SEMANT_TRACE("CThrowStatementASTNode");
+
 	Expression = dynamic_cast<CExpressionBaseASTNode*>(ReplaceChild(Expression, Expression->Semant(semanter)));
 
 	CDataType* exception_base = FindDataType(semanter, "Exception", std::vector<CDataType*>());

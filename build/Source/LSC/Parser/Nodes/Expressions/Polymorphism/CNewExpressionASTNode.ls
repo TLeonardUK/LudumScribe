@@ -48,6 +48,8 @@ public class CNewExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CNewExpressionASTNode");
+		
 		// Semant data types.
 		DataType = DataType.Semant(semanter, this);
 

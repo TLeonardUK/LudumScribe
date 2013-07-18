@@ -32,7 +32,7 @@ int CASTNode::g_create_index_tracker = 0;
 CASTNode::CASTNode()
 {
 	m_create_index = g_create_index_tracker++;
-
+	
 	Parent = NULL;
 	Children.clear();
 }
@@ -50,7 +50,8 @@ CASTNode::CASTNode(CASTNode* parent, CToken token)
 
 	if (parent != NULL)
 	{
-		parent->Children.push_back(this);
+		parent->AddChild(this);
+		//parent->Children.push_back(this);
 	}
 }
 
@@ -86,12 +87,26 @@ void CASTNode::AddChild(CASTNode* node, bool atStart)
 
 	if (atStart == true)
 	{
+		SEMANT_TRACE("Add %s At Start", typeid(*node).name());
 		Children.insert(Children.begin(), node);
 	}
 	else
 	{
+		SEMANT_TRACE("Add %s", typeid(*node).name());
 		Children.push_back(node);
 	}
+	
+//	if (node->m_create_index == 54504)
+//	{
+//		__debugbreak();
+//	}
+
+	SEMANT_TRACE("==================================");
+	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	{
+		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
+	}
+	SEMANT_TRACE("==================================");
 }
 
 // =================================================================
@@ -104,10 +119,19 @@ void CASTNode::RemoveChild(CASTNode* node)
 	for (auto iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		if (*iter == node)
-		{
+		{	
+			SEMANT_TRACE("Removed %s", typeid(*node).name());
+
 			iter = Children.erase(iter);
 		}
 	}
+	
+	SEMANT_TRACE("==================================");
+	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	{	
+		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
+	}
+	SEMANT_TRACE("==================================");
 }
 
 // =================================================================
@@ -124,13 +148,25 @@ CASTNode* CASTNode::ReplaceChild(CASTNode* replace, CASTNode* with)
 	{
 		if (*iter == replace)
 		{
+			SEMANT_TRACE("Removed %s", typeid(*replace).name());
+
 			Children.erase(iter);
 			break;
 		}
 	}
+	
+	SEMANT_TRACE("Replaced %s with %s", typeid(*replace).name(), typeid(*with).name());
 
 	Children.push_back(with);
 	with->Parent = this;
+
+	SEMANT_TRACE("==================================");
+	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	{
+		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
+	}
+	SEMANT_TRACE("==================================");
+
 	return with;
 }
 

@@ -8,6 +8,8 @@
 
 #include "CMethodBodyASTNode.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -34,6 +36,8 @@ CASTNode* CMethodBodyASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CMethodBodyASTNode::Semant(CSemanter* semanter)
 {
+	SEMANT_TRACE("CMethodBodyASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

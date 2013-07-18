@@ -61,6 +61,8 @@ public class CIdentifierDataType : CDataType
 	
 	public virtual override CDataType Semant(CSemanter semanter, CASTNode node)
 	{
+		Trace.Write("CIdentifierDataType");
+		
 		List<CDataType> generic_arguments = new List<CDataType>();
 
 		foreach (CDataType iter in GenericTypes)

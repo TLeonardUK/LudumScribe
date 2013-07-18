@@ -30,6 +30,8 @@ CBaseExpressionASTNode::CBaseExpressionASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CBaseExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CBaseExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

@@ -61,6 +61,8 @@ CASTNode* CArrayInitializerASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CArrayInitializerASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CArrayInitializerASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

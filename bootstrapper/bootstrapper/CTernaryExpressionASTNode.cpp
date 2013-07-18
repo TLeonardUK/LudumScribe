@@ -34,6 +34,8 @@ CTernaryExpressionASTNode::CTernaryExpressionASTNode(CASTNode* parent, CToken to
 // =================================================================
 CASTNode* CTernaryExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CTernaryExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

@@ -56,6 +56,8 @@ CASTNode* CBinaryMathExpressionASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CBinaryMathExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CBinaryMathExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

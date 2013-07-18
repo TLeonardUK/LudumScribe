@@ -35,6 +35,11 @@ CVariableStatementASTNode::CVariableStatementASTNode(CASTNode* parent, CToken to
 // =================================================================
 std::string CVariableStatementASTNode::ToString()
 {
+	if (Type == NULL)
+	{
+		return Identifier;
+	}
+
 	std::string val = Type->ToString();
 
 	val += " " + Identifier;
@@ -73,6 +78,8 @@ void CVariableStatementASTNode::CheckAccess(CSemanter* semanter, CASTNode* refer
 // =================================================================
 CASTNode* CVariableStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CVariableStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

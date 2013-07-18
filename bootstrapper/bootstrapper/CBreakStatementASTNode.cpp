@@ -26,6 +26,8 @@ CBreakStatementASTNode::CBreakStatementASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CBreakStatementASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CBreakStatementASTNode");
+
 	CASTNode* node = FindLoopScope(semanter);
 	if (node == NULL || node->AcceptBreakStatement() == false)
 	{

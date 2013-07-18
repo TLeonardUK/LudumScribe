@@ -46,15 +46,14 @@ public class CASTNode
 	// =================================================================
 	public CASTNode(CASTNode parent, CToken token)
 	{
-		m_create_index = g_create_index_tracker++;
-
 		Parent = parent;
 		Token = token;
 		Semanted = false;
 
 		if (parent != null)
 		{
-			parent.Children.AddLast(this);
+			parent.AddChild(this);
+			//parent.Children.AddLast(this);
 		}
 	}
 	
@@ -75,12 +74,21 @@ public class CASTNode
 
 		if (atStart == true)
 		{
+			Trace.Write("Add " + Trace.GetName(node) + " At Start");
 			Children.AddFirst(node);
 		}
 		else
 		{
+			Trace.Write("Add " + Trace.GetName(node));
 			Children.AddLast(node);
 		}
+		
+		Trace.Write("==================================");
+		foreach (CASTNode n in Children)
+		{
+			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
+		}
+		Trace.Write("==================================");
 	}
 		
 	// =================================================================
@@ -89,7 +97,19 @@ public class CASTNode
 	public void RemoveChild(CASTNode node)
 	{
 		node.Parent = null;
-		Children.Remove(node);
+		
+		if (Children.Contains(node))
+		{
+			Trace.Write("Removed " + Trace.GetName(node));
+			Children.Remove(node);
+		}
+		
+		Trace.Write("==================================");
+		foreach (CASTNode n in Children)
+		{
+			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
+		}
+		Trace.Write("==================================");
 	}
 	
 	// =================================================================
@@ -102,10 +122,24 @@ public class CASTNode
 			return replace;
 		}
 
-		Children.Remove(replace);
+		if (Children.Contains(replace))
+		{
+			Trace.Write("Removed " + Trace.GetName(replace));
+			Children.Remove(replace);
+		}
 
+		Trace.Write("Replaced " + Trace.GetName(replace) + " with " + Trace.GetName(with));
+			
 		Children.AddLast(with);
-		with.Parent = this;
+		with.Parent = this;	
+		
+		Trace.Write("==================================");
+		foreach (CASTNode n in Children)
+		{
+			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
+		}
+		Trace.Write("==================================");
+		
 		return with;
 	}
 

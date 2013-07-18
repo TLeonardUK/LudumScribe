@@ -58,6 +58,11 @@ public class CClassMemberASTNode : CDeclarationASTNode
 	// General management.
 	public virtual override string ToString()
 	{
+		if (ReturnType == null)
+		{
+			return Identifier;
+		}
+	
 		string val = ReturnType.ToString();
 
 		if (MemberMemberType == MemberType.Field)
@@ -114,6 +119,8 @@ public class CClassMemberASTNode : CDeclarationASTNode
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CClassMemberASTNode="+Identifier);
+		
 		// Only semant once.
 		if (Semanted == true)
 		{
@@ -474,9 +481,13 @@ public class CClassMemberASTNode : CDeclarationASTNode
 			{
 				if (member.IsStatic   == true && 
 					member.MemberMemberType == MemberType.Field &&
-					member.IsNative   == false &&
-					member.Assignment != null)
+					member.IsNative   == false)
 				{
+					if (member.Assignment == null)
+					{
+						member.Semant(semanter);
+					}
+				
 					CToken op	= member.Assignment.Token.Copy();
 					op.Type		= TokenIdentifier.OP_ASSIGN;
 					op.Literal	= "=";
@@ -510,16 +521,22 @@ public class CClassMemberASTNode : CDeclarationASTNode
 		
 		// Find all fields with assignment expressions
 		// and add their assignment to this constructor.
-		foreach (CASTNode iter in classScope.Body.Children)
+		// TODO: IN reverse
+		for (int i = classScope.Body.Children.Count() - 1; i >= 0; i--)
 		{
+			CASTNode iter = classScope.Body.Children.GetIndex(i);
 			CClassMemberASTNode member = iter as CClassMemberASTNode;
 			if (member != null)
 			{
 				if (member.IsStatic   == false && 
 					member.MemberMemberType == MemberType.Field &&
-					member.IsNative   == false &&
-					member.Assignment != null)
+					member.IsNative   == false)
 				{
+					if (member.Assignment == null)
+					{
+						member.Semant(semanter);
+					}
+				
 					CToken op	= member.Assignment.Token.Copy();
 					op.Type		= TokenIdentifier.OP_ASSIGN;
 					op.Literal	= "=";

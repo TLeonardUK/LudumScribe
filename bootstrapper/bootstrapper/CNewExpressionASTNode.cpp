@@ -44,6 +44,8 @@ CNewExpressionASTNode::CNewExpressionASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 {
+	SEMANT_TRACE("CNewExpressionASTNode");
+
 	// Semant data types.
 	DataType = DataType->Semant(semanter, this);
 

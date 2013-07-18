@@ -96,6 +96,8 @@ CClassASTNode* CObjectDataType::GetClass(CSemanter* semanter)
 // =================================================================
 CDataType* CObjectDataType::Semant(CSemanter* semanter, CASTNode* node)
 {
+	SEMANT_TRACE("CObjectDataType");
+
 	if (m_class->IsEnum == true)
 	{
 		return new CIntDataType(Token);

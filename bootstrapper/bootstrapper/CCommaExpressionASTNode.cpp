@@ -10,6 +10,8 @@
 
 #include "CTranslator.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -25,6 +27,8 @@ CCommaExpressionASTNode::CCommaExpressionASTNode(CASTNode* parent, CToken token)
 // =================================================================
 CASTNode* CCommaExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CCommaExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

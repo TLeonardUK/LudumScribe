@@ -41,6 +41,8 @@ public class CThrowStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CThrowStatementASTNode");
+		
 		Expression = <CExpressionBaseASTNode>(ReplaceChild(Expression, Expression.Semant(semanter)));
 
 		CDataType exception_base = FindDataType(semanter, "Exception", new List<CDataType>());

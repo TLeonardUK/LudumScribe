@@ -45,6 +45,8 @@ CMethodCallExpressionASTNode::CMethodCallExpressionASTNode(CASTNode* parent, CTo
 // =================================================================
 CASTNode* CMethodCallExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CMethodCallExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

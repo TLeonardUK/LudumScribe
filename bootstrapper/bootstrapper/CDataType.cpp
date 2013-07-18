@@ -94,6 +94,8 @@ CArrayDataType* CDataType::ArrayOf()
 // =================================================================
 CDataType* CDataType::Semant(CSemanter* semanter, CASTNode* node)
 {
+	SEMANT_TRACE("CDataType");
+
 	return this;
 }
 

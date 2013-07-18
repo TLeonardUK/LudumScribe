@@ -44,6 +44,8 @@ CFieldAccessExpressionASTNode::CFieldAccessExpressionASTNode(CASTNode* parent, C
 // =================================================================
 CASTNode* CFieldAccessExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CFieldAccessExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

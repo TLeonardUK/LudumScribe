@@ -10,6 +10,8 @@
 
 #include "CTranslator.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -24,6 +26,8 @@ CTryStatementASTNode::CTryStatementASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CTryStatementASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CTryStatementASTNode");
+
 	SemantChildren(semanter);
 	return this;
 }

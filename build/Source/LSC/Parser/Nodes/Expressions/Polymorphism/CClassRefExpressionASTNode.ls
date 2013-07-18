@@ -33,6 +33,8 @@ public class CClassRefExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CClassRefExpressionASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

@@ -83,6 +83,8 @@ CClassASTNode* CIdentifierDataType::GetClass(CSemanter* semanter)
 // =================================================================
 CDataType* CIdentifierDataType::Semant(CSemanter* semanter, CASTNode* node)
 {
+	SEMANT_TRACE("CIdentifierDataType");
+
 	std::vector<CDataType*> generic_arguments;
 
 	for (auto iter = GenericTypes.begin(); iter != GenericTypes.end(); iter++)

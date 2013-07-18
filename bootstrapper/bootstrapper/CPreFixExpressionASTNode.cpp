@@ -59,6 +59,8 @@ CASTNode* CPreFixExpressionASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CPreFixExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CPreFixExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

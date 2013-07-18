@@ -41,6 +41,8 @@ public class CPreFixExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CPreFixExpressionASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

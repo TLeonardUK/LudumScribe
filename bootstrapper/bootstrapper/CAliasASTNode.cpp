@@ -54,6 +54,8 @@ std::string CAliasASTNode::ToString()
 // =================================================================
 CASTNode* CAliasASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CAliasASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

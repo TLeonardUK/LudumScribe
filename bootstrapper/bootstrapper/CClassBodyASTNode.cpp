@@ -8,6 +8,8 @@
 
 #include "CClassBodyASTNode.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -22,6 +24,8 @@ CClassBodyASTNode::CClassBodyASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CClassBodyASTNode::Semant(CSemanter* semanter)
 {
+	SEMANT_TRACE("CClassBodyASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

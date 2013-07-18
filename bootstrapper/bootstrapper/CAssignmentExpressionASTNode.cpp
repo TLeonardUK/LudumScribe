@@ -45,6 +45,8 @@ CAssignmentExpressionASTNode::CAssignmentExpressionASTNode(CASTNode* parent, CTo
 // =================================================================
 CASTNode* CAssignmentExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CAssignmentExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

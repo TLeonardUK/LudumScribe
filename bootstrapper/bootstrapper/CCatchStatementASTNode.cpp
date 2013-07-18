@@ -31,6 +31,8 @@ CCatchStatementASTNode::CCatchStatementASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CASTNode* CCatchStatementASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CCatchStatementASTNode");
+
 	if (BodyStatement != NULL)
 	{
 		BodyStatement = BodyStatement->Semant(semanter);

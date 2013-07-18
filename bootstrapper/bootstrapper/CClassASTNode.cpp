@@ -175,13 +175,7 @@ std::string CClassASTNode::ToString()
 // =================================================================
 CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 { 
-	//static int counter = 0;
-	//OutputDebugStringA(("SEMANT[" + CStringHelper::ToString(counter++) + "]: " + Identifier + "\n").c_str());
-	//if (counter - 1 ==  487)
-	//{
-	//	printf("UPDATE!");
-	//}
-
+	SEMANT_TRACE("CClassASTNode=%s", Identifier.c_str());
 
 	// Only semant once.
 	if (Semanted == true)

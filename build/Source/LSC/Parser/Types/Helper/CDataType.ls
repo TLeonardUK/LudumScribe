@@ -63,6 +63,8 @@ public class CDataType
 	
 	public virtual CDataType Semant(CSemanter semanter, CASTNode node)
 	{
+		Trace.Write("CDataType");
+		
 		return this;
 	}	
 }

@@ -47,6 +47,8 @@ public class CDoStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CDoStatementASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

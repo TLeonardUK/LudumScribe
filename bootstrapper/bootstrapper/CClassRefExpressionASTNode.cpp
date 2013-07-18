@@ -31,6 +31,8 @@ CClassRefExpressionASTNode::CClassRefExpressionASTNode(CASTNode* parent, CToken 
 // =================================================================
 CASTNode* CClassRefExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CClassRefExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

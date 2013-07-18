@@ -34,6 +34,11 @@
 #include "CNullDataType.h"
 #include "CBoolDataType.h"
 
+// Global variable used for log tracing.
+#ifndef _NDEBUG
+int g_semant_trace_index = 0;
+#endif
+
 // =================================================================
 //	Processes input and performs the actions requested.
 // =================================================================

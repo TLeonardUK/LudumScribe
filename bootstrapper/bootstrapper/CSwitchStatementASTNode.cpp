@@ -12,6 +12,8 @@
 
 #include "CTranslator.h"
 
+#include "CSemanter.h"
+
 // =================================================================
 //	Constructs a new instance of this class.
 // =================================================================
@@ -26,6 +28,8 @@ CSwitchStatementASTNode::CSwitchStatementASTNode(CASTNode* parent, CToken token)
 // =================================================================
 CASTNode* CSwitchStatementASTNode::Semant(CSemanter* semanter)
 {	
+	SEMANT_TRACE("CSwitchStatementASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

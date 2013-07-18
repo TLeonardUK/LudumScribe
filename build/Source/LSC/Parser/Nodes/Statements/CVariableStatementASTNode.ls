@@ -27,6 +27,11 @@ public class CVariableStatementASTNode : CDeclarationASTNode
 	// =================================================================
 	public virtual override string ToString()
 	{
+		if (Type == null)
+		{
+			return Identifier;
+		}
+	
 		string val = Type.ToString();
 
 		val += " " + Identifier;
@@ -60,6 +65,8 @@ public class CVariableStatementASTNode : CDeclarationASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
+		Trace.Write("CVariableStatementASTNode");
+		
 		// Only semant once.
 		if (Semanted == true)
 		{

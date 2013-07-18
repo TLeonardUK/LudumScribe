@@ -255,7 +255,7 @@ int CCompiler::Process(int argc, char* argv[])
 
 	// Banner.
 	printf("=============================================================\n");
-	printf(" LudumScribe Self-Hosting Transcompiler, version 1.0\n");
+	printf(" LudumScribe Bootstrapper Transcompiler, version 1.0\n");
 	printf(" Copyright (C) TwinDrills. All rights reserved.\n");
 	printf("=============================================================\n");
 	printf("\n");

@@ -50,6 +50,8 @@ CASTNode* CIdentifierExpressionASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CIdentifierExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CIdentifierExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{

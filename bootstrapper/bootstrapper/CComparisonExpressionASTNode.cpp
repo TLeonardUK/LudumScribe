@@ -57,6 +57,8 @@ CASTNode* CComparisonExpressionASTNode::Clone(CSemanter* semanter)
 // =================================================================
 CASTNode* CComparisonExpressionASTNode::Semant(CSemanter* semanter)
 { 
+	SEMANT_TRACE("CComparisonExpressionASTNode");
+
 	// Only semant once.
 	if (Semanted == true)
 	{
