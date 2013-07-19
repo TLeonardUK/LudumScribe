@@ -1468,7 +1468,7 @@ void CCPPTranslator::TranslateTryStatement(CTryStatementASTNode* node)
 		{
 			EmitSourceFile("catch (%s %s)\n", TranslateDataType(catchStmt->VariableStatement->Type).c_str(), catchStmt->VariableStatement->MangledIdentifier.c_str());
 			EmitSourceFile("{\n");	
-			node->BodyStatement->Translate(this);
+			catchStmt->BodyStatement->Translate(this);
 			EmitSourceFile("}\n");
 		}		
 	}

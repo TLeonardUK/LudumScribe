@@ -136,7 +136,7 @@ public class CCPPTranslator : CTranslator
 		{	
 			if (m_last_source_was_newline == true)
 			{
-				text = "\t".PadRight(m_source_indent_level) + text;
+				text = "".PadRight(m_source_indent_level, "\t") + text;
 			}
 			m_source_indent_level++;
 		}
@@ -145,14 +145,14 @@ public class CCPPTranslator : CTranslator
 			m_source_indent_level--;
 			if (m_last_source_was_newline == true)
 			{
-				text = "\t".PadRight(m_source_indent_level) + text;
+				text = "".PadRight(m_source_indent_level, "\t") + text;
 			}
 		}
 		else
 		{
 			if (m_last_source_was_newline == true)
 			{
-				text = "\t".PadRight(m_source_indent_level) + text;
+				text = "".PadRight(m_source_indent_level, "\t") + text;
 			}
 		}
 		
@@ -172,7 +172,7 @@ public class CCPPTranslator : CTranslator
 		{
 			if (m_last_header_was_newline == true)
 			{
-				text = "\t".PadRight(m_header_indent_level) + text;
+				text = "".PadRight(m_header_indent_level, "\t") + text;
 			}
 			m_header_indent_level++;
 		}
@@ -181,14 +181,14 @@ public class CCPPTranslator : CTranslator
 			m_header_indent_level--;
 			if (m_last_header_was_newline == true)
 			{
-				text = "\t".PadRight(m_header_indent_level) + text;
+				text = "".PadRight(m_header_indent_level, "\t") + text;
 			}
 		}
 		else
 		{
 			if (m_last_header_was_newline == true)
 			{
-				text = "\t".PadRight(m_header_indent_level) + text;
+				text = "".PadRight(m_header_indent_level, "\t") + text;
 			}
 		}
 		
@@ -205,7 +205,7 @@ public class CCPPTranslator : CTranslator
 	{
 		if (m_emit_source_counter > m_last_gc_collect_emit)
 		{
-			EmitSourceFile("lsGCObject.GCCollect(false);\n");
+			EmitSourceFile("lsGCObject::GCCollect(false);\n");
 		}
 		m_last_gc_collect_emit = m_emit_source_counter;
 	}
@@ -1190,7 +1190,9 @@ public class CCPPTranslator : CTranslator
 
 				m_switchBreakJumpLabel = previousLabel;
 
-				EmitSourceFile("}\n");			
+				EmitSourceFile("}\n");	
+			
+				outer_index++;		
 			}
 			else if (defaultStmt != null)
 			{
@@ -1211,6 +1213,8 @@ public class CCPPTranslator : CTranslator
 				{
 					EmitSourceFile("}\n");	
 				}
+			
+				outer_index++;
 				break;
 			}
 			else
@@ -1218,8 +1222,6 @@ public class CCPPTranslator : CTranslator
 			// TODO: Make it ignore expression of switch block.
 			//	GetContext().FatalError("Internal error. Unknown switch statement child node.", node.Token);
 			}
-			
-			outer_index++;
 		}
 
 		// Emit the break label.
@@ -1247,7 +1249,7 @@ public class CCPPTranslator : CTranslator
 			{
 				EmitSourceFile("catch ("+TranslateDataType(catchStmt.VariableStatement.Type)+" " + catchStmt.VariableStatement.MangledIdentifier + ")\n");
 				EmitSourceFile("{\n");	
-				node.BodyStatement.Translate(this);
+				catchStmt.BodyStatement.Translate(this);
 				EmitSourceFile("}\n");
 			}		
 		}
@@ -1562,7 +1564,7 @@ public class CCPPTranslator : CTranslator
 		}
 		else if (node.ExpressionResultType is CNullDataType)
 		{
-			return "null";
+			return "NULL";
 		}
 		else
 		{
@@ -1685,7 +1687,7 @@ public class CCPPTranslator : CTranslator
 				}
 				else
 				{
-					defaultValue = "null";
+					defaultValue = "NULL";
 				}
 
 				result = "((new lsArray<" + TranslateDataType(arrayType.ElementType) + ">(" + expr.TranslateExpr(this) + "))->Init(" + defaultValue + "))";

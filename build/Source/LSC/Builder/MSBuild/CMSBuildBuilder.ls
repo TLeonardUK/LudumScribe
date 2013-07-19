@@ -118,7 +118,7 @@ public class CMSBuildBuilder : CBuilder
 		string project_name = Path.StripDirectory(Path.StripExtension(m_context.GetFilePath())).Filter("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "_");
 		string project_guid = "B6037403-B804-4B15-8193-1E54E39D188D"; // TODO: Should probably not hard code this.
 
-		string solution_file_path = build_dir + "/" + project_name + ".sln";
+		string solution_file_path = Path.Normalize(build_dir + "/" + project_name + ".sln");
 		string solution_file = 
 			"Microsoft Visual Studio Solution File, Format Version 11.00\n" +
 			"# Visual Studio 2010\n" +
