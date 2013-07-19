@@ -1215,7 +1215,8 @@ public class CCPPTranslator : CTranslator
 			}
 			else
 			{
-				GetContext().FatalError("Internal error. Unknown switch statement child node.", node.Token);
+			// TODO: Make it ignore expression of switch block.
+			//	GetContext().FatalError("Internal error. Unknown switch statement child node.", node.Token);
 			}
 			
 			outer_index++;
