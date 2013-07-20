@@ -12,9 +12,15 @@
 #include <string>
 #include <assert.h>
 #include <algorithm>
+
+#ifdef _WIN32
 #include <stdarg.h>
-#include <map>
 #include <Windows.h>
+#else
+#include <cstdarg>
+#endif
+
+#include <map>
 
 #include "CStringHelper.h"
 
@@ -363,6 +369,8 @@ std::map<std::string, std::string> CStringHelper::GetEnvironmentVariables()
 {
 	std::map<std::string, std::string> vars;
 
+#ifdef _WIN32
+	
 	LPTCH str = GetEnvironmentStrings();
 	
 	std::string newvar = "";
@@ -398,5 +406,11 @@ std::map<std::string, std::string> CStringHelper::GetEnvironmentVariables()
 			
 	FreeEnvironmentStrings(str);
 
+#else
+	
+	assert(0);
+	
+#endif
+	
 	return vars;
 }

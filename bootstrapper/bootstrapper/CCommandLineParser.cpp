@@ -208,7 +208,7 @@ bool CCommandLineParser::Parse(int argc, char* argv[])
 
 				if (foundOption == false)
 				{
-					printf("%s is invalid value for argument %s\n", arg->Value, argString.c_str());
+					printf("%s is invalid value for argument %s\n", arg->Value.c_str(), argString.c_str());
 					return false;
 				}
 			}

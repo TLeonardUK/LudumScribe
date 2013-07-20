@@ -6,14 +6,16 @@
 
    ***************************************************************** */
 
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include <stdio.h>
 #include <string>
 #include <assert.h>
 #include <algorithm>
+
+#ifdef _WIN32
+#include <Windows.h>
 #include <direct.h>
-#include <windows.h>
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
 
 #include "CPathHelper.h"
 #include "CStringHelper.h"
@@ -69,6 +71,7 @@ bool CPathHelper::SaveFile(std::string path, std::string output)
 // =================================================================
 bool CPathHelper::IsDirectory(std::string value)
 {
+#ifdef _WIN32
 	DWORD flags = GetFileAttributesA(value.c_str());
 	if (flags == INVALID_FILE_ATTRIBUTES)
 	{
@@ -79,8 +82,10 @@ bool CPathHelper::IsDirectory(std::string value)
 	{
 		return false;
 	}
-
 	return true;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -88,6 +93,7 @@ bool CPathHelper::IsDirectory(std::string value)
 // =================================================================
 bool CPathHelper::IsFile(std::string value)
 {
+#ifdef _WIN32
 	DWORD flags = GetFileAttributesA(value.c_str());
 	if (flags == INVALID_FILE_ATTRIBUTES)
 	{
@@ -100,6 +106,9 @@ bool CPathHelper::IsFile(std::string value)
 	}
 
 	return true;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -107,6 +116,7 @@ bool CPathHelper::IsFile(std::string value)
 // =================================================================
 bool CPathHelper::IsRelative(std::string value)
 {
+#ifdef _WIN32
 	if (value.size() <= 2)
 	{
 		return true;
@@ -118,6 +128,9 @@ bool CPathHelper::IsRelative(std::string value)
 	}
 
 	return false;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -125,9 +138,13 @@ bool CPathHelper::IsRelative(std::string value)
 // =================================================================
 std::string	CPathHelper::CurrentPath()
 {
+#ifdef _WIN32
 	char buffer[512];
 	GetCurrentDirectoryA(512, buffer);
 	return std::string(buffer);
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -135,6 +152,7 @@ std::string	CPathHelper::CurrentPath()
 // =================================================================
 std::string CPathHelper::RealPathCase(std::string value)
 {
+#ifdef _WIN32
 	std::vector<std::string> crackedPath = CStringHelper::Split(value, '/');
 	std::string path = "";
 
@@ -164,6 +182,9 @@ std::string CPathHelper::RealPathCase(std::string value)
 	}
 
 	return path;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -246,9 +267,13 @@ std::string	CPathHelper::ExtractExtension(std::string value)
 // =================================================================
 void CPathHelper::CopyFileTo(std::string src, std::string dst)
 {
+#ifdef _WIN32
 	src = CleanPath(src);
 	dst = CleanPath(dst);
 	CopyFileA(src.c_str(), dst.c_str(), false);
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -256,6 +281,7 @@ void CPathHelper::CopyFileTo(std::string src, std::string dst)
 // =================================================================
 void CPathHelper::MakeDirectory(std::string value)
 {
+#ifdef _WIN32
 	std::vector<std::string> crackedPath = CStringHelper::Split(value, '/');
 	for (unsigned int i = 0; i < crackedPath.size(); i++)
 	{
@@ -275,6 +301,9 @@ void CPathHelper::MakeDirectory(std::string value)
 			CreateDirectoryA(path.c_str(), NULL);
 		}
 	}
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -283,6 +312,7 @@ void CPathHelper::MakeDirectory(std::string value)
 // =================================================================
 std::string	CPathHelper::GetAbsolutePath(std::string value)
 {
+#ifdef _WIN32
 	// Add current directory.
 	if (IsRelative(value) == true)
 	{
@@ -320,6 +350,9 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 	}
 
 	return finalPath;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -327,6 +360,7 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 // =================================================================
 std::string	CPathHelper::GetRelativePath(std::string path, std::string relative)
 {
+#ifdef _WIN32
 	std::string path_file     = CPathHelper::StripDirectory(path);
 	std::string relative_file = CPathHelper::StripDirectory(relative);
 
@@ -368,6 +402,9 @@ std::string	CPathHelper::GetRelativePath(std::string path, std::string relative)
 	}
 
 	return result;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -375,6 +412,7 @@ std::string	CPathHelper::GetRelativePath(std::string path, std::string relative)
 // =================================================================
 std::vector<std::string> CPathHelper::ListFiles(std::string value)
 {
+#ifdef _WIN32
 	std::vector<std::string>	files;
 	WIN32_FIND_DATAA			data;
 	HANDLE						handle;
@@ -405,14 +443,17 @@ std::vector<std::string> CPathHelper::ListFiles(std::string value)
 	}
 
 	return files;
+#else
+	assert(0);
+#endif	
 }
-
 
 // =================================================================
 //	List all files in a directory recursively.
 // =================================================================
 std::vector<std::string> CPathHelper::ListRecursiveFiles(std::string path, std::string extension)
 {
+#ifdef _WIN32
 	std::vector<std::string> result;
 	
 	std::vector<std::string> files = ListFiles(path);
@@ -449,6 +490,9 @@ std::vector<std::string> CPathHelper::ListRecursiveFiles(std::string path, std::
 	}
 
 	return result;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -456,6 +500,7 @@ std::vector<std::string> CPathHelper::ListRecursiveFiles(std::string path, std::
 // =================================================================
 std::vector<std::string> CPathHelper::ListDirs(std::string value)
 {
+#ifdef _WIN32
 	std::vector<std::string>	files;
 	WIN32_FIND_DATAA			data;
 	HANDLE						handle;
@@ -488,6 +533,9 @@ std::vector<std::string> CPathHelper::ListDirs(std::string value)
 	}
 
 	return files;
+#else
+	assert(0);
+#endif	
 }
 
 // =================================================================
@@ -495,6 +543,7 @@ std::vector<std::string> CPathHelper::ListDirs(std::string value)
 // =================================================================
 std::vector<std::string> CPathHelper::ListAll(std::string value)
 {
+#ifdef _WIN32
 	std::vector<std::string>	files;
 	WIN32_FIND_DATAA			data;
 	HANDLE						handle;
@@ -526,4 +575,7 @@ std::vector<std::string> CPathHelper::ListAll(std::string value)
 	}
 
 	return files;
+#else
+	assert(0);
+#endif	
 }

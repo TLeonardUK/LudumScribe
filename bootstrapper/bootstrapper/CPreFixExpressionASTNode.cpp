@@ -131,7 +131,7 @@ CASTNode* CPreFixExpressionASTNode::Semant(CSemanter* semanter)
 			// Check expression type is integer.
 			if (dynamic_cast<CIntDataType*>(ExpressionResultType) == NULL)
 			{
-				semanter->GetContext()->FatalError(CStringHelper::FormatString("Prefix operator '%s' only supports integer r-value's.", Token.Literal), Token);
+				semanter->GetContext()->FatalError(CStringHelper::FormatString("Prefix operator '%s' only supports integer r-value's.", Token.Literal.c_str()), Token);
 			}
 
 			break;
@@ -142,7 +142,7 @@ CASTNode* CPreFixExpressionASTNode::Semant(CSemanter* semanter)
 		{
 			if (dynamic_cast<CNumericDataType*>(leftValueBase->ExpressionResultType) == NULL)
 			{
-				semanter->GetContext()->FatalError(CStringHelper::FormatString("Unary %s operator is only supported on numeric types.", Token.Literal), Token);
+				semanter->GetContext()->FatalError(CStringHelper::FormatString("Unary %s operator is only supported on numeric types.", Token.Literal.c_str()), Token);
 			}
 
 			ExpressionResultType = leftValueBase->ExpressionResultType;

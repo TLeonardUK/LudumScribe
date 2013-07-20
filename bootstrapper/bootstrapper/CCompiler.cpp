@@ -22,7 +22,9 @@
 
 #include "CMSBuildBuilder.h"
 
-#include <windows.h>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 // =================================================================
 //	Merges two config states and returns the result. The passed

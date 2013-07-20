@@ -83,6 +83,7 @@ public:
 	int							GetLastLineRow		();
 	int							GetLastLineColumn	();
 
+	int							GetTicks			();
 	bool						Execute				(std::string path, std::string cmd_line);
 
 	bool						AddUsingFile		(std::string file, bool isNative, bool isLibrary, bool isCopy);

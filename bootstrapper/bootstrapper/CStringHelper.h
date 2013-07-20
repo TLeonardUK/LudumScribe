@@ -15,6 +15,12 @@
 #include <ctime>
 #include <map>
 
+#ifdef _WIN32
+#include <stdarg.h>
+#else
+#include <cstdarg>
+#endif
+
 // =================================================================
 //	Class contains several string related helper functions.
 // =================================================================

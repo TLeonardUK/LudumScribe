@@ -2091,7 +2091,7 @@ std::string	CCPPTranslator::TranslateCastExpression(CCastExpressionASTNode* node
 		}
 	}
 
-	GetContext()->FatalError(CStringHelper::FormatString("Internal error. Can not cast from '%s' to '%s'.", fromType->ToString(), toType->ToString()), node->Token);
+	GetContext()->FatalError(CStringHelper::FormatString("Internal error. Can not cast from '%s' to '%s'.", fromType->ToString().c_str(), toType->ToString().c_str()), node->Token);
 	return "";
 }
 
@@ -2215,7 +2215,7 @@ std::string	CCPPTranslator::TranslateTypeExpression(CTypeExpressionASTNode* node
 			}
 	}
 
-	GetContext()->FatalError(CStringHelper::FormatString("Internal error. Can not perform '%s' operator.", node->Token.Literal), node->Token);
+	GetContext()->FatalError(CStringHelper::FormatString("Internal error. Can not perform '%s' operator.", node->Token.Literal.c_str()), node->Token);
 	return "";
 }
 

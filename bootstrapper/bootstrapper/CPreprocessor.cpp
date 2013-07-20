@@ -9,6 +9,7 @@
 #include <string>
 #include <stdio.h>
 #include <assert.h>
+#include <stdexcept>
 
 #include "CCompiler.h"
 #include "CPreprocessor.h"

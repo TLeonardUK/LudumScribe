@@ -21,7 +21,11 @@
 #include "CTranslator.h"
 
 #include <stdexcept>
+#include <assert.h>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 // =================================================================
 //	Constructs a new instance of this class.
@@ -446,7 +450,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 {
 	try
 	{
-		int start_tick_count = GetTickCount();
+		int start_tick_count = GetTicks();
 
 		if (importedPackage == false)
 		{
@@ -558,7 +562,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 		// is done by the importer.
 		if (importedPackage == true)
 		{
-			int elapsed = GetTickCount() - start_tick_count;
+			int elapsed = GetTicks() - start_tick_count;
 			Info("Imported " + m_filename + " in " + CStringHelper::ToString(elapsed) + "ms");
 			return true;
 		}
@@ -574,24 +578,24 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 		}
 
 		// Translate into target language.
-		int tick_count = GetTickCount();
+		int tick_count = GetTicks();
 		m_compiler->GetTranslator()->Process(this);		
 		m_translated_files = m_compiler->GetTranslator()->GetTranslatedFiles();
 		Info(CStringHelper::FormatString("Translated %s using '%s' translator in %s ms.",
 										m_filename.c_str(), 
 										m_compiler->GetProjectConfig().GetString("TRANSLATOR_NAME").c_str(), 
-										CStringHelper::ToString(GetTickCount() - tick_count).c_str()));
+										CStringHelper::ToString(GetTicks() - tick_count).c_str()));
 
 		// Invoke native compiler.
-		tick_count = GetTickCount();
+		tick_count = GetTicks();
 		m_compiler->GetBuilder()->Process(this);
 		Info(CStringHelper::FormatString("Compiled %s using '%s' builder in %s ms.",
 								m_filename.c_str(), 
 								m_compiler->GetProjectConfig().GetString("BUILDER_NAME").c_str(), 
-								CStringHelper::ToString(GetTickCount() - tick_count).c_str()));
+								CStringHelper::ToString(GetTicks() - tick_count).c_str()));
 
 		// Work out elapsed time.
-		int elapsed = GetTickCount() - start_tick_count;
+		int elapsed = GetTicks() - start_tick_count;
 		Info("Generated " + m_filename + " in " + CStringHelper::ToString(elapsed) + "ms");
 
 		return true;
@@ -630,11 +634,25 @@ bool CTranslationUnit::PreProcess()
 }
 
 // =================================================================
+// 	Gets the current tick count.
+// =================================================================
+int	CTranslationUnit::GetTicks()
+{
+#ifdef _WIN32
+	return GetTickCount();
+#else
+	assert(0);
+#endif
+}
+
+// =================================================================
 //	Runs an executable witht he given arguments and emits the 
 //	output to the stdout.
 // =================================================================
 bool CTranslationUnit::Execute(std::string path, std::string cmd_line)
 {
+#ifdef _WIN32
+
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFOA		si = { sizeof(si) };
 	
@@ -656,5 +674,11 @@ bool CTranslationUnit::Execute(std::string path, std::string cmd_line)
 	CloseHandle(pi.hThread);
 
 	return (res == 0);
+
+#else
+
+	assert(0);
+
+#endif
 }
 

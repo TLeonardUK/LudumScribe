@@ -83,7 +83,7 @@ CASTNode* CComparisonExpressionASTNode::Semant(CSemanter* semanter)
 		Token.Type != TokenIdentifier::OP_EQUAL &&
 		Token.Type != TokenIdentifier::OP_NOT_EQUAL)
 	{
-		semanter->GetContext()->FatalError(CStringHelper::FormatString("%s operator cannot be used on objects.", Token.Literal), Token);
+		semanter->GetContext()->FatalError(CStringHelper::FormatString("%s operator cannot be used on objects.", Token.Literal.c_str()), Token);
 	}
 
 	// Cast to resulting expression.
