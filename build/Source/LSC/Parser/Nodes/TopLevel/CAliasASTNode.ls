@@ -46,8 +46,6 @@ public class CAliasASTNode : CDeclarationASTNode
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CAliasASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

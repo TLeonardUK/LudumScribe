@@ -26,8 +26,6 @@ public class CMethodBodyASTNode : CASTNode
 	
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CMethodBodyASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

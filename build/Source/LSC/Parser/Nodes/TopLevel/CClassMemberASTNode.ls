@@ -119,8 +119,6 @@ public class CClassMemberASTNode : CDeclarationASTNode
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CClassMemberASTNode="+Identifier);
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

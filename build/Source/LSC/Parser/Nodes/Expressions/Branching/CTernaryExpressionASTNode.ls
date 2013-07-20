@@ -55,8 +55,6 @@ public class CTernaryExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CTernaryExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

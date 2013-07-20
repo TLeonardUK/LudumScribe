@@ -935,7 +935,7 @@ public class CCPPTranslator : CTranslator
 				}
 				EmitSourceFile(")\n");	
 				EmitSourceFile("{\n");	
-				EmitGCCollect();
+				//EmitGCCollect();
 				
 				// Translate body.
 				node.Body.TranslateChildren(this);
@@ -1134,7 +1134,7 @@ public class CCPPTranslator : CTranslator
 	public virtual override void TranslateReturnStatement(CReturnStatementASTNode node)
 	{
 		EmitSourceFile("{\n");
-		EmitGCCollect();
+		//EmitGCCollect();
 		if (node.ReturnExpression != null)
 		{
 			EmitSourceFile("return (" + (node.ReturnExpression as CExpressionBaseASTNode).TranslateExpr(this) + ");\n");

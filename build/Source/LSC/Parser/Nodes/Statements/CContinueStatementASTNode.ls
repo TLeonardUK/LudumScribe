@@ -33,8 +33,6 @@ public class CContinueStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CContinueStatementASTNode");
-		
 		CASTNode node = FindLoopScope(semanter);
 		if (node == null || node.AcceptContinueStatement() == false)
 		{

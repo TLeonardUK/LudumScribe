@@ -10,11 +10,6 @@
 #include <typeinfo>
 #include "Packages/Native/Win32/System/Debug.hpp"
 
-lsString lsTrace::GetNameMangled(lsObject* value)
-{
-	return lsString(typeid(*value).name());
-}
-
 // -----------------------------------------------------------------------------
 //	Shows an error message to the user.
 // -----------------------------------------------------------------------------

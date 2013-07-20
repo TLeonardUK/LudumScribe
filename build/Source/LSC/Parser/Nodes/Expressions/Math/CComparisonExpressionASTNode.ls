@@ -48,8 +48,6 @@ public class CComparisonExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CComparisonExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

@@ -42,8 +42,6 @@ public class CArrayInitializerASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CArrayInitializerExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

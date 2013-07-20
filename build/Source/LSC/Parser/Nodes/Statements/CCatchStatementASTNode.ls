@@ -47,8 +47,6 @@ public class CCatchStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CCatchStatementASTNode");
-		
 		if (BodyStatement != null)
 		{
 			BodyStatement = BodyStatement.Semant(semanter);

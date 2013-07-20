@@ -22,7 +22,8 @@ class CClassMemberASTNode;
 class CExpressionASTNode;
 
 // Debug function used to make a trace of function calls during semantation.
-#ifdef _NDEBUG
+//#ifdef _NDEBUG 
+#if 1
 #define SEMANT_TRACE(...) 
 #else
 extern int g_semant_trace_index;

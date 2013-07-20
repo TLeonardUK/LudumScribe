@@ -60,8 +60,6 @@ public class CForStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CForStatementASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

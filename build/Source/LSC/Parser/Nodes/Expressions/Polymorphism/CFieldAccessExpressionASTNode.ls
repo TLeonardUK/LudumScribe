@@ -51,8 +51,6 @@ public class CFieldAccessExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CFieldAccessExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

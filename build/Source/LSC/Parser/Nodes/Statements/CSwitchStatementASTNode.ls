@@ -41,8 +41,6 @@ public class CSwitchStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CSwitchStatementASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

@@ -18,8 +18,6 @@ public class CClassBodyASTNode : CASTNode
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CClassBodyASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

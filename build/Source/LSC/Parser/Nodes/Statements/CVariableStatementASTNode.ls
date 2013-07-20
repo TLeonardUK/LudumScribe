@@ -65,8 +65,6 @@ public class CVariableStatementASTNode : CDeclarationASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CVariableStatementASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

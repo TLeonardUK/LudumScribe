@@ -41,8 +41,6 @@ public class CDefaultStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CDefaultStatementASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

@@ -377,6 +377,8 @@ void lsGCObject::operator delete(void *p)
 	
 lsGCObject* lsGCObject::GCAllocate(int size)
 {
+	GCCollect(false);
+
 	void* ptr = GC_MALLOC(size);
 	if (ptr == NULL)
 	{

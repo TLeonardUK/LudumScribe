@@ -11,13 +11,6 @@
 
 #include "Packages/Native/Win32/Compiler/Support/Types.hpp"
 
-class lsTrace
-{
-public:
-	static lsString GetNameMangled(lsObject* value);
-};
-
-
 // -----------------------------------------------------------------------------
 //	This class is used to expose debugging functionality.
 // -----------------------------------------------------------------------------

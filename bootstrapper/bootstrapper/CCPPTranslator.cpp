@@ -987,7 +987,7 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 			}
 			EmitSourceFile(")\n");	
 			EmitSourceFile("{\n");	
-			EmitGCCollect();
+			//EmitGCCollect();
 			
 			// Translate body.
 			node->Body->TranslateChildren(this);
@@ -1345,7 +1345,7 @@ void CCPPTranslator::TranslateIfStatement(CIfStatementASTNode* node)
 void CCPPTranslator::TranslateReturnStatement(CReturnStatementASTNode* node)
 {
 	EmitSourceFile("{\n");
-	EmitGCCollect();
+	//EmitGCCollect();
 	if (node->ReturnExpression != NULL)
 	{
 		EmitSourceFile("return (%s);\n", dynamic_cast<CExpressionBaseASTNode*>(node->ReturnExpression)->TranslateExpr(this).c_str());

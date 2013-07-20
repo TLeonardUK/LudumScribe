@@ -35,8 +35,6 @@ public class CBlockStatementASTNode : CASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CBlockStatementASTNode");
-		
 		SemantChildren(semanter);
 		return this;
 	}

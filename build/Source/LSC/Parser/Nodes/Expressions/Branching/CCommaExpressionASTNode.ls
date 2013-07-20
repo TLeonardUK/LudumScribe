@@ -47,8 +47,6 @@ public class CCommaExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CCommaExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

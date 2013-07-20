@@ -74,21 +74,12 @@ public class CASTNode
 
 		if (atStart == true)
 		{
-			Trace.Write("Add " + Trace.GetName(node) + " At Start");
 			Children.AddFirst(node);
 		}
 		else
 		{
-			Trace.Write("Add " + Trace.GetName(node));
 			Children.AddLast(node);
 		}
-		
-		Trace.Write("==================================");
-		foreach (CASTNode n in Children)
-		{
-			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
-		}
-		Trace.Write("==================================");
 	}
 		
 	// =================================================================
@@ -100,16 +91,8 @@ public class CASTNode
 		
 		if (Children.Contains(node))
 		{
-			Trace.Write("Removed " + Trace.GetName(node));
 			Children.Remove(node);
 		}
-		
-		Trace.Write("==================================");
-		foreach (CASTNode n in Children)
-		{
-			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
-		}
-		Trace.Write("==================================");
 	}
 	
 	// =================================================================
@@ -124,22 +107,12 @@ public class CASTNode
 
 		if (Children.Contains(replace))
 		{
-			Trace.Write("Removed " + Trace.GetName(replace));
 			Children.Remove(replace);
 		}
-
-		Trace.Write("Replaced " + Trace.GetName(replace) + " with " + Trace.GetName(with));
 			
 		Children.AddLast(with);
 		with.Parent = this;	
-		
-		Trace.Write("==================================");
-		foreach (CASTNode n in Children)
-		{
-			Trace.Write("\tChild:" + Trace.GetName(n) + " - " + n.ToString());
-		}
-		Trace.Write("==================================");
-		
+
 		return with;
 	}
 

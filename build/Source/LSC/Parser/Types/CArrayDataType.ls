@@ -78,8 +78,6 @@ public class CArrayDataType : CObjectDataType
 	
 	public virtual override CDataType Semant(CSemanter semanter, CASTNode node)
 	{
-		Trace.Write("CArrayDataType");
-		
 		CDataType dt = ElementType.Semant(semanter, node).ArrayOf();
 		dt.GetClass(semanter); // Initialises generic instances if neccessary.
 		return dt;

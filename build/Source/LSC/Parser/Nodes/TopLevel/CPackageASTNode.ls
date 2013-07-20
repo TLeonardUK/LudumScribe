@@ -18,8 +18,6 @@ public class CPackageASTNode : CASTNode
 	// Semantic analysis.
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CPackageASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{

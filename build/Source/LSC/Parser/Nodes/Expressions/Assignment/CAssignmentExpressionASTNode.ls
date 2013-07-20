@@ -47,9 +47,7 @@ public class CAssignmentExpressionASTNode : CExpressionBaseASTNode
 	//	Performs semantic analysis on this node.
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
-	{
-		Trace.Write("CAssignmentExpressionASTNode");
-		
+	{		
 		// Only semant once.
 		if (Semanted == true)
 		{

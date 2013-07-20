@@ -48,8 +48,6 @@ public class CIndexExpressionASTNode : CExpressionBaseASTNode
 	// =================================================================
 	public virtual override CASTNode Semant(CSemanter semanter)
 	{
-		Trace.Write("CIndexExpressionASTNode");
-		
 		// Only semant once.
 		if (Semanted == true)
 		{
