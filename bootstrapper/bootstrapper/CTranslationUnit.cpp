@@ -24,7 +24,18 @@
 #include <assert.h>
 
 #ifdef _WIN32
+
 #include <windows.h>
+
+#elif defined(__linux__) || defined(__GNUC__)
+
+#include <sys/time.h>
+#include <ctime>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+
 #endif
 
 // =================================================================
@@ -639,7 +650,9 @@ bool CTranslationUnit::PreProcess()
 int	CTranslationUnit::GetTicks()
 {
 #ifdef _WIN32
-	return GetTickCount();
+	return GetTickCount();	
+#elif defined(__linux__) || defined(__GNUC__)
+	return clock() / (CLOCKS_PER_SEC / 1000);
 #else
 	assert(0);
 #endif
@@ -675,6 +688,29 @@ bool CTranslationUnit::Execute(std::string path, std::string cmd_line)
 
 	return (res == 0);
 
+#elif defined(__linux__) || defined(__GNUC__)
+
+	pid_t pid = fork();
+	int status;
+
+	switch (pid) 
+	{
+	case -1: 
+		return 0;
+	
+	case 0: 
+		execl(path.c_str(), path.c_str(), cmd_line.c_str(), NULL); 
+		exit(1);
+		
+	default: 
+		while (!WIFEXITED(status)) 
+		{
+			waitpid(pid, &status, 0); 
+		}
+
+		return (WEXITSTATUS(status) == 0);
+	}
+	
 #else
 
 	assert(0);

@@ -1,32 +1,32 @@
 // -----------------------------------------------------------------------------
-// 	LSC.lsproject
+// 	Linux.lsplatform
 // 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
 // -----------------------------------------------------------------------------
 //	This file contains all the configuration needed to tell the compiler
-//	how to build and package the compiler (crazy incenstuous nonsesnse)!
+//	how to translate code for the linux platform.
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-//	COMPILE_FILE: Path to the root file to be compiled.
+//	PLATFORM_SHORT_NAME: Name of the platform we are compiling for. This is the name
+//				used in configuration files and by the PLATFORM definition.
 // -----------------------------------------------------------------------------
-#define COMPILE_FILE 			"LSC.ls"
+#define PLATFORM_SHORT_NAME 	"Linux"
 
 // -----------------------------------------------------------------------------
-//	BUILD_DIR: Directory to build translated project in.
+//	PLATFORM_NAME: Long version of the name used in descriptions.
 // -----------------------------------------------------------------------------
-#define BUILD_DIR				"../../Bin/Build/LSC/"
+#define PLATFORM_NAME 			"Linux"
 
 // -----------------------------------------------------------------------------
-//	OUTPUT_DIR: Folder to emit products to.
+//	PLATFORM_TRANSLATOR: Which translator to use to generate output.
 // -----------------------------------------------------------------------------
-#define OUTPUT_DIR				"../../Bin/"
+#define PLATFORM_TRANSLATOR 	"C++"
 
 // -----------------------------------------------------------------------------
-//	SUPPORTED_PLATFORMS: Defines which platforms are supported by this project.
+//	PLATFORM_BUILDER: Which builder to use to compile the translated output.
 // -----------------------------------------------------------------------------
-#define SUPPORTED_PLATFORMS   	"Win32"
-
-// -----------------------------------------------------------------------------
-//	SUPPORTED_CONFIGS: Defines which configurations are supported by this project.
-// -----------------------------------------------------------------------------
-#define SUPPORTED_CONFIGS		"Debug|Release"
+#if OS == "Linux"
+	#define PLATFORM_BUILDER "Make"
+#elif PLATFORM == "Linux"
+	#error "Can not target {PLATFORM_SHORT_NAME} on {OS}."
+#endif

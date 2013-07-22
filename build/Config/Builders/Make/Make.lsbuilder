@@ -1,40 +1,46 @@
 // -----------------------------------------------------------------------------
-// 	MSBuild.lsbuilder
+// 	Make.lsbuilder
 // 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
 // -----------------------------------------------------------------------------
 //	This file contains all the configuration needed to tell the compiler
-//	how to compile translated code with the MSBuild builder.
+//	how to compile translated code with the Make builder.
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 //	BUILDER_INTERNAL_NAME: Name of the compiled class that this config file represents.
 // -----------------------------------------------------------------------------
-#define BUILDER_INTERNAL_NAME 	"CMSBuildBuilder"
+#define BUILDER_INTERNAL_NAME 	"CMakeBuilder"
 
 // -----------------------------------------------------------------------------
 //	BUILDER_SHORT_NAME: Name of the builder.
 // -----------------------------------------------------------------------------
-#define BUILDER_SHORT_NAME 		"MSBuild"
+#define BUILDER_SHORT_NAME 		"Make"
 
 // -----------------------------------------------------------------------------
 //	BUILDER_NAME: Long version of the name used in descriptions.
 // -----------------------------------------------------------------------------
-#define BUILDER_NAME 			"Microsoft Build"
+#define BUILDER_NAME 			"Make"
 
 // -----------------------------------------------------------------------------
-//	MSBUILD_PATH: Path to the MSBuild.exe executable used to compile.
+//	MAKE_PATH: Path to the Make executable used to compile.
 // -----------------------------------------------------------------------------
-#define MSBUILD_PATH			@"{WINDIR}/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe"
+#define MAKE_PATH				@"???"
 
 // -----------------------------------------------------------------------------
-//	MSBUILD_FLAGS: Extra command line parameters to pass to MSBuild, can be used
-//				   to override default settings.
+//	MAKE_CFLAGS: Extra command line parameters to pass to the compiler
+//				 when using make.
 // -----------------------------------------------------------------------------
-#define MSBUILD_FLAGS			""
+#define MAKE_CFLAGS				""
+
+// -----------------------------------------------------------------------------
+//	MAKE_LDFLAGS: Extra command line parameters to pass to the linker
+//			   	  when using make.
+// -----------------------------------------------------------------------------
+#define MAKE_LDFLAGS			""
 
 // -----------------------------------------------------------------------------
 //	Make sure our platform is valid.
 // -----------------------------------------------------------------------------
-#if OS != "Win32" && PLATFORM == "Windows"
+#if OS != "Linux" && PLATFORM == "Linux"
 	#error "Can not build using {BUILDER_SHORT_NAME} on {OS}."
 #endif

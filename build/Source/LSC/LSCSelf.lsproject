@@ -14,12 +14,12 @@
 // -----------------------------------------------------------------------------
 //	BUILD_DIR: Directory to build translated project in.
 // -----------------------------------------------------------------------------
-#define BUILD_DIR				"../../Bin/LSCSELF/"
+#define BUILD_DIR				"../../Bin/Build/LSCSELF/"
 
 // -----------------------------------------------------------------------------
 //	OUTPUT_DIR: Folder to emit products to.
 // -----------------------------------------------------------------------------
-#define OUTPUT_DIR				"../../Bin/LSCSELF/"
+#define OUTPUT_DIR				"../../Bin/Build/"
 
 // -----------------------------------------------------------------------------
 //	SUPPORTED_PLATFORMS: Defines which platforms are supported by this project.

@@ -25,12 +25,8 @@
 // -----------------------------------------------------------------------------
 //	PLATFORM_BUILDER: Which builder to use to compile the translated output.
 // -----------------------------------------------------------------------------
-#if OS == "Linux"
-	#define PLATFORM_BUILDER "GCC"
-#elseif OS == "MacOS"
-	#define PLATFORM_BUILDER "GCC"
-#elseif OS == "Win32"
+#if OS == "Win32"
 	#define PLATFORM_BUILDER "MSBuild"		
-#else
-	#error "Can not target {SHORT_NAME} on {OS}."
+#elif PLATFORM == "Win32"
+	#error "Can not target {PLATFORM_SHORT_NAME} on {OS}."
 #endif

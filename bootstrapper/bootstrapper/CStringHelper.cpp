@@ -406,6 +406,33 @@ std::map<std::string, std::string> CStringHelper::GetEnvironmentVariables()
 			
 	FreeEnvironmentStrings(str);
 
+#elif defined(__linux__) || defined(__GNUC__)
+
+	extern char** environ;
+
+	std::string newvar = "";
+	char* var = NULL;
+	int i = 0;
+	
+	while (true)
+	{
+		var = *(environ + (i++));
+		if (var == NULL)
+		{
+			break;
+		}
+		
+		newvar = std::string(var);
+	 
+		// Should be in the format of name=value.
+		unsigned int idx = newvar.find('=');
+		if (idx > 0) // Ignore envvars that start with an = sign 
+					 // (some wierd variables we don't care are reported at the start like this).
+		{
+			vars.insert(std::pair<std::string, std::string>(newvar.substr(0, idx), newvar.substr(idx + 1)));
+		}
+	}
+
 #else
 	
 	assert(0);
