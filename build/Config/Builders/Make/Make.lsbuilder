@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------
 //	MAKE_PATH: Path to the Make executable used to compile.
 // -----------------------------------------------------------------------------
-#define MAKE_PATH				@"???"
+#define MAKE_PATH				@"/usr/bin/make"
 
 // -----------------------------------------------------------------------------
 //	MAKE_CFLAGS: Extra command line parameters to pass to the compiler

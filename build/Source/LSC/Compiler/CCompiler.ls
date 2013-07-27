@@ -121,6 +121,7 @@ public class CCompiler
 	private string									m_builderDirectory;
 	private string									m_translatorDirectory;
 	private string									m_buildDirectory;
+	private string									m_baseDirectory;
 
 	private string									m_fileExtension;
 
@@ -421,7 +422,7 @@ public class CCompiler
 		string compile_file_path = m_project_config.GetString("COMPILE_FILE");
 		if (Path.IsRelative(compile_file_path) == true)
 		{
-			compile_file_path = Path.Normalize(Path.StripFilename(path) + "/" + compile_file_path);
+			compile_file_path = Path.Normalize(Path.GetAbsolute(Path.StripFilename(path) + "/" + compile_file_path));
 		}
 		if (!File.Exists(compile_file_path))
 		{
@@ -429,11 +430,18 @@ public class CCompiler
 			return false;
 		}
 
+		// Find base directory.
+		m_baseDirectory = m_project_config.GetString("BUILD_DIR");
+		if (Path.IsRelative(m_baseDirectory) == true)
+		{
+			m_baseDirectory = Path.GetAbsolute(Path.Normalize(Path.StripFilename(path)));
+		}
+ 
 		// Create output directory.
 		m_buildDirectory = m_project_config.GetString("OUTPUT_DIR");
 		if (Path.IsRelative(m_buildDirectory) == true)
 		{
-			m_buildDirectory = Path.Normalize(Path.StripFilename(path) + "/" + m_buildDirectory);
+			m_buildDirectory = Path.GetAbsolute(Path.Normalize(Path.StripFilename(path) + "/" + m_buildDirectory));
 		}
 		if (!Directory.Exists(m_buildDirectory))
 		{
@@ -566,7 +574,15 @@ public class CCompiler
 	{
 		return m_buildDirectory;
 	}
-
+	
+	// =================================================================
+	//	Gets the directory thatthe project is in.
+	// =================================================================
+	string GetProjectDirectory()
+	{
+		return m_baseDirectory;
+	}
+		
 	// =================================================================
 	//	Gets the translator to use when compiling files.
 	// =================================================================

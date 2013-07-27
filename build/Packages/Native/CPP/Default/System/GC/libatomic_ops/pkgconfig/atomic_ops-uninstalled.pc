@@ -1,0 +1,10 @@
+prefix=/Volumes/main/LudumScribe/LudumScribe/build/Packages/Native/CPP/Default/System/GC
+exec_prefix=${prefix}
+top_builddir=/Volumes/main/LudumScribe/LudumScribe/build/Packages/Native/CPP/Default/System/GC/libatomic_ops
+top_srcdir=/Volumes/main/LudumScribe/LudumScribe/build/Packages/Native/CPP/Default/System/GC/libatomic_ops
+
+Name: The atomic_ops library (uninstalled)
+Description: Atomic memory update operations
+Version: 7.2
+Libs: ${top_builddir}/src/libatomic_ops.la
+Cflags: -I${top_builddir}/src -I${top_srcdir}/src

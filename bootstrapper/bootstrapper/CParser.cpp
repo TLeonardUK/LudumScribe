@@ -231,7 +231,7 @@
 		}
 		*/
 
-		for (auto iter = m_scope_stack.begin(); iter != m_scope_stack.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = m_scope_stack.begin(); iter != m_scope_stack.end(); iter++)
 		{		
 			CClassMemberASTNode* class_scope = dynamic_cast<CClassMemberASTNode*>(*iter);
 			if (class_scope != NULL)
@@ -494,7 +494,7 @@
 			}
 
 			std::vector<std::string> files = CPathHelper::ListFiles(final_path);
-			for (auto iter = files.begin(); iter != files.end(); iter++)
+			for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); iter++)
 			{
 				std::string file_path = final_path + "/" + (*iter);		
 			

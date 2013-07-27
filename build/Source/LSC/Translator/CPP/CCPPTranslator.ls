@@ -513,8 +513,8 @@ public class CCPPTranslator : CTranslator
 		m_base_directory			= Path.StripFilename(m_context.GetFilePath());
 		m_dst_directory				= m_context.GetCompiler().GetBuildDirectory();
 		m_package_directory			= m_context.GetCompiler().GetPackageDirectory();
-		m_source_directory			= m_dst_directory + "Source/";
-		m_source_package_directory	= m_dst_directory + "Source/Packages/";
+		m_source_directory			= m_dst_directory;
+		m_source_package_directory	= m_dst_directory + "Packages/";
 		m_package					= node;
 		m_created_files.Clear();
 
@@ -615,11 +615,19 @@ public class CCPPTranslator : CTranslator
 			string dst_file_no_extension = Path.StripExtension(dst_file);
 			
 			// Copy native file over.
+#if PLATFORM=="Win32"
 			if (File.Exists(file_no_extension + ".lib"))
 			{
 				m_created_files.AddLast(dst_file_no_extension + ".lib");
 				File.Copy(file_no_extension + ".lib", dst_file_no_extension + ".lib");
 			}
+#elif PLATFORM=="Linux" || PLATFORM=="MacOS"
+			if (File.Exists(file_no_extension + ".a"))
+			{
+				m_created_files.AddLast(dst_file_no_extension + ".a");
+				File.Copy(file_no_extension + ".a", dst_file_no_extension + ".a");
+			}
+#endif
 		}
 		
 		// Copy across all copy files.

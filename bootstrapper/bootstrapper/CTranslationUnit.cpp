@@ -27,7 +27,7 @@
 
 #include <windows.h>
 
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 
 #include <sys/time.h>
 #include <ctime>
@@ -55,13 +55,13 @@ CTranslationUnit::CTranslationUnit(CCompiler* compiler, std::string file_path, s
 // =================================================================
 CTranslationUnit::~CTranslationUnit()
 {
-	for (auto iter = m_imported_units.begin(); iter != m_imported_units.end(); iter++)
+	for (std::vector<CTranslationUnit*>::iterator iter = m_imported_units.begin(); iter != m_imported_units.end(); iter++)
 	{
 		delete *iter;
 	}
 	m_imported_units.clear();
 
-	for (auto iter = m_identifier_data_types.begin(); iter != m_identifier_data_types.end(); iter++)
+	for (std::vector<CDataType*>::iterator iter = m_identifier_data_types.begin(); iter != m_identifier_data_types.end(); iter++)
 	{
 		delete *iter;
 	}
@@ -203,7 +203,7 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative, bool isLibr
 
 	if (isLibrary == true)
 	{
-		for (auto iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
+		for (std::vector<std::string>::iterator iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
 		{
 			std::string clean_iter = *iter;
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
@@ -215,7 +215,7 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative, bool isLibr
 	}
 	else if (isCopy == true)
 	{
-		for (auto iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
+		for (std::vector<std::string>::iterator iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
 		{
 			std::string clean_iter = *iter;
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
@@ -227,7 +227,7 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative, bool isLibr
 	}
 	else if (isNative == true)
  	{
-		for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
+		for (std::vector<std::string>::iterator iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
 		{
 			std::string clean_iter = *iter;
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
@@ -239,7 +239,7 @@ bool CTranslationUnit::AddUsingFile(std::string file, bool isNative, bool isLibr
 	}
 	else
 	{
-		for (auto iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
+		for (std::vector<std::string>::iterator iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
 		{
 			std::string clean_iter = *iter;
 			if (CStringHelper::ToLower(cleaned) == CStringHelper::ToLower(clean_iter))
@@ -268,7 +268,7 @@ void CTranslationUnit::FatalError(std::string msg, std::string source, int row, 
 	else
 	{
 		line = "(could not retrieve source code)";
-		for (auto iter = m_imported_units.begin(); iter != m_imported_units.end(); iter++)
+		for (std::vector<CTranslationUnit*>::iterator iter = m_imported_units.begin(); iter != m_imported_units.end(); iter++)
 		{
 			CTranslationUnit* unit = *iter;
 			if (unit->m_file_path == source)
@@ -381,12 +381,12 @@ bool CTranslationUnit::Evaluate(std::string expr)
 		}
 
 		// Replace all identifier tokens with defines.
-		for (auto iter = m_token_list.begin(); iter != m_token_list.end(); iter++)
+		for (std::vector<CToken>::iterator iter = m_token_list.begin(); iter != m_token_list.end(); iter++)
 		{
 			CToken& token = *iter;
 			if (token.Type == TokenIdentifier::IDENTIFIER)
 			{
-				for (auto defIter = m_defines.begin(); defIter != m_defines.end(); defIter++)
+				for (std::vector<CDefine>::iterator defIter = m_defines.begin(); defIter != m_defines.end(); defIter++)
 				{
 					CDefine& define = *defIter;
 					if (define.Name == token.Literal)
@@ -496,7 +496,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 			std::string					support_dir = m_compiler->GetPackageDirectory() + "/Compiler/Support";
 			std::vector<std::string>	files		= CPathHelper::ListFiles(support_dir);
 
-			for (auto iter = files.begin(); iter != files.end(); iter++)
+			for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); iter++)
 			{
 				AddUsingFile(support_dir + "/" + (*iter), false, false, false);
 			}
@@ -508,19 +508,19 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 			// If we are an imported package ourselves, then pass the import up to the main package.
 			if (importedPackage == true)
 			{
-				for (auto iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
+				for (std::vector<std::string>::iterator iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
 				{
 					importingPackage->AddUsingFile(*iter, false, false, false);
 				}
-				for (auto iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
+				for (std::vector<std::string>::iterator iter = m_native_files.begin(); iter != m_native_files.end(); iter++)
 				{
 					importingPackage->AddUsingFile(*iter, true, false, false);
 				}
-				for (auto iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
+				for (std::vector<std::string>::iterator iter = m_library_files.begin(); iter != m_library_files.end(); iter++)
 				{
 					importingPackage->AddUsingFile(*iter, false, true, false);
 				}
-				for (auto iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
+				for (std::vector<std::string>::iterator iter = m_copy_files.begin(); iter != m_copy_files.end(); iter++)
 				{
 					importingPackage->AddUsingFile(*iter, false, false, true);
 				}
@@ -533,10 +533,10 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 				std::vector<std::string> imported_files;
 				while (imported_files.size() != m_using_files.size())
 				{			
-					for (auto iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
+					for (std::vector<std::string>::iterator iter = m_using_files.begin(); iter != m_using_files.end(); iter++)
 					{
 						bool imported = false;
-						for (auto iter2 = imported_files.begin(); iter2 != imported_files.end(); iter2++)
+						for (std::vector<std::string>::iterator iter2 = imported_files.begin(); iter2 != imported_files.end(); iter2++)
 						{
 							if (*iter == *iter2)
 							{
@@ -553,7 +553,7 @@ bool CTranslationUnit::Compile(bool importedPackage, CTranslationUnit* importing
 							CASTNode* unitRoot = unit->GetASTRoot();
 							CASTNode* realRoot = GetASTRoot();
 							
-							for (auto childIter = unitRoot->Children.begin(); childIter != unitRoot->Children.end(); childIter++)
+							for (std::vector<CASTNode*>::iterator childIter = unitRoot->Children.begin(); childIter != unitRoot->Children.end(); childIter++)
 							{
 								realRoot->AddChild(*childIter);
 							}
@@ -651,7 +651,7 @@ int	CTranslationUnit::GetTicks()
 {
 #ifdef _WIN32
 	return GetTickCount();	
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 	return clock() / (CLOCKS_PER_SEC / 1000);
 #else
 	assert(0);
@@ -688,7 +688,7 @@ bool CTranslationUnit::Execute(std::string path, std::string cmd_line)
 
 	return (res == 0);
 
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 
 	pid_t pid = fork();
 	int status;

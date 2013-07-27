@@ -6,7 +6,9 @@
 
    ***************************************************************** */
 
+#ifdef _WIN32
 #pragma warning(disable:4996) // Remove Microsofts obsession with their proprietary _s postfixed functions.
+#endif
 
 #include "CCPPTranslator.h"
 
@@ -405,7 +407,7 @@ void CCPPTranslator::EmitRequiredClassIncludes(CClassASTNode* node)
 		}
 	}
 
-	for (auto iter = node->Interfaces.begin(); iter != node->Interfaces.end(); iter++)
+	for (std::vector<CClassASTNode*>::iterator  iter = node->Interfaces.begin(); iter != node->Interfaces.end(); iter++)
 	{
 		CClassASTNode* interfaceNode = *iter;
 		if (interfaceNode->IsNative == false)
@@ -433,7 +435,7 @@ std::vector<CClassASTNode*> CCPPTranslator::FindReferencedClasses(CASTNode* node
 		{
 			CCollectionHelper::VectorAddIfNotExists(references, classNode->SuperClass);
 		}
-		for (auto iter = classNode->Interfaces.begin(); iter != classNode->Interfaces.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator  iter = classNode->Interfaces.begin(); iter != classNode->Interfaces.end(); iter++)
 		{
 			CCollectionHelper::VectorAddIfNotExists(references, *iter);
 		}
@@ -447,10 +449,10 @@ std::vector<CClassASTNode*> CCPPTranslator::FindReferencedClasses(CASTNode* node
 	}
 
 	// Grab references made by children.
-	for (auto iter = node->Children.begin(); iter != node->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator  iter = node->Children.begin(); iter != node->Children.end(); iter++)
 	{
 		std::vector<CClassASTNode*> child_refs = FindReferencedClasses(*iter);		
-		for (auto ref_iter = child_refs.begin(); ref_iter != child_refs.end(); ref_iter++)
+		for (std::vector<CClassASTNode*>::iterator  ref_iter = child_refs.begin(); ref_iter != child_refs.end(); ref_iter++)
 		{
 			CCollectionHelper::VectorAddIfNotExists(references, *ref_iter);	
 		}
@@ -502,7 +504,7 @@ void CCPPTranslator::GenerateEntryPoint(CPackageASTNode* node)
 	EmitSourceFile("\n");
 
 	// Call class constructors.
-	for (auto iter = node->Children.begin(); iter != node->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = node->Children.begin(); iter != node->Children.end(); iter++)
 	{
 		CClassASTNode* classNode = dynamic_cast<CClassASTNode*>(*iter);
 		if (classNode != NULL &&
@@ -553,8 +555,8 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 	m_base_directory			= CPathHelper::StripFilename(m_context->GetFilePath());
 	m_dst_directory				= m_context->GetCompiler()->GetBuildDirectory();
 	m_package_directory			= m_context->GetCompiler()->GetPackageDirectory();
-	m_source_directory			= m_dst_directory + "Source/";
-	m_source_package_directory	= m_dst_directory + "Source/Packages/";
+	m_source_directory			= m_dst_directory;
+	m_source_package_directory	= m_dst_directory + "Packages/";
 	m_package					= node;
 	m_created_files.clear();
 
@@ -566,7 +568,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 	// Work out and create all unique native files.
 	std::vector<std::string> native_files = m_context->GetNativeFileList();
 	m_native_file_paths.clear();
-	for (auto iter = native_files.begin(); iter != native_files.end(); iter++)
+	for (std::vector<std::string>::iterator  iter = native_files.begin(); iter != native_files.end(); iter++)
 	{
 		std::string file     = *iter;
 		std::string dst_file = file;
@@ -592,7 +594,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 		// Work out base file without an extension.
 		std::string file_no_extension = CPathHelper::StripExtension(file);
 		std::string dst_file_no_extension = CPathHelper::StripExtension(dst_file);
-		
+
 		// Copy native file over.
 		if (CPathHelper::IsFile(file_no_extension + ".hpp"))
 		{
@@ -629,7 +631,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 
 	// Work out and create all library files.
 	std::vector<std::string> library_files = m_context->GetLibraryFileList();
-	for (auto iter = library_files.begin(); iter != library_files.end(); iter++)
+	for (std::vector<std::string>::iterator  iter = library_files.begin(); iter != library_files.end(); iter++)
 	{
 		std::string file     = *iter;
 		std::string dst_file = file;
@@ -657,16 +659,24 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 		std::string dst_file_no_extension = CPathHelper::StripExtension(dst_file);
 		
 		// Copy native file over.
+#ifdef _WIN32
 		if (CPathHelper::IsFile(file_no_extension + ".lib"))
 		{
 			m_created_files.push_back(dst_file_no_extension + ".lib");
 			CPathHelper::CopyFileTo(file_no_extension + ".lib", dst_file_no_extension + ".lib");
 		}
+#else defined(__linux__) || defined(__APPLE__)
+		if (CPathHelper::IsFile(file_no_extension + ".a"))
+		{
+			m_created_files.push_back(dst_file_no_extension + ".a");
+			CPathHelper::CopyFileTo(file_no_extension + ".a", dst_file_no_extension + ".a");
+		}
+#endif
 	}
 	
 	// Copy across all copy files.
 	std::vector<std::string> copy_files = m_context->GetCopyFileList();
-	for (auto iter = copy_files.begin(); iter != copy_files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = copy_files.begin(); iter != copy_files.end(); iter++)
 	{
 		std::string file     = *iter;
 		std::string dst_file = file;
@@ -698,7 +708,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 	}
 	
 	// Emit a source file for each class.
-	for (auto iter = node->Children.begin(); iter != node->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = node->Children.begin(); iter != node->Children.end(); iter++)
 	{
 		CClassASTNode* child = dynamic_cast<CClassASTNode*>(*iter);
 		if (child == NULL)
@@ -733,7 +743,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 
 	// Emit all forward declarations.
 	std::vector<CASTNode*> referenced_classes = m_package->Children;//FindReferencedClasses(node);
-	for (auto iter = referenced_classes.begin(); iter != referenced_classes.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = referenced_classes.begin(); iter != referenced_classes.end(); iter++)
 	{
 		CClassASTNode* child = dynamic_cast<CClassASTNode*>(*iter);
 		if (child == NULL)
@@ -742,7 +752,7 @@ void CCPPTranslator::TranslatePackage(CPackageASTNode* node)
 		}
 		if (child->IsGeneric == true)
 		{
-			for (auto iter2 = child->GenericInstances.begin(); iter2 != child->GenericInstances.end(); iter2++)
+			for (std::vector<CClassASTNode*>::iterator iter2 = child->GenericInstances.begin(); iter2 != child->GenericInstances.end(); iter2++)
 			{
 				if (!IsKeyword((*iter2)->MangledIdentifier))
 				{
@@ -798,7 +808,7 @@ void CCPPTranslator::TranslateClass(CClassASTNode* node)
 	
 	// Emit all forward declarations.
 	std::vector<CASTNode*> referenced_classes = m_package->Children;//FindReferencedClasses(node);
-	for (auto iter = referenced_classes.begin(); iter != referenced_classes.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = referenced_classes.begin(); iter != referenced_classes.end(); iter++)
 	{
 		CClassASTNode* child = dynamic_cast<CClassASTNode*>(*iter);
 		if (child == NULL || 
@@ -808,7 +818,7 @@ void CCPPTranslator::TranslateClass(CClassASTNode* node)
 		}
 		if (child->IsGeneric == true)
 		{
-			for (auto iter2 = child->GenericInstances.begin(); iter2 != child->GenericInstances.end(); iter2++)
+			for (std::vector<CClassASTNode*>::iterator iter2 = child->GenericInstances.begin(); iter2 != child->GenericInstances.end(); iter2++)
 			{
 				if (!IsKeyword((*iter2)->MangledIdentifier))
 				{
@@ -847,7 +857,7 @@ void CCPPTranslator::TranslateClass(CClassASTNode* node)
 					inherit += "public " + node->SuperClass->MangledIdentifier;
 				}
 
-				for (auto iter = node->Interfaces.begin(); iter != node->Interfaces.end(); iter++)
+				for (std::vector<CClassASTNode*>::iterator iter = node->Interfaces.begin(); iter != node->Interfaces.end(); iter++)
 				{
 					CClassASTNode* inheritNode = *iter;
 					if (inherit != " ")
@@ -863,7 +873,7 @@ void CCPPTranslator::TranslateClass(CClassASTNode* node)
 			EmitHeaderFile("{\npublic:\n");	
 		}
 
-		for (auto iter = node->Body->Children.begin(); iter != node->Body->Children.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = node->Body->Children.begin(); iter != node->Body->Children.end(); iter++)
 		{
 			(*iter)->Translate(this);
 		}
@@ -930,7 +940,7 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 				EmitHeaderFile(", ");
 			}
 		}
-		for (auto iter = node->Arguments.begin(); iter != node->Arguments.end(); iter++)
+		for (std::vector<CVariableStatementASTNode*>::iterator iter = node->Arguments.begin(); iter != node->Arguments.end(); iter++)
 		{
 			CVariableStatementASTNode* arg = *iter;
 			
@@ -973,7 +983,7 @@ void CCPPTranslator::TranslateClassMember(CClassMemberASTNode* node)
 					EmitSourceFile(", ");
 				}
 			}
-			for (auto iter = node->Arguments.begin(); iter != node->Arguments.end(); iter++)
+			for (std::vector<CVariableStatementASTNode*>::iterator iter = node->Arguments.begin(); iter != node->Arguments.end(); iter++)
 			{
 				CVariableStatementASTNode* arg = *iter;
 			
@@ -1372,9 +1382,9 @@ void CCPPTranslator::TranslateSwitchStatement(CSwitchStatementASTNode* node)
 					dynamic_cast<CExpressionBaseASTNode*>(node->ExpressionStatement)->TranslateExpr(this).c_str());
 
 	// Skip first child, thats the expression.
-	auto iterBegin = node->Children.begin() + 1;
+	std::vector<CASTNode*>::iterator iterBegin = node->Children.begin() + 1;
 
-	for (auto iter = iterBegin; iter != node->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = iterBegin; iter != node->Children.end(); iter++)
 	{
 		CCaseStatementASTNode* caseStmt = dynamic_cast<CCaseStatementASTNode*>(*iter);
 		CDefaultStatementASTNode* defaultStmt = dynamic_cast<CDefaultStatementASTNode*>(*iter);
@@ -1387,7 +1397,7 @@ void CCPPTranslator::TranslateSwitchStatement(CSwitchStatementASTNode* node)
 			}
 			EmitSourceFile("if (");
 
-			for (auto exprIter = caseStmt->Expressions.begin(); exprIter != caseStmt->Expressions.end(); exprIter++)
+			for (std::vector<CASTNode*>::iterator exprIter = caseStmt->Expressions.begin(); exprIter != caseStmt->Expressions.end(); exprIter++)
 			{
 				if (exprIter != caseStmt->Expressions.begin())
 				{
@@ -1461,7 +1471,7 @@ void CCPPTranslator::TranslateTryStatement(CTryStatementASTNode* node)
 	node->BodyStatement->Translate(this);
 	EmitSourceFile("}\n");
 
-	for (auto iter = node->Children.begin(); iter != node->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = node->Children.begin(); iter != node->Children.end(); iter++)
 	{
 		CCatchStatementASTNode* catchStmt = dynamic_cast<CCatchStatementASTNode*>(*iter);
 		if (catchStmt != NULL)
@@ -1957,7 +1967,7 @@ std::string	CCPPTranslator::TranslateMethodCallExpression(CMethodCallExpressionA
 		args += left_base->TranslateExpr(this);
 	}
 
-	for (auto iter = node->ArgumentExpressions.begin(); iter != node->ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = node->ArgumentExpressions.begin(); iter != node->ArgumentExpressions.end(); iter++)
 	{
 		if (args != "")
 		{
@@ -2146,7 +2156,7 @@ std::string	CCPPTranslator::TranslateNewExpression(CNewExpressionASTNode* node)
 		// Invoke the constructor.
 		result += "->" + node->ResolvedConstructor->MangledIdentifier + "(";
 
-		for (auto iter = node->ArgumentExpressions.begin(); iter != node->ArgumentExpressions.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = node->ArgumentExpressions.begin(); iter != node->ArgumentExpressions.end(); iter++)
 		{
 			CExpressionBaseASTNode* expr = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 			if (iter != node->ArgumentExpressions.begin())
@@ -2227,7 +2237,7 @@ std::string	CCPPTranslator::TranslateArrayInitializerExpression(CArrayInitialize
 {
 	std::string result = "lsConstructArray<" + TranslateDataType(dynamic_cast<CArrayDataType*>(node->ExpressionResultType)->ElementType) + ">(" + CStringHelper::ToString(node->Expressions.size());
 
-	for (auto iter = node->Expressions.begin(); iter != node->Expressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = node->Expressions.begin(); iter != node->Expressions.end(); iter++)
 	{
 		result += ", " + dynamic_cast<CExpressionBaseASTNode*>(*iter)->TranslateExpr(this);
 	}

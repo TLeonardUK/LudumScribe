@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to perform
 //	common math operations.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.Math;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.Math;
 
 // -----------------------------------------------------------------------------
 //	This class is used to perform several common math operations.

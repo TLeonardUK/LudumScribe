@@ -124,6 +124,7 @@
     <ClCompile Include="CLexer.cpp" />
     <ClCompile Include="CLiteralExpressionASTNode.cpp" />
     <ClCompile Include="CLogicalExpressionASTNode.cpp" />
+    <ClCompile Include="CMakeBuilder.cpp" />
     <ClCompile Include="CMethodBodyASTNode.cpp" />
     <ClCompile Include="CMethodCallExpressionASTNode.cpp" />
     <ClCompile Include="CMSBuildBuilder.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="CIntDataType.h" />
     <ClInclude Include="CLiteralExpressionASTNode.h" />
     <ClInclude Include="CLogicalExpressionASTNode.h" />
+    <ClInclude Include="CMakeBuilder.h" />
     <ClInclude Include="CMethodBodyASTNode.h" />
     <ClInclude Include="CMethodCallExpressionASTNode.h" />
     <ClInclude Include="CMSBuildBuilder.h" />

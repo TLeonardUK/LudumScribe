@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to perform
 //	common directory manipulation.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.Directory;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.Directory;
 
 // -----------------------------------------------------------------------------
 //	Specifies what type of information Directory.List should return.

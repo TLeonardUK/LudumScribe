@@ -27,47 +27,51 @@
 // =================================================================
 bool CMSBuildBuilder::Build()
 {
-	std::string build_dir = m_context->GetCompiler()->GetBuildDirectory();
+	std::string build_dir = CPathHelper::GetAbsolutePath(m_context->GetCompiler()->GetBuildDirectory()) + "/";
 	CConfigState project_config = m_context->GetCompiler()->GetProjectConfig();
+	
+	std::string project_dir = m_context->GetCompiler()->GetProjectDirectory();
 
 	std::vector<std::string> configs = CStringHelper::Split(project_config.GetString("SUPPORTED_CONFIGS"), '|');
 	std::string config_name = project_config.GetString("CONFIG");
+	
+	std::string output_file_name = project_config.GetString("OUTPUT_FILE");
 
 	std::vector<std::string> files = m_context->GetTranslatedFiles();
 
-	std::string output_dir = project_config.GetString("OUTPUT_DIR");
+	std::string output_dir = project_config.GetString("OUTPUT_DIR") + "/";
 	if (CPathHelper::IsRelative(output_dir))
 	{
-		output_dir = build_dir + "/" + output_dir;
+		output_dir = project_dir + "/" + output_dir;
 	}
-	output_dir = CPathHelper::CleanPath(output_dir);
+	output_dir = CPathHelper::CleanPath(CPathHelper::GetAbsolutePath(output_dir));
 
 	// Gather all source files in the build folder.
 	std::vector<std::string> source_files;// = CPathHelper::ListRecursiveFiles(build_dir, "cpp");
 	std::vector<std::string> header_files;// = CPathHelper::ListRecursiveFiles(build_dir, "hpp");
 	std::vector<std::string> library_files;
-	for (auto iter = files.begin(); iter != files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); iter++)
 	{
 		std::string file = CPathHelper::CleanPath(*iter);
 		std::string ext = CStringHelper::ToLower(CPathHelper::ExtractExtension(file));
 
 		if (ext == "hpp" || ext == "h")
 		{
-			header_files.push_back(file);
+			header_files.push_back(CPathHelper::GetAbsolutePath(file));
 		}
 		else if (ext == "lib")
 		{
-			library_files.push_back(file);
+			library_files.push_back(CPathHelper::GetAbsolutePath(file));
 		}
 		else 
 		{
-			source_files.push_back(file);
+			source_files.push_back(CPathHelper::GetAbsolutePath(file));
 		}
 	}
 
 	// Work out include directories.
 	std::vector<std::string> include_paths;
-	for (auto iter = header_files.begin(); iter != header_files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = header_files.begin(); iter != header_files.end(); iter++)
 	{
 		std::string dir = CPathHelper::StripFilename(*iter) + "/";
 		std::string relative = CPathHelper::GetRelativePath(dir, build_dir);
@@ -78,7 +82,7 @@ bool CMSBuildBuilder::Build()
 
 		bool found = false;
 
-		for (auto iter2 = include_paths.begin(); iter2 != include_paths.end(); iter2++)
+		for (std::vector<std::string>::iterator iter2 = include_paths.begin(); iter2 != include_paths.end(); iter2++)
 		{
 			if (relative == *iter2)
 			{
@@ -98,7 +102,7 @@ bool CMSBuildBuilder::Build()
 	// Work out library directories.
 	std::vector<std::string> full_library_paths;
 	std::vector<std::string> full_library_names;
-	for (auto iter = library_files.begin(); iter != library_files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = library_files.begin(); iter != library_files.end(); iter++)
 	{
 		std::string dir = CPathHelper::StripFilename(*iter) + "/";
 		std::string relative = CPathHelper::GetRelativePath(dir, build_dir);
@@ -109,7 +113,7 @@ bool CMSBuildBuilder::Build()
 
 		bool found = false;
 
-		for (auto iter2 = full_library_paths.begin(); iter2 != full_library_paths.end(); iter2++)
+		for (std::vector<std::string>::iterator iter2 = full_library_paths.begin(); iter2 != full_library_paths.end(); iter2++)
 		{
 			if (relative == *iter2)
 			{
@@ -248,7 +252,7 @@ bool CMSBuildBuilder::Build()
 						"	   <AdditionalLibraryDirectories>" + library_paths + ";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>" + 
 						"      <SubSystem>Console</SubSystem>\n" +
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
-						"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
+						"      <OutputFile>" + output_dir + output_file_name + "</OutputFile>\n" + 
 						"    </Link>\n" +
 						"  </ItemDefinitionGroup>\n";
 	}
@@ -272,14 +276,14 @@ bool CMSBuildBuilder::Build()
 						"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
 						"      <EnableCOMDATFolding>true</EnableCOMDATFolding>\n" +
 						"      <OptimizeReferences>true</OptimizeReferences>\n" +
-						"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
+						"      <OutputFile>" + output_dir + output_file_name + "</OutputFile>\n" + 
 						"    </Link>\n" +
 						"  </ItemDefinitionGroup>\n";
 	}
 
 	// Include files.
 	project_file += "  <ItemGroup>\n";	
-	for (auto iter = header_files.begin(); iter != header_files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = header_files.begin(); iter != header_files.end(); iter++)
 	{
 		std::string relative = CPathHelper::GetRelativePath(*iter, project_file_path);
 		project_file += "    <ClInclude Include=\"" + relative + "\" />\n";
@@ -288,7 +292,7 @@ bool CMSBuildBuilder::Build()
 
 	// Source files.
 	project_file += "  <ItemGroup>\n";
-	for (auto iter = source_files.begin(); iter != source_files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = source_files.begin(); iter != source_files.end(); iter++)
 	{
 		std::string relative = CPathHelper::GetRelativePath(*iter, project_file_path);
 		project_file += "    <ClCompile Include=\"" + relative + "\" />\n";

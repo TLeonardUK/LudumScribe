@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------
 //	BUILD_DIR: Directory to build translated project in.
 // -----------------------------------------------------------------------------
-#define BUILD_DIR				"../../Bin/Build/LSCSELF/"
+#define BUILD_DIR				"../../Bin/Build/LSCSELF/{OS}/{CONFIG}/"
 
 // -----------------------------------------------------------------------------
 //	OUTPUT_DIR: Folder to emit products to.
@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------
 //	SUPPORTED_PLATFORMS: Defines which platforms are supported by this project.
 // -----------------------------------------------------------------------------
-#define SUPPORTED_PLATFORMS   	"Win32"
+#define SUPPORTED_PLATFORMS   	"Win32|Linux"
 
 // -----------------------------------------------------------------------------
 //	SUPPORTED_CONFIGS: Defines which configurations are supported by this project.

@@ -54,7 +54,7 @@ std::string	CIdentifierDataType::ToString()
 	if (GenericTypes.size() > 0)
 	{
 		std::string args = "";
-		for (auto iter = GenericTypes.begin(); iter != GenericTypes.end(); iter++)
+		for (std::vector<CDataType*>::iterator iter = GenericTypes.begin(); iter != GenericTypes.end(); iter++)
 		{
 			if (args != "")
 			{
@@ -87,7 +87,7 @@ CDataType* CIdentifierDataType::Semant(CSemanter* semanter, CASTNode* node)
 
 	std::vector<CDataType*> generic_arguments;
 
-	for (auto iter = GenericTypes.begin(); iter != GenericTypes.end(); iter++)
+	for (std::vector<CDataType*>::iterator  iter = GenericTypes.begin(); iter != GenericTypes.end(); iter++)
 	{
 		generic_arguments.push_back((*iter)->Semant(semanter, node));
 	}

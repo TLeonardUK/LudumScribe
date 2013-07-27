@@ -139,6 +139,12 @@
     <Filter Include="Source Files\Parser\Nodes\Statements\Top-Level">
       <UniqueIdentifier>{8bbdd2b2-bda6-4be6-802b-a404ecb089dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Builder\Make">
+      <UniqueIdentifier>{2df20183-3fea-4ee5-82a9-055ae3376bf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Builder\Make">
+      <UniqueIdentifier>{9c8b7f39-fe2a-411b-9a41-a61dc82b5a07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bootstrapper.cpp">
@@ -366,6 +372,9 @@
     <ClCompile Include="CArrayInitializerASTNode.cpp">
       <Filter>Source Files\Parser\Nodes\Expressions\Types</Filter>
     </ClCompile>
+    <ClCompile Include="CMakeBuilder.cpp">
+      <Filter>Source Files\Builder\Make</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CStringHelper.h">
@@ -592,6 +601,9 @@
     </ClInclude>
     <ClInclude Include="CArrayInitializerASTNode.h">
       <Filter>Header Files\Parser\Nodes\Expressions\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="CMakeBuilder.h">
+      <Filter>Header Files\Builder\Make</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

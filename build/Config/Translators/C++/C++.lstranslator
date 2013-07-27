@@ -31,11 +31,15 @@
 //	TRANSLATOR_LIBRARY_FILE_EXTENSION: File extension to look for when including 
 //						   			   native library files.
 // -----------------------------------------------------------------------------
+#if OS == "Win32"
 #define TRANSLATOR_LIBRARY_FILE_EXTENSION "lib"
+#else
+#define TRANSLATOR_LIBRARY_FILE_EXTENSION "a"
+#endif
 
 // -----------------------------------------------------------------------------
 //	Make sure our platform is valid.
 // -----------------------------------------------------------------------------
 #if OS != "Win32" && OS != "Linux" && OS != "MacOS"
-	#error "Can not translate to {NAME} on {OS}."
+	#error "Can not translate to {TRANSLATOR_SHORT_NAME} on {OS}."
 #endif

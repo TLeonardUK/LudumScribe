@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to perform
 //	common path manipulation.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.Path;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.Path;
 
 // -----------------------------------------------------------------------------
 //	This class is used to perform several common path manipulation functions.

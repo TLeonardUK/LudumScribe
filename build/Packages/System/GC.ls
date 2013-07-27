@@ -5,18 +5,18 @@
 //	This package contains the declarations of the class used to interact with
 //	the target languages garbage collector.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.GC;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.GC;
 
 // Include the Boehm Garbage Collector folder/library
 // if our target language is C++.
 #if TRANSLATOR_SHORT_NAME=="C++"
-	using copy    Native.{PLATFORM}.System.GC.include.*;
-	using copy    Native.{PLATFORM}.System.GC.include.extra.*;
-	using copy    Native.{PLATFORM}.System.GC.include.private.*;	
+	using copy    {NATIVE_PACKAGE_NAMESPACE}.System.GC.include.*;
+	using copy    {NATIVE_PACKAGE_NAMESPACE}.System.GC.include.extra.*;
+	using copy    {NATIVE_PACKAGE_NAMESPACE}.System.GC.include.private.*;	
 	#if CONFIG=="Debug"
-		using library Native.{PLATFORM}.System.GC.lib.libgcd;
+		using library {NATIVE_PACKAGE_NAMESPACE}.System.GC.lib.{PLATFORM}.libgcd;
 	#else
-		using library Native.{PLATFORM}.System.GC.lib.libgc;	
+		using library {NATIVE_PACKAGE_NAMESPACE}.System.GC.lib.{PLATFORM}.libgc;	
 	#endif
 #endif
 

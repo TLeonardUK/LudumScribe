@@ -6,7 +6,7 @@
 //	This should never be modified as the compiler relies on the correct content 
 //  and ordering of this file.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.Compiler.Support.Runtime;
+using native {NATIVE_PACKAGE_NAMESPACE}.Compiler.Support.Runtime;
 
 // Nothing is declared directly in this file. All work is performed by the 
 // native runtime source code.

@@ -23,6 +23,11 @@
 #define PLATFORM_TRANSLATOR 	"C++"
 
 // -----------------------------------------------------------------------------
+//	NATIVE_PACKAGE_NAMESPACE: Which folder contains native package source code.	
+// -----------------------------------------------------------------------------
+#define NATIVE_PACKAGE_NAMESPACE "Native.CPP.Default"
+
+// -----------------------------------------------------------------------------
 //	PLATFORM_BUILDER: Which builder to use to compile the translated output.
 // -----------------------------------------------------------------------------
 #if OS == "Linux"

@@ -13,20 +13,24 @@ public class CMSBuildBuilder : CBuilder
 {
 	protected override bool Build()
 	{
-		string build_dir = m_context.GetCompiler().GetBuildDirectory();
+		string build_dir = Path.GetAbsolute(m_context.GetCompiler().GetBuildDirectory()) + "/";
 		CConfigState project_config = m_context.GetCompiler().GetProjectConfig();
 
+		string project_dir = m_context.GetCompiler().GetProjectDirectory();
+		
+		string output_file_name = project_config.GetString("OUTPUT_FILE");
+		
 		string[] configs = project_config.GetString("SUPPORTED_CONFIGS").Split('|');
 		string config_name = project_config.GetString("CONFIG");
 
 		List<string> files = m_context.GetTranslatedFiles();
 
-		string output_dir = project_config.GetString("OUTPUT_DIR");
+		string output_dir = project_config.GetString("OUTPUT_DIR") + "/";
 		if (Path.IsRelative(output_dir))
 		{
-			output_dir = build_dir + "/" + output_dir;
+			output_dir = project_dir + output_dir;
 		}
-		output_dir = Path.Normalize(output_dir);
+		output_dir = Path.Normalize(Path.GetAbsolute(output_dir));
 
 		// Gather all source files in the build folder.
 		List<string> source_files = new List<string>();
@@ -39,15 +43,15 @@ public class CMSBuildBuilder : CBuilder
 
 			if (ext == "hpp" || ext == "h")
 			{
-				header_files.AddLast(file);
+				header_files.AddLast(Path.GetAbsolute(file));
 			}
 			else if (ext == "lib")
 			{
-				library_files.AddLast(file);
+				library_files.AddLast(Path.GetAbsolute(file));
 			}
 			else 
 			{
-				source_files.AddLast(file);
+				source_files.AddLast(Path.GetAbsolute(file));
 			}
 		}
 
@@ -243,7 +247,7 @@ public class CMSBuildBuilder : CBuilder
 							"	   <AdditionalLibraryDirectories>" + library_paths + ";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>" + 
 							"      <SubSystem>Console</SubSystem>\n" +
 							"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
-							"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
+							"      <OutputFile>" + output_dir + output_file_name + "</OutputFile>\n" + 
 							"    </Link>\n" +
 							"  </ItemDefinitionGroup>\n";
 		}
@@ -267,7 +271,7 @@ public class CMSBuildBuilder : CBuilder
 							"      <GenerateDebugInformation>true</GenerateDebugInformation>\n" +
 							"      <EnableCOMDATFolding>true</EnableCOMDATFolding>\n" +
 							"      <OptimizeReferences>true</OptimizeReferences>\n" +
-							"      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>\n" + 
+							"      <OutputFile>" + output_dir + output_file_name + "</OutputFile>\n" + 
 							"    </Link>\n" +
 							"  </ItemDefinitionGroup>\n";
 		}

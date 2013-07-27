@@ -119,7 +119,7 @@ std::string CClassMemberASTNode::ToString()
 		val += " " + Identifier;
 		val += "(";
 
-		for (auto iter = Arguments.begin(); iter != Arguments.end(); iter++)
+		for (std::vector<CVariableStatementASTNode*>::iterator iter = Arguments.begin(); iter != Arguments.end(); iter++)
 		{
 			if (iter != Arguments.begin())
 			{
@@ -171,7 +171,7 @@ CASTNode* CClassMemberASTNode::Semant(CSemanter* semanter)
 
 	// Semant arguments.	
 	std::vector<CDataType*> argument_types;
-	for (auto iter = Arguments.begin(); iter != Arguments.end(); iter++)
+	for (std::vector<CVariableStatementASTNode*>::iterator iter = Arguments.begin(); iter != Arguments.end(); iter++)
 	{
 		CVariableStatementASTNode* arg = (*iter);
 		arg->Semant(semanter);
@@ -349,7 +349,7 @@ void CClassMemberASTNode::AddClassConstructorStub(CSemanter* semanter)
 
 	// Find all fields with assignment expressions
 	// and add their assignment to this constructor.
-	for (auto iter = classScope->Body->Children.begin(); iter != classScope->Body->Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = classScope->Body->Children.begin(); iter != classScope->Body->Children.end(); iter++)
 	{
 		CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 		if (member != NULL)
@@ -400,7 +400,7 @@ void CClassMemberASTNode::AddInstanceConstructorStub(CSemanter* semanter)
 	
 	// Find all fields with assignment expressions
 	// and add their assignment to this constructor.
-	for (auto iter = classScope->Body->Children.rbegin(); iter != classScope->Body->Children.rend(); iter++)
+	for (std::vector<CASTNode*>::reverse_iterator iter = classScope->Body->Children.rbegin(); iter != classScope->Body->Children.rend(); iter++)
 	{
 		CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 		if (member != NULL)
@@ -557,7 +557,7 @@ CASTNode* CClassMemberASTNode::Finalize(CSemanter* semanter)
 
 		// Create a list of arguments.
 		std::vector<CDataType*> types;
-		for (auto iter = Arguments.begin(); iter != Arguments.end(); iter++)
+		for (std::vector<CVariableStatementASTNode*>::iterator iter = Arguments.begin(); iter != Arguments.end(); iter++)
 		{
 			types.push_back((*iter)->Type);
 		}
@@ -577,7 +577,7 @@ CASTNode* CClassMemberASTNode::Finalize(CSemanter* semanter)
 				MangledIdentifier = node->MangledIdentifier;
 			}
 
-			for (auto iter = scope->Interfaces.begin(); iter != scope->Interfaces.end(); iter++)
+			for (std::vector<CClassASTNode*>::iterator iter = scope->Interfaces.begin(); iter != scope->Interfaces.end(); iter++)
 			{
 				CClassASTNode* interf = *iter;		
 				CClassMemberASTNode* interf_node = interf->FindClassMethod(semanter, Identifier, types, true, this, this);
@@ -621,7 +621,7 @@ CASTNode* CClassMemberASTNode::Clone(CSemanter* semanter)
 	clone->ReturnType		 = this->ReturnType;
 	clone->IsConstructor	 = this->IsConstructor;
 	
-	for (auto iter = Arguments.begin(); iter != Arguments.end(); iter++)
+	for (std::vector<CVariableStatementASTNode*>::iterator iter = Arguments.begin(); iter != Arguments.end(); iter++)
 	{
 		CVariableStatementASTNode* arg = dynamic_cast<CVariableStatementASTNode*>((*iter)->Clone(semanter));
 		clone->Arguments.push_back(arg);

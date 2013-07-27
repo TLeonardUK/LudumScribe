@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to interact with
 //	the output console.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.Console;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.Console;
 
 // -----------------------------------------------------------------------------
 //	This class is used to read/write from the standard output console.

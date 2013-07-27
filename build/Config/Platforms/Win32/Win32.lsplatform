@@ -23,10 +23,15 @@
 #define PLATFORM_TRANSLATOR 	"C++"
 
 // -----------------------------------------------------------------------------
+//	NATIVE_PACKAGE_NAMESPACE: Which folder contains native package source code.	
+// -----------------------------------------------------------------------------
+#define NATIVE_PACKAGE_NAMESPACE "Native.CPP.Default"
+
+// -----------------------------------------------------------------------------
 //	PLATFORM_BUILDER: Which builder to use to compile the translated output.
 // -----------------------------------------------------------------------------
 #if OS == "Win32"
-	#define PLATFORM_BUILDER "MSBuild"		
+	#define PLATFORM_BUILDER "MSBuild"
 #elif PLATFORM == "Win32"
 	#error "Can not target {PLATFORM_SHORT_NAME} on {OS}."
 #endif

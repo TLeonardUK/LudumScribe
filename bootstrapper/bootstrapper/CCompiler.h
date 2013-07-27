@@ -88,6 +88,7 @@ private:
 	std::string							m_builderDirectory;
 	std::string							m_translatorDirectory;
 	std::string							m_buildDirectory;
+	std::string							m_baseDirectory;
 
 	std::string							m_fileExtension;
 
@@ -119,6 +120,7 @@ public:
 
 	std::string GetPackageDirectory		();	
 	std::string GetBuildDirectory		();	
+	std::string GetProjectDirectory		();	
 	std::string GetFileExtension		();
 
 	CTranslator* GetTranslator			();

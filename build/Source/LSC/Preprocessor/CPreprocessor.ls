@@ -248,7 +248,7 @@ public class CPreprocessor
 		while (!EndOfLines())
 		{		
 			List<string> split = SplitLine(LookAheadLine());
-			if (split.Count() > 1)
+			if (split.Count() >= 1)
 			{
 				string cmd = split.GetIndex(0);
 				if (cmd == "#if")
@@ -315,7 +315,7 @@ public class CPreprocessor
 		{
 			List<string> split = SplitLine(CurrentLine());
 			string cmd = split.GetIndex(0);
-			string val = split.GetIndex(1);
+			string val = split.Count() > 1 ? split.GetIndex(1) : "";
 
 			if (cmd == "#endif" || cmd == "#end")
 			{

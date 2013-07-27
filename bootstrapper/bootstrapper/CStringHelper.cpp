@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #ifdef _WIN32
+#include <cstdarg>
 #include <stdarg.h>
 #include <Windows.h>
 #else
@@ -95,7 +96,7 @@ std::vector<std::string> CStringHelper::Split(std::string value, char deliminato
 	while (true)
 	{
 		int offset = value.find(deliminator, startIndex);
-		if (offset <= 0)
+		if (offset < 0)
 		{
 			break;
 		}
@@ -117,7 +118,7 @@ std::string CStringHelper::Join(std::vector<std::string> values, std::string glu
 {
 	std::string result = "";
 
-	for (auto iter = values.begin(); iter != values.end(); iter++)
+	for (std::vector<std::string>::iterator iter = values.begin(); iter != values.end(); iter++)
 	{
 		if (iter != values.begin())
 		{
@@ -134,9 +135,11 @@ std::string CStringHelper::Join(std::vector<std::string> values, std::string glu
 // =================================================================
 std::string CStringHelper::Replace(std::string value, std::string from, std::string to)
 {
+	int offset = 0;
+	
 	while (true)
 	{
-		int pos = value.find(from);
+		int pos = value.find(from, offset);
 		if (pos == std::string::npos)
 		{
 			break;
@@ -145,6 +148,8 @@ std::string CStringHelper::Replace(std::string value, std::string from, std::str
 		std::string left = value.substr(0, pos);
 		std::string right = value.substr(pos + from.size());
 		value = left + to + right;
+		
+		offset = pos + to.size();
 	}
 
 	return value;
@@ -188,12 +193,19 @@ std::string	CStringHelper::FormatString(std::string value, ...)
 // =================================================================
 std::string	CStringHelper::FormatStringVarArgs(std::string value, va_list& va)
 {
+	va_list start_list;
+
+// Fucking microsoft.
+#ifdef _WIN32
+	start_list = va;
+#else
+	va_copy(start_list, va);
+#endif
+
 	int size = vsnprintf(NULL, NULL, value.c_str(), va);
 
 	char* buffer = new char[size + 1];
-
-	vsnprintf(buffer, size, value.c_str(), va);
-	buffer[size] = '\0';
+	vsnprintf(buffer, size + 1, value.c_str(), start_list);
 
 	std::string result = buffer;
 
@@ -406,7 +418,7 @@ std::map<std::string, std::string> CStringHelper::GetEnvironmentVariables()
 			
 	FreeEnvironmentStrings(str);
 
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__)  || defined(__APPLE__) 
 
 	extern char** environ;
 

@@ -183,7 +183,7 @@ std::string CPreprocessor::ReplaceDefineTags(std::string line)
 	if (line.find('{') != std::string::npos &&
 		line.find('}') != std::string::npos)
 	{
-		for (auto iter = m_defines->begin(); iter != m_defines->end(); iter++)
+		for (std::vector<CDefine>::iterator  iter = m_defines->begin(); iter != m_defines->end(); iter++)
 		{
 			CDefine& define = *iter;
 			line = CStringHelper::Replace(line, "{" + define.Name + "}", define.Value);
@@ -272,7 +272,7 @@ void CPreprocessor::SkipIfBlock()
 	while (!EndOfLines())
 	{		
 		std::vector<std::string> split = SplitLine(LookAheadLine());
-		if (split.size() > 1)
+		if (split.size() >= 1)
 		{
 			std::string cmd = split.at(0);
 			if (cmd == "#if")
@@ -339,7 +339,7 @@ void CPreprocessor::ParseIf(std::string line)
 	{
 		std::vector<std::string> split = SplitLine(CurrentLine());
 		std::string cmd = split.at(0);
-		std::string val = split.at(1);
+		std::string val = split.size() > 1 ? split.at(1) : "";
 
 		if (cmd == "#endif" || cmd == "#end")
 		{
@@ -427,7 +427,7 @@ void CPreprocessor::ParseUndefine(std::string line)
 
 	std::string name = CStringHelper::StripWhitespace(line);
 				
-	for (auto iter = m_defines->begin(); iter != m_defines->end(); iter++)
+	for (std::vector<CDefine>::iterator  iter = m_defines->begin(); iter != m_defines->end(); iter++)
 	{
 		CDefine& def = *iter;
 		if (def.Name == name)

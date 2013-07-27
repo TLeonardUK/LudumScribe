@@ -6,7 +6,7 @@
 //	language. This should never be modified as the compiler relies on the 
 //	correct content and ordering of this file.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.Compiler.Support.Types;
+using native {NATIVE_PACKAGE_NAMESPACE}.Compiler.Support.Types;
 using System.Collections.*;
 
 // =============================================================================
@@ -598,7 +598,8 @@ public sealed native("lsString") box("StringBox") class @string : null, IEnumera
 		
 		if (seperator == "")
 		{
-			return { this };
+			result.AddLast(this);
+			return result;
 		}
 		
 		for (int i = 0; i < Length(); i++)

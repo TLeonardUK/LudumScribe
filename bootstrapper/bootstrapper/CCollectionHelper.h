@@ -26,7 +26,7 @@ public:
 	static int VectorIndexOf(std::vector<T>& vector, T object)
 	{
 		int index = 0;
-		for (auto iter = vector.begin(); iter != vector.end(); iter++, index++)
+		for (typename std::vector<T>::iterator iter = vector.begin(); iter != vector.end(); iter++, index++)
 		{
 			if (*iter == object)
 			{
@@ -40,7 +40,7 @@ public:
 	static bool VectorAddIfNotExists(std::vector<T>& vector, T object)
 	{
 		int index = 0;
-		for (auto iter = vector.begin(); iter != vector.end(); iter++, index++)
+		for (typename std::vector<T>::iterator iter = vector.begin(); iter != vector.end(); iter++, index++)
 		{
 			if (*iter == object)
 			{

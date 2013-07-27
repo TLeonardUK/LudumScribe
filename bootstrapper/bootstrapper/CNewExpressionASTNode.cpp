@@ -51,7 +51,7 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 
 	// Semant arguments.
 	std::vector<CDataType*> argument_datatypes;
-	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{
 		CExpressionBaseASTNode* node = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 		node = dynamic_cast<CExpressionBaseASTNode*>(node->Semant(semanter));
@@ -70,7 +70,7 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 	{
 		// Cast all arguments to correct data types.
 		int index = 0;
-		for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 		{
 			CExpressionBaseASTNode* subnode = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 			subnode->Parent->ReplaceChild(subnode, subnode = dynamic_cast<CExpressionBaseASTNode*>(subnode->CastTo(semanter, new CIntDataType(Token), Token)));
@@ -127,7 +127,7 @@ CASTNode* CNewExpressionASTNode::Semant(CSemanter* semanter)
 
 		// Cast all arguments to correct data types.
 		int index = 0;
-		for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 		{
 			CDataType* dataType = node->Arguments.at(index++)->Type;
 
@@ -171,7 +171,7 @@ CASTNode* CNewExpressionASTNode::Finalize(CSemanter* semanter)
 {
 	// Grab arguments.
 	std::vector<CDataType*> argument_datatypes;
-	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{
 		CExpressionBaseASTNode* node = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 		argument_datatypes.push_back(node->ExpressionResultType);
@@ -206,7 +206,7 @@ CASTNode* CNewExpressionASTNode::Clone(CSemanter* semanter)
 	clone->DataType = DataType;
 	clone->IsArray = IsArray;
 
-	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{
 		CASTNode* node = (*iter)->Clone(semanter);
 		clone->ArgumentExpressions.push_back(node);

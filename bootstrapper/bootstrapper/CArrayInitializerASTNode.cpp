@@ -46,7 +46,7 @@ CASTNode* CArrayInitializerASTNode::Clone(CSemanter* semanter)
 {
 	CArrayInitializerASTNode* clone = new CArrayInitializerASTNode(NULL, Token);
 
-	for (auto iter = Expressions.begin(); iter != Expressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Expressions.begin(); iter != Expressions.end(); iter++)
 	{
 		CASTNode* node = (*iter)->Clone(semanter);
 		clone->Expressions.push_back(node);
@@ -71,7 +71,7 @@ CASTNode* CArrayInitializerASTNode::Semant(CSemanter* semanter)
 	Semanted = true;
 
 	// Semant all expressions.
-	for (auto iter = Expressions.begin(); iter != Expressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Expressions.begin(); iter != Expressions.end(); iter++)
 	{
 		CExpressionBaseASTNode* node = dynamic_cast<CExpressionBaseASTNode*>(*iter);
 		node->Semant(semanter);

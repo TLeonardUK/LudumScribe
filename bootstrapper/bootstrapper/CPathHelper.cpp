@@ -17,13 +17,12 @@
 #include <direct.h>
 #define _CRT_SECURE_NO_DEPRECATE
 
-#else defined(__linux__) || defined(__GNUC__)
+#else defined(__linux__) || defined(__APPLE__)
 
 #include <unistd.h> 
 #include <sys/types.h>  
 #include <sys/stat.h>   
 #include <fcntl.h>
-#include <sys/sendfile.h>
 #include <dirent.h>
 #include <cstring>
 
@@ -37,7 +36,7 @@
 // =================================================================
 bool CPathHelper::LoadFile(std::string path, std::string& output)
 {
-	FILE* file = fopen(path.c_str(), "r");
+	FILE* file = fopen(path.c_str(), "rb");
 	if (file == NULL)
 	{
 		return false;
@@ -49,7 +48,31 @@ bool CPathHelper::LoadFile(std::string path, std::string& output)
 		int c = fgetc(file);
 		if (c != EOF)
 		{
-			output += (char)c;
+			// Patch up \r\n newlines into simply \n
+			if (c == '\r')
+			{
+				int c2 = fgetc(file);
+				if (c2 == '\n')
+				{
+					output += (char)c2;
+				}
+				else
+				{					
+					output += (char)c;
+					if (c2 != EOF)
+					{
+						output += (char)c2;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				output += (char)c;
+			}
 		}
 	}
 
@@ -62,7 +85,7 @@ bool CPathHelper::LoadFile(std::string path, std::string& output)
 // =================================================================
 bool CPathHelper::SaveFile(std::string path, std::string output)
 {
-	FILE* file = fopen(path.c_str(), "w");
+	FILE* file = fopen(path.c_str(), "wb");
 	if (file == NULL)
 	{
 		return false;
@@ -95,7 +118,7 @@ bool CPathHelper::IsDirectory(std::string value)
 		return false;
 	}
 	return true;
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 	if (access(value.c_str(), 0) != 0)
 	{
 		return false;
@@ -133,7 +156,7 @@ bool CPathHelper::IsFile(std::string value)
 	}
 
 	return true;
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 	if (access(value.c_str(), 0) != 0)
 	{
 		return false;
@@ -170,7 +193,7 @@ bool CPathHelper::IsRelative(std::string value)
 	}
 
 	return false;
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__) 
 	if (value.size() <= 1)
 	{
 		return true;
@@ -196,7 +219,7 @@ std::string	CPathHelper::CurrentPath()
 	char buffer[512];
 	GetCurrentDirectoryA(512, buffer);
 	return std::string(buffer);
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__) 
 	char buffer[512];
 	getcwd(buffer, 512);
 	return std::string(buffer);
@@ -219,7 +242,7 @@ std::string CPathHelper::RealPathCase(std::string value)
 		if (path != "")
 		{
 			std::vector<std::string> files = ListAll(path + "/");
-			for (auto iter = files.begin(); iter != files.end(); iter++)
+			for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); iter++)
 			{
 				std::string lower1 = CStringHelper::ToLower(*iter);
 				std::string lower2 = CStringHelper::ToLower(crack);
@@ -325,15 +348,26 @@ void CPathHelper::CopyFileTo(std::string src, std::string dst)
 	dst = CleanPath(dst);
 #ifdef _WIN32
 	CopyFileA(src.c_str(), dst.c_str(), false);
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__) 
+	if (IsFile(dst) == true)
+	{
+		unlink(dst.c_str());
+	}
+
 	int source_fd = open(src.c_str(), O_RDWR);
-	int dest_fd   = open(dst.c_str(), O_RDWR);          
+	int dest_fd   = open(dst.c_str(), O_RDWR|O_CREAT|O_TRUNC, 0777);  
 
 	struct stat stats;
 	fstat(source_fd, &stats);
-
-	sendfile(dest_fd, source_fd, 0, stats.st_size);
 	
+    char buf[1024];
+    size_t size;
+
+	while ((size = read(source_fd, buf, 1024)) > 0) 
+	{
+        write(dest_fd, buf, size);
+    }
+
 	close(source_fd);
 	close(dest_fd);
 #else
@@ -350,10 +384,10 @@ void CPathHelper::MakeDirectory(std::string value)
 	for (unsigned int i = 0; i < crackedPath.size(); i++)
 	{
 		std::string path = "";
-		for (unsigned int k = 0; k < i; k++)
+		for (unsigned int k = 0; k <= i; k++)
 		{
 			path += crackedPath.at(k);
-			if (k + 1 < i)
+			if (k + 1 <= i)
 			{
 				path += "/";
 			}
@@ -364,7 +398,7 @@ void CPathHelper::MakeDirectory(std::string value)
 		{
 #ifdef _WIN32
 			CreateDirectoryA(path.c_str(), NULL);
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 			mkdir(path.c_str(), 0777);
 #else
 			assert(0);
@@ -386,17 +420,19 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 	}
 
 	value = CleanPath(value);
-
+	
 	// Strip out all .. and . references.
 	std::vector<std::string> crackedPath = CStringHelper::Split(value, '/');
 	std::string				 finalPath   = "";
+	int						 skip_count = 0;
 
 	for (int i = crackedPath.size() - 1; i >= 0; i--)
 	{
 		std::string part = crackedPath.at(i);
+
 		if (part == "..")
 		{
-			i--;
+			skip_count++;
 		}
 		else if (part == ".")
 		{
@@ -404,6 +440,12 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 		}
 		else
 		{
+			if (skip_count > 0)
+			{
+				skip_count--;
+				continue;
+			}
+
 			if (finalPath == "")
 			{
 				finalPath = part;
@@ -414,6 +456,11 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 			}
 		}
 	}
+	
+	if (value[value.size() - 1] == '/')
+	{
+		finalPath += "/";
+	}
 
 	return finalPath;
 }
@@ -423,6 +470,9 @@ std::string	CPathHelper::GetAbsolutePath(std::string value)
 // =================================================================
 std::string	CPathHelper::GetRelativePath(std::string path, std::string relative)
 {
+	path = GetAbsolutePath(path);
+	relative = GetAbsolutePath(relative);
+
 	std::string path_file     = CPathHelper::StripDirectory(path);
 	std::string relative_file = CPathHelper::StripDirectory(relative);
 
@@ -477,7 +527,7 @@ std::vector<std::string> CPathHelper::ListRecursiveFiles(std::string path, std::
 	std::vector<std::string> dirs  = ListDirs(path);
 
 	std::vector<std::string> abs_files;
-	for (auto iter = files.begin(); iter != files.end(); iter++)
+	for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); iter++)
 	{
 		std::string file_path = CPathHelper::CleanPath(path + "/" + (*iter));
 		
@@ -494,13 +544,13 @@ std::vector<std::string> CPathHelper::ListRecursiveFiles(std::string path, std::
 	}
 	
 	std::vector<std::string> abs_dirs;
-	for (auto iter = dirs.begin(); iter != dirs.end(); iter++)
+	for (std::vector<std::string>::iterator iter = dirs.begin(); iter != dirs.end(); iter++)
 	{
 		std::string dir_path = CPathHelper::CleanPath(path + "/" + (*iter));
 		abs_dirs.push_back(dir_path);
 
 		std::vector<std::string> rel_abs_files = ListRecursiveFiles(dir_path, extension);
-		for (auto iter2 = rel_abs_files.begin(); iter2 != rel_abs_files.end(); iter2++)
+		for (std::vector<std::string>::iterator iter2 = rel_abs_files.begin(); iter2 != rel_abs_files.end(); iter2++)
 		{
 			result.push_back(*iter2);
 		}
@@ -544,7 +594,7 @@ std::vector<std::string> CPathHelper::ListFiles(std::string value)
 		}
 		FindClose(handle);
 	}
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__) 
 	DIR* dir;
 	struct dirent* file;
 	
@@ -611,7 +661,7 @@ std::vector<std::string> CPathHelper::ListDirs(std::string value)
 		}
 		FindClose(handle);
 	}
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 	DIR* dir;
 	struct dirent* file;
 	
@@ -678,7 +728,7 @@ std::vector<std::string> CPathHelper::ListAll(std::string value)
 		}
 		FindClose(handle);
 	}
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__) || defined(__APPLE__)
 	DIR* dir;
 	struct dirent* file;
 	

@@ -104,7 +104,7 @@ void CASTNode::AddChild(CASTNode* node, bool atStart)
 //	}
 
 	SEMANT_TRACE("==================================");
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
 	}
@@ -118,7 +118,7 @@ void CASTNode::RemoveChild(CASTNode* node)
 {
 	node->Parent = NULL;
 
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		if (*iter == node)
 		{	
@@ -129,7 +129,7 @@ void CASTNode::RemoveChild(CASTNode* node)
 	}
 	
 	SEMANT_TRACE("==================================");
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{	
 		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
 	}
@@ -146,7 +146,7 @@ CASTNode* CASTNode::ReplaceChild(CASTNode* replace, CASTNode* with)
 		return replace;
 	}
 
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		if (*iter == replace)
 		{
@@ -163,7 +163,7 @@ CASTNode* CASTNode::ReplaceChild(CASTNode* replace, CASTNode* with)
 	with->Parent = this;
 
 	SEMANT_TRACE("==================================");
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		SEMANT_TRACE("\tChild:%s - %s", typeid(**iter).name(), (*iter)->ToString().c_str());
 	}
@@ -187,7 +187,7 @@ CASTNode* CASTNode::Prepare(CSemanter* semanter)
 // =================================================================
 void CASTNode::PrepareChildren(CSemanter* semanter)
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		(*iter)->Prepare(semanter);
 	}
@@ -208,7 +208,7 @@ CASTNode* CASTNode::Semant(CSemanter* semanter)
 // =================================================================
 void CASTNode::SemantChildren(CSemanter* semanter)
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		(*iter)->Semant(semanter);
 	}
@@ -227,7 +227,7 @@ void CASTNode::Translate(CTranslator* translator)
 // =================================================================
 void CASTNode::TranslateChildren(CTranslator* translator)
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		(*iter)->Translate(translator);
 	}
@@ -247,7 +247,7 @@ CExpressionBaseASTNode* CASTNode::SemantAsExpression(CSemanter* semanter)
 // =================================================================
 void CASTNode::FinalizeChildren(CSemanter* semanter)
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		(*iter)->Finalize(semanter);
 	}
@@ -267,7 +267,7 @@ CASTNode* CASTNode::Finalize(CSemanter* semanter)
 // =================================================================
 void CASTNode::CloneChildren(CSemanter* semanter, CASTNode* parent)
 {
-	for (auto iter = Children.begin(); iter != Children.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Children.begin(); iter != Children.end(); iter++)
 	{
 		CASTNode* node = (*iter)->Clone(semanter);
 		parent->AddChild(node);
@@ -427,7 +427,7 @@ CDeclarationASTNode* CASTNode::FindDataTypeDeclaration(CSemanter* semanter,
 
 	// Find normal declarations.
 	std::vector<CASTNode*>& nodes = GetSearchScopeChildren(semanter);
-	for (auto iter = nodes.begin(); iter != nodes.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
 	{
 		CClassASTNode* node = dynamic_cast<CClassASTNode*>(*iter);
 		if (node != NULL && node != ignoreNode)
@@ -466,7 +466,7 @@ CDeclarationASTNode* CASTNode::FindDeclaration(CSemanter* semanter,
 
 	// Find normal declarations.
 	std::vector<CASTNode*>& nodes = GetSearchScopeChildren(semanter);
-	for (auto iter = nodes.begin(); iter != nodes.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
 	{
 		CDeclarationASTNode* node = dynamic_cast<CDeclarationASTNode*>(*iter);
 		if (node != NULL && node != ignoreNode)
@@ -498,7 +498,7 @@ CAliasASTNode* CASTNode::FindAlias(CSemanter* semanter,
 {
 	// Find normal declarations.
 	std::vector<CASTNode*>& nodes = GetSearchScopeChildren(semanter);
-	for (auto iter = nodes.begin(); iter != nodes.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
 	{
 		CAliasASTNode* node = dynamic_cast<CAliasASTNode*>(*iter);
 		if (node != NULL && node != ignoreNode)

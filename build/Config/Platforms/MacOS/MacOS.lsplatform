@@ -1,0 +1,37 @@
+// -----------------------------------------------------------------------------
+// 	MacOS.lsplatform
+// 	Copyright (C) 2012-2013 TwinDrills, All Rights Reserved
+// -----------------------------------------------------------------------------
+//	This file contains all the configuration needed to tell the compiler
+//	how to translate code for the MacOS platform.
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_SHORT_NAME: Name of the platform we are compiling for. This is the name
+//				used in configuration files and by the PLATFORM definition.
+// -----------------------------------------------------------------------------
+#define PLATFORM_SHORT_NAME 	"MacOS"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_NAME: Long version of the name used in descriptions.
+// -----------------------------------------------------------------------------
+#define PLATFORM_NAME 			"MacOS"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_TRANSLATOR: Which translator to use to generate output.
+// -----------------------------------------------------------------------------
+#define PLATFORM_TRANSLATOR 	"C++"
+
+// -----------------------------------------------------------------------------
+//	NATIVE_PACKAGE_NAMESPACE: Which folder contains native package source code.	
+// -----------------------------------------------------------------------------
+#define NATIVE_PACKAGE_NAMESPACE "Native.CPP.Default"
+
+// -----------------------------------------------------------------------------
+//	PLATFORM_BUILDER: Which builder to use to compile the translated output.
+// -----------------------------------------------------------------------------
+#if OS == "MacOS"
+	#define PLATFORM_BUILDER "Make"
+#elif PLATFORM == "MacOS"
+	#error "Can not target {PLATFORM_SHORT_NAME} on {OS}."
+#endif

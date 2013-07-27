@@ -77,7 +77,7 @@ CASTNode* CMethodCallExpressionASTNode::Semant(CSemanter* semanter)
 	// Semant arguments.
 	std::vector<CDataType*> argument_types;
 	std::string argument_types_string;
-	for (auto iter = ArgumentExpressions.begin(); iter < ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter < ArgumentExpressions.end(); iter++)
 	{
 		CExpressionBaseASTNode* node = dynamic_cast<CExpressionBaseASTNode*>((*iter)->Semant(semanter));
 		argument_types.push_back(node->ExpressionResultType);
@@ -135,7 +135,7 @@ CASTNode* CMethodCallExpressionASTNode::Semant(CSemanter* semanter)
 	
 	// Cast all arguments to correct data types.
 	int index = 0;
-	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{
 		CDataType* dataType = declaration->Arguments.at(index++)->Type;
 
@@ -182,7 +182,7 @@ CASTNode* CMethodCallExpressionASTNode::Clone(CSemanter* semanter)
 {
 	CMethodCallExpressionASTNode* clone = new CMethodCallExpressionASTNode(NULL, Token);
 
-	for (auto iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = ArgumentExpressions.begin(); iter != ArgumentExpressions.end(); iter++)
 	{
 		CASTNode* node = (*iter)->Clone(semanter);
 		clone->ArgumentExpressions.push_back(node);

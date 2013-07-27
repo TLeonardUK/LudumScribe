@@ -115,7 +115,7 @@ std::string	CSemanter::GetMangled(std::string mangled)
 	{
 		bool found = false;
 
-		for (auto iter = m_mangled.begin(); iter != m_mangled.end(); iter++)
+		for (std::vector<std::string>::iterator  iter = m_mangled.begin(); iter != m_mangled.end(); iter++)
 		{
 			if (*iter == mangled)
 			{

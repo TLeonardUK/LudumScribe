@@ -19,6 +19,7 @@
 #include "CTranslationUnit.h"
 
 #include "CCPPTranslator.h"
+#include "CMakeBuilder.h"
 
 #include "CMSBuildBuilder.h"
 
@@ -34,12 +35,12 @@ CConfigState CConfigState::Merge(CConfigState other)
 {
 	CConfigState result = *this;
 	
-	for (auto iter = other.Defines.begin(); iter != other.Defines.end(); iter++)
+	for (std::vector<CDefine>::iterator iter = other.Defines.begin(); iter != other.Defines.end(); iter++)
 	{
 		CDefine def = *iter;
 		bool found = false;
 		
-		for (auto iter2 = result.Defines.begin(); iter2 != result.Defines.end(); iter2++)
+		for (std::vector<CDefine>::iterator iter2 = result.Defines.begin(); iter2 != result.Defines.end(); iter2++)
 		{
 			CDefine& otherDef = *iter2;
 			if (def.Name == otherDef.Name)
@@ -66,7 +67,7 @@ CConfigState CConfigState::Merge(CConfigState other)
 // =================================================================
 std::string CConfigState::GetString(std::string name, std::string defaultValue, bool errorOnNotExists)
 {
-	for (auto iter = Defines.begin(); iter != Defines.end(); iter++)
+	for (std::vector<CDefine>::iterator iter = Defines.begin(); iter != Defines.end(); iter++)
 	{
 		CDefine def = *iter;
 		if (def.Name == name)
@@ -105,6 +106,7 @@ CCompiler::CCompiler()
 
 	// Make list of builders.
 	m_builders.insert(std::pair<std::string, CBuilder*>("CMSBuildBuilder", new CMSBuildBuilder()));
+	m_builders.insert(std::pair<std::string, CBuilder*>("CMakeBuilder", new CMakeBuilder()));
 }
 
 // =================================================================
@@ -155,7 +157,7 @@ bool CCompiler::ValidateConfig()
 	m_defines.push_back(CDefine(DefineType::String, "PLATFORM", m_cmdLineParser.GetString("-platform")));
 #if defined(_WIN32) || defined(__MINGW32__)
 	m_defines.push_back(CDefine(DefineType::String, "OS",		"Win32"));
-#elif defined(__linux__) || defined(__GNUC__)
+#elif defined(__linux__)
 	m_defines.push_back(CDefine(DefineType::String, "OS",		"Linux"));
 #elif defined(__APPLE__)
 	m_defines.push_back(CDefine(DefineType::String, "OS",		"MacOS"));
@@ -165,7 +167,7 @@ bool CCompiler::ValidateConfig()
 
 	// Define environment variables.
 	std::map<std::string, std::string> environments = CStringHelper::GetEnvironmentVariables();
-	for (auto iter = environments.begin(); iter != environments.end(); iter++)
+	for (std::map<std::string, std::string>::iterator iter = environments.begin(); iter != environments.end(); iter++)
 	{
 		std::string name = CStringHelper::ToUpper((*iter).first);
 		if (name != "OS" &&
@@ -195,8 +197,8 @@ bool CCompiler::ValidateConfig()
 	}
 
 	// Check platform given is valid.
-	std::string platform_name   = m_cmdLineParser.GetString("-platform");
-	auto	    plat			= m_platform_configs.find(platform_name);
+	std::string									  platform_name   = m_cmdLineParser.GetString("-platform");
+	std::map<std::string, CConfigState>::iterator plat			= m_platform_configs.find(platform_name);
 	if (plat == m_platform_configs.end())
 	{
 		printf("Platform '%s' does not exist.\n", platform_name.c_str());
@@ -205,8 +207,8 @@ bool CCompiler::ValidateConfig()
 	m_platform_config = (*plat).second;
 
 	// Check translator config is valid.
-	std::string translator_name = m_platform_config.GetString("PLATFORM_TRANSLATOR");
-	auto		trans			= m_translator_configs.find(translator_name);
+	std::string											translator_name = m_platform_config.GetString("PLATFORM_TRANSLATOR");
+	std::map<std::string, CConfigState>::iterator		trans			= m_translator_configs.find(translator_name);
 	if (trans == m_translator_configs.end())
 	{
 		printf("Translator '%s' configuration does not exist.\n", translator_name.c_str());
@@ -215,8 +217,8 @@ bool CCompiler::ValidateConfig()
 	m_translator_config = (*trans).second;
 	
 	// Grab the actual translator instance.
-	std::string internal_translator_name = m_translator_config.GetString("TRANSLATOR_INTERNAL_NAME");
-	auto		internal_trans			 = m_translators.find(internal_translator_name);
+	std::string											internal_translator_name = m_translator_config.GetString("TRANSLATOR_INTERNAL_NAME");
+	std::map<std::string, CTranslator*>::iterator		internal_trans			 = m_translators.find(internal_translator_name);
 	if (internal_trans == m_translators.end())
 	{
 		printf("Translator '%s' is not implemented.\n", internal_translator_name.c_str());
@@ -226,7 +228,7 @@ bool CCompiler::ValidateConfig()
 	
 	// Check builder config is valid.
 	std::string builder_name = m_platform_config.GetString("PLATFORM_BUILDER");
-	auto		builder		 = m_builder_configs.find(builder_name);
+	std::map<std::string, CConfigState>::iterator		builder		 = m_builder_configs.find(builder_name);
 	if (builder == m_builder_configs.end())
 	{
 		printf("Builder '%s' configuration does not exist.\n", builder_name.c_str());
@@ -236,7 +238,7 @@ bool CCompiler::ValidateConfig()
 	
 	// Grab the actual builder instance.
 	std::string internal_builder_name = m_builder_config.GetString("BUILDER_INTERNAL_NAME");
-	auto		internal_builder	  = m_builders.find(internal_builder_name);
+	std::map<std::string, CBuilder*>::iterator		internal_builder	  = m_builders.find(internal_builder_name);
 	if (internal_builder == m_builders.end())
 	{
 		printf("Builder '%s' is not implemented.\n", internal_builder_name.c_str());
@@ -336,7 +338,7 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 	std::string platform = m_project_config.GetString("PLATFORM");
 
 	bool found = false;
-	for (auto iter = platforms.begin(); iter != platforms.end(); iter++)
+	for (std::vector<std::string>::iterator iter = platforms.begin(); iter != platforms.end(); iter++)
 	{
 		if (*iter == platform)
 		{
@@ -356,7 +358,7 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 	std::string config = m_project_config.GetString("CONFIG");
 
 	found = false;
-	for (auto iter = configs.begin(); iter != configs.end(); iter++)
+	for (std::vector<std::string>::iterator iter = configs.begin(); iter != configs.end(); iter++)
 	{
 		if (*iter == config)
 		{
@@ -375,19 +377,26 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 	std::string compile_file_path = m_project_config.GetString("COMPILE_FILE");
 	if (CPathHelper::IsRelative(compile_file_path) == true)
 	{
-		compile_file_path = CPathHelper::CleanPath(CPathHelper::StripFilename(path) + "/" + compile_file_path);
+		compile_file_path = CPathHelper::CleanPath(CPathHelper::GetAbsolutePath(CPathHelper::StripFilename(path) + "/" + compile_file_path));
 	}
 	if (!CPathHelper::IsFile(compile_file_path))
 	{
 		printf("Could not find file to compile: %s\n", compile_file_path.c_str());			
 		return false;
 	}
+	
+	// Find base directory.
+	m_baseDirectory = m_project_config.GetString("BUILD_DIR");
+	if (CPathHelper::IsRelative(m_baseDirectory) == true)
+	{
+		m_baseDirectory = CPathHelper::GetAbsolutePath(CPathHelper::CleanPath(CPathHelper::StripFilename(path)));
+	}
 
 	// Create output directory.
 	m_buildDirectory = m_project_config.GetString("BUILD_DIR");
 	if (CPathHelper::IsRelative(m_buildDirectory) == true)
 	{
-		m_buildDirectory = CPathHelper::CleanPath(CPathHelper::StripFilename(path) + "/" + m_buildDirectory);
+		m_buildDirectory = CPathHelper::GetAbsolutePath(CPathHelper::CleanPath(CPathHelper::StripFilename(path) + "/" + m_buildDirectory));
 	}
 	if (!CPathHelper::IsDirectory(m_buildDirectory))
 	{
@@ -412,7 +421,7 @@ bool CCompiler::CompilePackage(std::string path, std::vector<CDefine> defines)
 bool CCompiler::LoadPlatformConfig()
 {
 	std::vector<std::string> dirs = CPathHelper::ListDirs(m_platformDirectory);
-	for (auto iter = dirs.begin(); iter != dirs.end(); iter++)
+	for (std::vector<std::string>::iterator iter = dirs.begin(); iter != dirs.end(); iter++)
 	{
 		std::string directory = CPathHelper::CleanPath(m_platformDirectory + "/" + *iter);
 		std::string platformfile = CPathHelper::CleanPath(m_platformDirectory + "/" + *iter + "/" + *iter + ".lsplatform");
@@ -445,7 +454,7 @@ bool CCompiler::LoadPlatformConfig()
 bool CCompiler::LoadBuilderConfig()
 {
 	std::vector<std::string> dirs = CPathHelper::ListDirs(m_builderDirectory);
-	for (auto iter = dirs.begin(); iter != dirs.end(); iter++)
+	for (std::vector<std::string>::iterator iter = dirs.begin(); iter != dirs.end(); iter++)
 	{
 		std::string directory = CPathHelper::CleanPath(m_builderDirectory + "/" + *iter);
 		std::string platformfile = CPathHelper::CleanPath(m_builderDirectory + "/" + *iter + "/" + *iter + ".lsbuilder");
@@ -478,7 +487,7 @@ bool CCompiler::LoadBuilderConfig()
 bool CCompiler::LoadTranslatorConfig()
 {
 	std::vector<std::string> dirs = CPathHelper::ListDirs(m_translatorDirectory);
-	for (auto iter = dirs.begin(); iter != dirs.end(); iter++)
+	for (std::vector<std::string>::iterator iter = dirs.begin(); iter != dirs.end(); iter++)
 	{
 		std::string directory = CPathHelper::CleanPath(m_translatorDirectory + "/" + *iter);
 		std::string platformfile = CPathHelper::CleanPath(m_translatorDirectory + "/" + *iter + "/" + *iter + ".lstranslator");
@@ -522,6 +531,14 @@ std::string CCompiler::GetBuildDirectory()
 }
 
 // =================================================================
+//	Gets the directory thatthe project is in.
+// =================================================================
+std::string CCompiler::GetProjectDirectory()
+{
+	return m_baseDirectory;
+}
+
+// =================================================================
 //	Gets the translator to use when compiling files.
 // =================================================================
 CTranslator* CCompiler::GetTranslator()
@@ -552,4 +569,3 @@ std::string CCompiler::GetFileExtension()
 {
 	return m_fileExtension;
 }
-

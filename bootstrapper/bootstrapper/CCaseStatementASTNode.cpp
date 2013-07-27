@@ -57,7 +57,7 @@ CASTNode* CCaseStatementASTNode::Semant(CSemanter* semanter)
 	}
 
 	// Semant the expression.
-	for (auto iter = Expressions.begin(); iter != Expressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Expressions.begin(); iter != Expressions.end(); iter++)
 	{
 		CASTNode* node = *iter;
 		node = ReplaceChild(node, node->Semant(semanter));
@@ -87,7 +87,7 @@ CASTNode* CCaseStatementASTNode::Clone(CSemanter* semanter)
 		clone->AddChild(clone->BodyStatement);
 	}
 	
-	for (auto iter = Expressions.begin(); iter != Expressions.end(); iter++)
+	for (std::vector<CASTNode*>::iterator iter = Expressions.begin(); iter != Expressions.end(); iter++)
 	{
 		CASTNode* node = (*iter)->Clone(semanter);
 		clone->Expressions.push_back(node);

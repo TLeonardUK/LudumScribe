@@ -12,9 +12,20 @@
 #define COMPILE_FILE 			"LSC.ls"
 
 // -----------------------------------------------------------------------------
+//	OUTPUT_FILE: Name of file to output.
+// -----------------------------------------------------------------------------
+#if OS=="Win32"
+#define OUTPUT_FILE 			"LSC.exe"
+#elif OS=="Linux"
+#define OUTPUT_FILE 			"LSC.linux"
+#elif OS=="MacOS"
+#define OUTPUT_FILE 			"LSC.macos"
+#endif
+
+// -----------------------------------------------------------------------------
 //	BUILD_DIR: Directory to build translated project in.
 // -----------------------------------------------------------------------------
-#define BUILD_DIR				"../../Bin/Build/LSC/"
+#define BUILD_DIR				"../../Bin/Build/LSC/{OS}/{CONFIG}/"
 
 // -----------------------------------------------------------------------------
 //	OUTPUT_DIR: Folder to emit products to.
@@ -24,7 +35,7 @@
 // -----------------------------------------------------------------------------
 //	SUPPORTED_PLATFORMS: Defines which platforms are supported by this project.
 // -----------------------------------------------------------------------------
-#define SUPPORTED_PLATFORMS   	"Win32"
+#define SUPPORTED_PLATFORMS   	"Win32|Linux|MacOS"
 
 // -----------------------------------------------------------------------------
 //	SUPPORTED_CONFIGS: Defines which configurations are supported by this project.

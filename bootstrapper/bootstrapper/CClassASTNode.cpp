@@ -43,6 +43,7 @@ CClassASTNode::CClassASTNode(CASTNode* parent, CToken token) :
 	IsAbstract				= false;
 	IsInterface				= false;
 	IsGeneric				= false;
+	IsSealed				= false;
 	Body					= NULL;
 	SuperClass				= NULL;
 	InheritsNull			= false;
@@ -64,7 +65,7 @@ CClassASTNode::CClassASTNode(CASTNode* parent, CToken token) :
 // =================================================================
 CClassASTNode::~CClassASTNode()
 {
-	for (auto iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
+	for (std::vector<CClassASTNode*>::iterator iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
 	{
 		delete (*iter);
 	}
@@ -101,7 +102,7 @@ CASTNode* CClassASTNode::Clone(CSemanter* semanter)
 
 	if (ClassConstructor != NULL)
 	{
-		for (auto iter = clone->Body->Children.begin(); iter != clone->Body->Children.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = clone->Body->Children.begin(); iter != clone->Body->Children.end(); iter++)
 		{
 			CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 			if (member != NULL)
@@ -117,7 +118,7 @@ CASTNode* CClassASTNode::Clone(CSemanter* semanter)
 	
 	if (InstanceConstructor != NULL)
 	{
-		for (auto iter = clone->Body->Children.begin(); iter != clone->Body->Children.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = clone->Body->Children.begin(); iter != clone->Body->Children.end(); iter++)
 		{
 			CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 			if (member != NULL)
@@ -146,7 +147,7 @@ std::string CClassASTNode::ToString()
 		result += "<";
 		if (GenericInstanceOf != NULL)
 		{
-			for (auto iter = GenericInstanceTypes.begin(); iter != GenericInstanceTypes.end(); iter++)
+			for (std::vector<CDataType*>::iterator iter = GenericInstanceTypes.begin(); iter != GenericInstanceTypes.end(); iter++)
 			{
 				if (iter != GenericInstanceTypes.begin())
 				{
@@ -157,7 +158,7 @@ std::string CClassASTNode::ToString()
 		}
 		else
 		{
-			for (auto iter = GenericTypeTokens.begin(); iter != GenericTypeTokens.end(); iter++)
+			for (std::vector<CToken>::iterator iter = GenericTypeTokens.begin(); iter != GenericTypeTokens.end(); iter++)
 			{
 				if (iter != GenericTypeTokens.begin())
 				{
@@ -223,7 +224,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 	
 		// Semant inherited types.
 		bool foundSuper = false;
-		for (auto iter = InheritedTypes.begin(); iter != InheritedTypes.end(); iter++)
+		for (std::vector<CIdentifierDataType*>::iterator iter = InheritedTypes.begin(); iter != InheritedTypes.end(); iter++)
 		{
 			CIdentifierDataType* type = *iter;
 			CClassASTNode* node = type->SemantAsClass(semanter, this, true);
@@ -284,7 +285,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 		{
 			SuperClass->Semant(semanter);
 		}
-		for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
 		{
 			CClassASTNode* interfaceClass = *iter;
 			interfaceClass->Semant(semanter);
@@ -293,7 +294,7 @@ CASTNode* CClassASTNode::Semant(CSemanter* semanter)
 		// Look for interface in parent classes.
 		if (SuperClass != NULL)
 		{
-			for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+			for (std::vector<CClassASTNode*>::iterator iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
 			{
 				CClassASTNode* interfaceClass = *iter;
 				if (SuperClass->InheritsFromClass(semanter, interfaceClass) != NULL)
@@ -386,7 +387,7 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 	if (IsGeneric == false || GenericInstanceOf != NULL)
 	{
 		// Check for hiding variables and methods.
-		for (auto iter = Body->Children.begin(); iter != Body->Children.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = Body->Children.begin(); iter != Body->Children.end(); iter++)
 		{
 			CClassMemberASTNode* node = dynamic_cast<CClassMemberASTNode*>(*iter);
 			if (node != NULL)
@@ -394,7 +395,7 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 				CClassASTNode* scope = SuperClass;
 				while (scope != NULL)
 				{
-					for (auto iter2 = scope->Body->Children.begin(); iter2 != scope->Body->Children.end(); iter2++)
+					for (std::vector<CASTNode*>::iterator iter2 = scope->Body->Children.begin(); iter2 != scope->Body->Children.end(); iter2++)
 					{
 						CClassMemberASTNode* node2 = dynamic_cast<CClassMemberASTNode*>(*iter2);
 						if (node2 != NULL &&
@@ -428,7 +429,7 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 			while (scope != NULL && IsAbstract == false)
 			{
 				// Look for abstract methods in this scope.		
-				for (auto iter = scope->Body->Children.begin(); iter != scope->Body->Children.end() && IsAbstract == false; iter++)
+				for (std::vector<CASTNode*>::iterator iter = scope->Body->Children.begin(); iter != scope->Body->Children.end() && IsAbstract == false; iter++)
 				{
 					CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 					if (member != NULL && member->MemberType == MemberType::Method)
@@ -438,7 +439,7 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 						if (member->IsAbstract == true)
 						{
 							bool found = false;
-							for (auto iter2 = members.begin(); iter2 != members.end(); iter2++)
+							for (std::vector<CClassMemberASTNode*>::iterator iter2 = members.begin(); iter2 != members.end(); iter2++)
 							{
 								CClassMemberASTNode* sub_member = *iter2;
 								
@@ -472,17 +473,17 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 		}
 
 		// Throw errors if we do not implement all interface functions.	
-		for (auto iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = Interfaces.begin(); iter != Interfaces.end(); iter++)
 		{
 			CClassASTNode* interfaceClass = *iter;
-			for (auto iter2 = interfaceClass->Body->Children.begin(); iter2 != interfaceClass->Body->Children.end(); iter2++)
+			for (std::vector<CASTNode*>::iterator iter2 = interfaceClass->Body->Children.begin(); iter2 != interfaceClass->Body->Children.end(); iter2++)
 			{
 				CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter2);
 				if (member != NULL &&
 					member->MemberType == MemberType::Method)
 				{
 					std::vector<CDataType*> argument_data_types;
-					for (auto iter3 = member->Arguments.begin(); iter3 != member->Arguments.end(); iter3++)
+					for (std::vector<CVariableStatementASTNode*>::iterator iter3 = member->Arguments.begin(); iter3 != member->Arguments.end(); iter3++)
 					{
 						CVariableStatementASTNode* arg = *iter3;
 						argument_data_types.push_back(arg->Type);
@@ -503,7 +504,7 @@ CASTNode* CClassASTNode::Finalize(CSemanter* semanter)
 	// Finalize generic instances.
 	else if (IsGeneric == true)
 	{
-		for (auto iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
 		{
 			(*iter)->Finalize(semanter);
 		}
@@ -536,7 +537,7 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 	{
 		if (scope->Body != NULL)
 		{
-			for (auto iter = scope->Body->Children.begin(); iter != scope->Body->Children.end(); iter++)
+			for (std::vector<CASTNode*>::iterator iter = scope->Body->Children.begin(); iter != scope->Body->Children.end(); iter++)
 			{
 				CClassMemberASTNode* member = dynamic_cast<CClassMemberASTNode*>(*iter);
 				if (member				!= NULL &&
@@ -548,7 +549,7 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 
 					// Has one of the other members overridcen this method already?
 					bool alreadyExists = false;
-					for (auto iter2 = nodes.begin(); iter2 != nodes.end(); iter2++)
+					for (std::vector<CClassMemberASTNode*>::iterator iter2 = nodes.begin(); iter2 != nodes.end(); iter2++)
 					{
 						CClassMemberASTNode* member2 = *iter2;
 						if (member->Identifier == member2->Identifier &&
@@ -589,11 +590,12 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 
 	// Try and find amatch!
 	CClassMemberASTNode* match			= NULL;
+	CClassMemberASTNode* ambiguousMatch	= NULL;
 	bool				 isExactMatch	= false;
 	std::string			 errorMessage	= "";
 
 	// Look for valid nodes.		
-	for (auto iter = nodes.begin(); iter != nodes.end(); iter++)
+	for (std::vector<CClassMemberASTNode*>::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
 	{
 		CClassMemberASTNode* member = *iter;
 
@@ -660,7 +662,10 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 			{
 				if (match != NULL)
 				{
-					errorMessage = CStringHelper::FormatString("Found ambiguous reference to method of class '%s'. Reference could mean either '%s' or '%s'.", Identifier.c_str(), match->ToString().c_str(), member->ToString().c_str());
+					if (ambiguousMatch == NULL)
+					{
+						ambiguousMatch = member;
+					}
 				}
 				else
 				{
@@ -668,6 +673,13 @@ CClassMemberASTNode* CClassASTNode::FindClassMethod(CSemanter*					semanter,
 				}
 			}
 		}
+	}
+
+	// Ambiguous non-exact matchs?
+	if (isExactMatch == false &&
+		ambiguousMatch != NULL)
+	{
+		errorMessage = CStringHelper::FormatString("Found ambiguous reference to method of class '%s'. Reference could mean either '%s' or '%s'.", Identifier.c_str(), match->ToString().c_str(), ambiguousMatch->ToString().c_str());
 	}
 
 	// Return?
@@ -713,7 +725,7 @@ CClassMemberASTNode* CClassASTNode::FindClassField(CSemanter*					semanter,
 		CClassMemberASTNode* result = NULL;
 
 		// Look for explicit member matchs.
-		for (auto iter = Body->Children.begin(); iter != Body->Children.end(); iter++)
+		for (std::vector<CASTNode*>::iterator iter = Body->Children.begin(); iter != Body->Children.end(); iter++)
 		{
 			CClassMemberASTNode* classNode = dynamic_cast<CClassMemberASTNode*>(*iter);
 			if (classNode					!= NULL &&
@@ -798,7 +810,7 @@ bool CClassASTNode::InheritsFromClass(CSemanter* semanter, CClassASTNode* node)
 		}
 
 		// Check for interface inheriting.
-		for (auto iter = check->Interfaces.begin(); iter != check->Interfaces.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = check->Interfaces.begin(); iter != check->Interfaces.end(); iter++)
 		{
 			if ((*iter) == node)
 			{
@@ -833,7 +845,7 @@ CClassASTNode* CClassASTNode::GenerateClassInstance(CSemanter* semanter, CASTNod
 		}
 
 		// Instance with these data types already exists?
-		for (auto iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
 		{
 			CClassASTNode* instance = *iter;
 			bool argumentsMatch = true;
@@ -893,7 +905,7 @@ void CClassASTNode::Translate(CTranslator* translator)
 {
 	if (IsGeneric == true)
 	{		
-		for (auto iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
+		for (std::vector<CClassASTNode*>::iterator iter = GenericInstances.begin(); iter != GenericInstances.end(); iter++)
 		{
 			CClassASTNode* instance = *iter;
 			translator->TranslateClass(instance);

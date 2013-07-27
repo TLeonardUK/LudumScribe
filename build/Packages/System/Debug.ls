@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to expose
 //	debugging functionality.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.Debug;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.Debug;
 using System.OS;
 
 // -----------------------------------------------------------------------------

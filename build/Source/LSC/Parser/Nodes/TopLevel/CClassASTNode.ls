@@ -98,6 +98,7 @@ public class CClassASTNode : CDeclarationASTNode
 		IsAbstract				= false;
 		IsInterface				= false;
 		IsGeneric				= false;
+		IsSealed				= false;
 		Body					= null;
 		SuperClass				= null;
 		InheritsNull			= false;
@@ -718,6 +719,7 @@ public class CClassASTNode : CDeclarationASTNode
 
 		// Try and find amatch!
 		CClassMemberASTNode  match			= null;
+		CClassMemberASTNode	 ambiguousMatch = null;
 		bool				 isExactMatch	= false;
 		string				 errorMessage	= "";
 
@@ -787,7 +789,10 @@ public class CClassASTNode : CDeclarationASTNode
 				{
 					if (match != null)
 					{
-						errorMessage = "Found ambiguous reference to method of class '" + Identifier + "'. Reference could mean either '" + match.ToString() + "' or '" + member.ToString() + "'.";
+						if (ambiguousMatch == null)
+						{
+							ambiguousMatch = member;
+						}
 					}
 					else
 					{
@@ -795,6 +800,13 @@ public class CClassASTNode : CDeclarationASTNode
 					}
 				}
 			}
+		}
+		
+		// Ambiguous non-exact matchs?
+		if (isExactMatch == false &&
+			ambiguousMatch != null)
+		{
+			errorMessage = "Found ambiguous reference to method of class '" + Identifier + "'. Reference could mean either '" + match.ToString() + "' or '" + ambiguousMatch.ToString() + "'.";
 		}
 
 		// Return?

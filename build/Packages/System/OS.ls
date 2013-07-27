@@ -5,7 +5,7 @@
 //	This package contains the declarations of the class used to interact with
 //	the target languages runtime/environment/os/shiz.
 // -----------------------------------------------------------------------------
-using native Native.{PLATFORM}.System.OS;
+using native {NATIVE_PACKAGE_NAMESPACE}.System.OS;
 
 // -----------------------------------------------------------------------------
 //	This class is used to interact with the target languages garbage collector.
